@@ -10,23 +10,23 @@ namespace AzureAppRegistration.Jobs
     {
         public string ExtensionName => "AzureApp";
         
-        protected AzureApplicationClient ApplicationClient { get; private set; }
+        protected IAzureGraphClient Client { get; private set; }
         
         protected void Initialize(CertificateStore details)
         {
             ILogger logger = LogHandler.GetReflectedClassLogger(this);
-            logger.LogDebug($"Certificate Store Configuration: {JsonConvert.SerializeObject(details)}");
+            logger.LogDebug("Certificate Store Configuration: {Details}", JsonConvert.SerializeObject(details));
             logger.LogDebug("Initializing AzureAppGatewayClient");
             dynamic properties = JsonConvert.DeserializeObject(details.Properties);
             
-            AzureProperties azureProperties = new AzureProperties
+            AzureSettings azureProperties = new AzureSettings
             {
                 TenantId = details.ClientMachine,
                 ApplicationId = properties?.ServerUsername,
                 ClientSecret = properties?.ServerPassword
             };
 
-            ApplicationClient = new AzureApplicationClient(azureProperties)
+            Client = new AzureServicePrincipalClient(azureProperties)
             {
                 ApplicationId = details.StorePath
             };
@@ -37,14 +37,14 @@ namespace AzureAppRegistration.Jobs
             ILogger logger = LogHandler.GetReflectedClassLogger(this);
             logger.LogDebug($"Discovery Job Configuration: {JsonConvert.SerializeObject(config)}");
             logger.LogDebug("Initializing AzureAppGatewayClient");
-            AzureProperties azureProperties = new AzureProperties
+            AzureSettings azureProperties = new AzureSettings
             {
                 TenantId = config.ClientMachine,
                 ApplicationId = config.ServerUsername,
                 ClientSecret = config.ServerPassword
             };
             
-            ApplicationClient = new AzureApplicationClient(azureProperties);
+            Client = new AzureServicePrincipalClient(azureProperties);
         }
     }
 }

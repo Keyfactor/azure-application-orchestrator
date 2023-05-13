@@ -14,7 +14,7 @@
 
 namespace AzureAppRegistration.Client
 {
-    public class AzureProperties
+    public class AzureSettings
     {
         public string TenantId { get; set; }
         public string ApplicationId { get; set; }

@@ -12,7 +12,7 @@ namespace AzureAppRegistration.Jobs
         
         public JobResult ProcessJob(ManagementJobConfiguration config)
         {
-            _logger.LogDebug("Beginning App Gateway Management Job");
+            _logger.LogDebug("Beginning {Type} Management Job", Client.TypeString);
             
             Initialize(config.CertificateStoreDetails);
             
@@ -27,18 +27,18 @@ namespace AzureAppRegistration.Jobs
                 switch (config.OperationType)
                 {
                     case CertStoreOperationType.Add:
-                        _logger.LogDebug("Adding certificate to App Gateway");
+                        _logger.LogDebug("Adding certificate to {Type}", Client.TypeString);
                         
                         PerformAddition(config);
                         
-                        _logger.LogDebug("Add operation complete.");
+                        _logger.LogDebug("Add operation complete");
                         
                         result.Result = OrchestratorJobStatusJobResult.Success;
                         break;
                     case CertStoreOperationType.Remove:
-                        _logger.LogDebug("Removing certificate from App Gateway");
+                        _logger.LogDebug("Removing certificate from {Type}", Client.TypeString);
 
-                        ApplicationClient.RemoveApplicationCertificate(config.JobCertificate.Alias);
+                        Client.RemoveCertificate(config.JobCertificate.Alias);
                         
                         _logger.LogDebug("Remove operation complete");
                         result.Result = OrchestratorJobStatusJobResult.Success;
@@ -58,10 +58,10 @@ namespace AzureAppRegistration.Jobs
         
         private void PerformAddition(ManagementJobConfiguration config)
         {
-            // Ensure that the certificate is in PKCS#12 format.
+            // Ensure that the password is provided.
             if (string.IsNullOrWhiteSpace(config.JobCertificate.PrivateKeyPassword))
             {
-                throw new Exception("Certificate must be in PKCS#12 format.");
+                throw new Exception("Private key password must be provided.");
             }
             // Ensure that an alias is provided.
             if (string.IsNullOrWhiteSpace(config.JobCertificate.Alias))
@@ -69,28 +69,21 @@ namespace AzureAppRegistration.Jobs
                 throw new Exception("Certificate alias is required.");
             }
             
-            if (ApplicationClient.ApplicationCertificateExists(config.JobCertificate.Alias) && !config.Overwrite)
+            if (Client.CertificateExists(config.JobCertificate.Alias) && !config.Overwrite)
             {
-                _logger.LogDebug("Certificate with alias \"{Alias}\" already exists in App Gateway, and job was not configured to overwrite", config.JobCertificate.Alias);
-                throw new Exception($"Certificate with alias \"{config.JobCertificate.Alias}\" already exists in App Gateway, and job was not configured to overwrite");
+                _logger.LogDebug("Certificate with alias \"{Alias}\" already exists in {Type}, and job was not configured to overwrite", config.JobCertificate.Alias, Client.TypeString);
+                throw new Exception($"Certificate with alias \"{config.JobCertificate.Alias}\" already exists in {Client.TypeString}, and job was not configured to overwrite");
             }
-            
-            string isPreferredSamlSignerString = config.JobProperties["IsPreferredSamlSigner"]?.ToString();
-            bool isPreferredSamlSigner = false;
-            if (!string.IsNullOrWhiteSpace(config.JobProperties["IsPreferredSamlSigner"]?.ToString()))
-            {
-                _logger.LogDebug("Enrollment field 'SetPreferredSamlSigner' is set to \"{SetPreferredSamlSigner}\". Also updating HTTP Listener", config.JobProperties["SetPreferredSamlSigner"].ToString());
-            }
-            
+
             if (config.Overwrite)
             {
-                _logger.LogDebug("Overwrite is enabled, replacing certificate in gateway called \"{0}\"", config.JobCertificate.Alias);
-                ApplicationClient.ReplaceApplicationCertificate(config.JobCertificate.Alias, config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword);
+                _logger.LogDebug("Overwrite is enabled, replacing certificate in {Type} called \"{Alias}\"", Client.TypeString, config.JobCertificate.Alias);
+                Client.ReplaceCertificate(config.JobCertificate.Alias, config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword);
             }
             else
             {
-                _logger.LogDebug("Adding certificate to App Gateway");
-                ApplicationClient.AddApplicationCertificate(config.JobCertificate.Alias, config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword, isPreferredSamlSigner);
+                _logger.LogDebug("Adding certificate to {Type}", Client.TypeString);
+                Client.AddCertificate(config.JobCertificate.Alias, config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword);
             }
         }
     }

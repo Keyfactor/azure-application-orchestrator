@@ -14,7 +14,6 @@
       <PackageReference Include="Azure.ResourceManager" Version="1.4.0" />
       <PackageReference Include="Keyfactor.Logging" Version="1.1.1" />
       <PackageReference Include="Keyfactor.Orchestrators.IOrchestratorJobExtensions" Version="0.7.0" />
-      <PackageReference Include="Microsoft.Azure.Management.Graph.RBAC.Fluent" Version="1.38.1" />
       <PackageReference Include="Microsoft.Graph" Version="5.6.0" />
     </ItemGroup>
 
