@@ -407,5 +407,10 @@ namespace AzureAppRegistration.Client
 
             return sp.PreferredTokenSigningKeyThumbprint;
         }
+        
+        public IEnumerable<string> DiscoverApplicationIds()
+        {
+            return GetServicePrincipals().Select(kvp => kvp.Key).ToList();
+        }
     }
 }

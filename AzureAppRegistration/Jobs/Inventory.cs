@@ -14,6 +14,8 @@ namespace AzureAppRegistration.Jobs
 
         public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate cb)
         {
+            Initialize(config.CertificateStoreDetails);
+            
             _logger.LogDebug("Beginning {Type} Inventory Job", Client.TypeString);
             
             JobResult result = new JobResult
@@ -21,8 +23,6 @@ namespace AzureAppRegistration.Jobs
                 Result = OrchestratorJobStatusJobResult.Failure,
                 JobHistoryId = config.JobHistoryId
             };
-
-            Initialize(config.CertificateStoreDetails);
             
             List<CurrentInventoryItem> inventoryItems;
             

@@ -6,9 +6,16 @@ using Newtonsoft.Json;
 
 namespace AzureAppRegistration.Jobs
 {
+    public class ServerConfig
+    {
+        public string ServerUsername { get; set; }
+        public string ServerPassword { get; set; }
+        public bool ServerUseSsl { get; set; }
+        public string Type { get; set; }
+    }
     public class AzureApplicationJob<T> : IOrchestratorJobExtension
     {
-        public string ExtensionName => "AzureApp";
+        public string ExtensionName => "AzAppCert";
         
         protected IAzureGraphClient Client { get; private set; }
         
@@ -17,19 +24,29 @@ namespace AzureAppRegistration.Jobs
             ILogger logger = LogHandler.GetReflectedClassLogger(this);
             logger.LogDebug("Certificate Store Configuration: {Details}", JsonConvert.SerializeObject(details));
             logger.LogDebug("Initializing AzureAppGatewayClient");
-            dynamic properties = JsonConvert.DeserializeObject(details.Properties);
+
+            ServerConfig config = JsonConvert.DeserializeObject<ServerConfig>(details.Properties);
             
             AzureSettings azureProperties = new AzureSettings
             {
                 TenantId = details.ClientMachine,
-                ApplicationId = properties?.ServerUsername,
-                ClientSecret = properties?.ServerPassword
+                ApplicationId = config.ServerUsername,
+                ClientSecret = config.ServerPassword
             };
 
-            Client = new AzureServicePrincipalClient(azureProperties)
+            if (config.Type == "OAuth/SAML (ServicePrincipal)")
             {
-                ApplicationId = details.StorePath
-            };
+                Client = new AzureServicePrincipalClient(azureProperties)
+                {
+                    ApplicationId = details.StorePath
+                };
+            } else // Else case is "Authentication (Application)"
+            {
+                Client = new AzureApplicationClient(azureProperties)
+                {
+                    ApplicationId = details.StorePath
+                };
+            }
         }
         
         protected void Initialize(DiscoveryJobConfiguration config)
@@ -44,7 +61,13 @@ namespace AzureAppRegistration.Jobs
                 ClientSecret = config.ServerPassword
             };
             
-            Client = new AzureServicePrincipalClient(azureProperties);
+            if (config.ServerUsername == "OAuth/SAML (ServicePrincipal)")
+            {
+                Client = new AzureServicePrincipalClient(azureProperties);
+            } else // Else case is "Authentication (Application)"
+            {
+                Client = new AzureApplicationClient(azureProperties);
+            }
         }
     }
 }

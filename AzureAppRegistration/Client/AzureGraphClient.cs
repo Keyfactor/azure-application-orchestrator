@@ -18,8 +18,10 @@ namespace AzureAppRegistration.Client
     {
         protected AzureGraphClient(AzureSettings properties)
         {
+            TypeString = typeof(T).Name;
+            
             Log = LogHandler.GetClassLogger<AzureApplicationClient>();
-            Log.LogDebug("Initializing Azure Application Client");
+            Log.LogDebug("Initializing Azure {Type} Client", TypeString);
             
             string[] scopes = { "https://graph.microsoft.com/.default" };
             
@@ -30,17 +32,12 @@ namespace AzureAppRegistration.Client
             
             ClientSecretCredential clientSecretCredential = new ClientSecretCredential(
                 properties.TenantId, properties.ApplicationId, properties.ClientSecret, options);
-            
-            ClientCertificateCredential clientCertificateCredential = new ClientCertificateCredential(
-                properties.TenantId, properties.ApplicationId, new X509Certificate2("C:\\Users\\hroszell\\Downloads\\terraform_test_cert.pfx", "TEVN6peCxyz4"));
 
-            GraphClient = new GraphServiceClient(clientCertificateCredential, scopes);
+            GraphClient = new GraphServiceClient(clientSecretCredential, scopes);
 
-            Log.LogDebug("Successfully created Graph client with ClientSecretCredential and scope \"{Scopes}\"", scopes[0]);
+            Log.LogDebug("Successfully created Graph client for {TypeString} with ClientSecretCredential and scope \"{Scopes}\"", TypeString, scopes[0]);
             
             _properties = properties;
-            
-            TypeString = typeof(T).Name;
         }
         
         protected GraphServiceClient GraphClient { get; }

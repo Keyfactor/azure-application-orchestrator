@@ -11,5 +11,6 @@ namespace AzureAppRegistration.Client
         public void RemoveCertificate(string certificateName);
         public bool CertificateExists(string certificateName);
         public IEnumerable<CurrentInventoryItem> GetInventory();
+        public IEnumerable<string> DiscoverApplicationIds();
     }
 }

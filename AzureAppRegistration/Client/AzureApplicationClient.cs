@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Models;
+using KeyValuePair = System.Collections.Generic.KeyValuePair;
 
 namespace AzureAppRegistration.Client
 {
@@ -206,6 +207,11 @@ namespace AzureAppRegistration.Client
             Application application = GetApplication();
             
             return application.KeyCredentials != null && application.KeyCredentials.Any(c => c.DisplayName == certificateName);
+        }
+
+        public IEnumerable<string> DiscoverApplicationIds()
+        {
+            return GetApplications().Select(kvp => kvp.Key).ToList();
         }
     }
 }

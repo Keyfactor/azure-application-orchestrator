@@ -12,9 +12,9 @@ namespace AzureAppRegistration.Jobs
         
         public JobResult ProcessJob(ManagementJobConfiguration config)
         {
-            _logger.LogDebug("Beginning {Type} Management Job", Client.TypeString);
-            
             Initialize(config.CertificateStoreDetails);
+            
+            _logger.LogDebug("Beginning {Type} Management Job", Client.TypeString);
             
             JobResult result = new JobResult
             {
