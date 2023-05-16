@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureAppRegistration", "AzureAppRegistration\AzureAppRegistration.csproj", "{51A6B345-EFCF-4B84-B863-447B72E8E381}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureEnterpriseApplicationOrchestrator", "AzureEnterpriseApplicationOrchestrator\AzureEnterpriseApplicationOrchestrator.csproj", "{51A6B345-EFCF-4B84-B863-447B72E8E381}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureAppRegistrationTests", "AzureAppRegistrationTests\AzureAppRegistrationTests.csproj", "{CF3213FC-F053-4409-9FBA-55978319FB6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureEnterpriseApplicationOrchestratorTests", "AzureEnterpriseApplicationOrchestratorTests\AzureEnterpriseApplicationOrchestratorTests.csproj", "{CF3213FC-F053-4409-9FBA-55978319FB6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

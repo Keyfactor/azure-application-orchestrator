@@ -1,0 +1,30 @@
+﻿{
+  "extensions": {
+    "Keyfactor.Orchestrators.Extensions.IOrchestratorJobExtension": {
+      "CertStores.AzureApp.Inventory": {
+        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.ApplicationJobs.Inventory"
+      },
+      "CertStores.AzureApp.Management": {
+        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.ApplicationJobs.Management"
+      },
+      "CertStores.AzureApp.Discovery": {
+        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.ApplicationJobs.Discovery"
+      },
+      "CertStores.AzureSP.Inventory": {
+        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.ServicePrincipalJobs.Inventory"
+      },
+      "CertStores.AzureSP.Management": {
+        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.ServicePrincipalJobs.Management"
+      },
+      "CertStores.AzureSP.Discovery": {
+        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.ServicePrincipalJobs.Discovery"
+      }
+    }
+  }
+}

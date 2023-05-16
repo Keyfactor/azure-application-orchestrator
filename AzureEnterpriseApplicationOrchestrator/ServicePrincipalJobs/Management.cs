@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace AzureAppRegistration.Client
+using AzureEnterpriseApplicationOrchestrator.Client;
+using Keyfactor.Orchestrators.Extensions;
+using Microsoft.Graph.Models;
+
+namespace AzureEnterpriseApplicationOrchestrator.ServicePrincipalJobs
 {
-    public class AzureSettings
+    public class Management : AzureGraphJob<ServicePrincipal>, IManagementJobExtension
     {
-        public string TenantId { get; set; }
-        public string ApplicationId { get; set; }
-        public string ClientSecret { get; set; }
+        public JobResult ProcessJob(ManagementJobConfiguration config)
+        {
+            return ProcessManagementJob(config);
+        }
     }
 }

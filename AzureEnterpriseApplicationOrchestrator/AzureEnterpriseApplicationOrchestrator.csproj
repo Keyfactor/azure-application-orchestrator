@@ -6,12 +6,13 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <RootNamespace>AzureEnterpriseApplicationOrchestrator</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-        <OutputPath>C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions\AzAppCert</OutputPath>
+        <OutputPath>C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions\AzureApp</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
