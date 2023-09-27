@@ -4,6 +4,7 @@ The Azure Application and Enterprise Application Orchestrator extension acts as 
 
 #### Integration status: Prototype - Demonstration quality. Not for use in customer environments.
 
+
 ## About the Keyfactor Universal Orchestrator Extension
 
 This repository contains a Universal Orchestrator Extension which is a plugin to the Keyfactor Universal Orchestrator. Within the Keyfactor Platform, Orchestrators are used to manage “certificate stores” &mdash; collections of certificates and roots of trust that are found within and used by various applications.
@@ -13,13 +14,11 @@ The Universal Orchestrator is part of the Keyfactor software distribution and is
 The Universal Orchestrator is the successor to the Windows Orchestrator. This Orchestrator Extension plugin only works with the Universal Orchestrator and does not work with the Windows Orchestrator.
 
 
-
 ## Support for Azure Application and Enterprise Application Orchestrator
 
 Azure Application and Enterprise Application Orchestrator is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket with your Keyfactor representative.
 
 ###### To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
-
 
 
 ---
@@ -224,13 +223,13 @@ To schedule a discovery job, select the _Locations_ drop down, select _Certifica
 Azure App Registrations (Applications) and Azure Enterprise Applications (Service Principals) are linked by the same Application ID, the configuration for both `AzureApp` and `AzureSP`
 is the same. The following table describes the configuration options for the Azure App Registration (Application) and Azure Enterprise Application (Service Principal) store types:
 
-| Parameter       | Value                                                               | Description                                                                                                   |
-|-----------------|---------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| Category        | 'Azure Application (Auth)' or `Azure Service Principal (SSO/SAML)`  | Name of the store type                                                                                        |
-| Client Machine  | Azure Tenant ID                                                     | The Azure Tenant ID                                                                                           |
-| Store Path      | Application Gateway resource ID                                     | Azure Application ID of the App Registration (Application) or Enterprise Application (Enterprise Application) |
-| Server Username | Application ID                                                      | Application ID of the service principal created to authenticate to the Graph API                              |
-| Server Password | Client Secret                                                       | Secret value of the service principal created to authenticate to the Graph API                                |
+| Parameter       | Value                                                              | Description                                                                                                   |
+|-----------------|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| Category        | `Azure Application (Auth)` or `Azure Service Principal (SSO/SAML)`  | Name of the store type                                                                                        |
+| Client Machine  | Azure Tenant ID                                                    | The Azure Tenant ID                                                                                           |
+| Store Path      | Application Gateway resource ID                                    | Azure Application ID of the App Registration (Application) or Enterprise Application (Enterprise Application) |
+| Server Username | Application ID                                                     | Application ID of the service principal created to authenticate to the Graph API                              |
+| Server Password | Client Secret                                                      | Secret value of the service principal created to authenticate to the Graph API                                |
 
 For the discovery job, populate the _Directories to search_ with any value. The extension will discover all Application Gateways accessible by the Azure Service Principal.
 
