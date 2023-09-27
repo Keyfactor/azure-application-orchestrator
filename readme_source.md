@@ -176,12 +176,12 @@ To schedule a discovery job, select the _Locations_ drop down, select _Certifica
 Azure App Registrations (Applications) and Azure Enterprise Applications (Service Principals) are linked by the same Application ID, the configuration for both `AzureApp` and `AzureSP`
 is the same. The following table describes the configuration options for the Azure App Registration (Application) and Azure Enterprise Application (Service Principal) store types:
 
-| Parameter       | Value                                                               | Description                                                                                                   |
-|-----------------|---------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| Category        | 'Azure Application (Auth)' or `Azure Service Principal (SSO/SAML)`  | Name of the store type                                                                                        |
-| Client Machine  | Azure Tenant ID                                                     | The Azure Tenant ID                                                                                           |
-| Store Path      | Application Gateway resource ID                                     | Azure Application ID of the App Registration (Application) or Enterprise Application (Enterprise Application) |
-| Server Username | Application ID                                                      | Application ID of the service principal created to authenticate to the Graph API                              |
-| Server Password | Client Secret                                                       | Secret value of the service principal created to authenticate to the Graph API                                |
+| Parameter       | Value                                                              | Description                                                                                                   |
+|-----------------|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| Category        | `Azure Application (Auth)` or `Azure Service Principal (SSO/SAML)`  | Name of the store type                                                                                        |
+| Client Machine  | Azure Tenant ID                                                    | The Azure Tenant ID                                                                                           |
+| Store Path      | Application Gateway resource ID                                    | Azure Application ID of the App Registration (Application) or Enterprise Application (Enterprise Application) |
+| Server Username | Application ID                                                     | Application ID of the service principal created to authenticate to the Graph API                              |
+| Server Password | Client Secret                                                      | Secret value of the service principal created to authenticate to the Graph API                                |
 
 For the discovery job, populate the _Directories to search_ with any value. The extension will discover all Application Gateways accessible by the Azure Service Principal.
