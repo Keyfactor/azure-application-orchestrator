@@ -84,11 +84,11 @@ namespace AzureEnterpriseApplicationOrchestrator.Client
             }
             else
             {
-                throw new System.Exception("Invalid type: " + typeof(T) + ". Must be ServicePrincipal or Application.");
+                throw new Exception("Invalid type: " + typeof(T) + ". Must be ServicePrincipal or Application.");
             }
         }
         
-        protected void Initialize(DiscoveryJobConfiguration config)
+        private void Initialize(DiscoveryJobConfiguration config)
         {
             ILogger logger = LogHandler.GetReflectedClassLogger(this);
             logger.LogDebug($"Discovery Job Configuration: {JsonConvert.SerializeObject(config)}");
@@ -100,12 +100,18 @@ namespace AzureEnterpriseApplicationOrchestrator.Client
                 ClientSecret = config.ServerPassword
             };
             
-            if (config.ServerUsername == "OAuth/SAML (ServicePrincipal)")
+            if (typeof(T) == typeof(ServicePrincipal))
             {
+                _logger.LogDebug("Initializing AzureServicePrincipalClient");
                 Client = new AzureServicePrincipalClient(azureProperties);
-            } else // Else case is "Authentication (Application)"
+            } else if (typeof(T) == typeof(Application))
             {
+                _logger.LogDebug("Initializing AzureApplicationClient");
                 Client = new AzureApplicationClient(azureProperties);
+            }
+            else
+            {
+                throw new Exception("Invalid type: " + typeof(T) + ". Must be ServicePrincipal or Application.");
             }
         }
 
@@ -161,7 +167,7 @@ namespace AzureEnterpriseApplicationOrchestrator.Client
                         _logger.LogDebug("Adding certificate to {Type}", Client.TypeString);
                         
                         // Ensure that the password is provided.
-                        if (string.IsNullOrWhiteSpace(config.JobCertificate.PrivateKeyPassword))
+                        if (typeof(T) == typeof(ServicePrincipal) && string.IsNullOrWhiteSpace(config.JobCertificate.PrivateKeyPassword))
                         {
                             throw new Exception("Private key password must be provided.");
                         }
@@ -181,6 +187,11 @@ namespace AzureEnterpriseApplicationOrchestrator.Client
                         {
                             _logger.LogDebug("Overwrite is enabled, replacing certificate in {Type} called \"{Alias}\"", Client.TypeString, config.JobCertificate.Alias);
                             Client.ReplaceCertificate(config.JobCertificate.Alias, config.JobCertificate.Contents, config.JobCertificate.PrivateKeyPassword);
+                        }
+                        else if (typeof(T) == typeof(ServicePrincipal) && !config.Overwrite)
+                        {
+                            throw new Exception(
+                                "Cannot perform Management Add for ServicePrincipal without overwrite enabled.");
                         }
                         else
                         {
