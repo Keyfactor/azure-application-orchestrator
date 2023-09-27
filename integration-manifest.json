@@ -84,7 +84,6 @@
           "CustomAliasAllowed": "Required"
         },
         {
-        {
           "Name": "Azure Service Principal (SSO/SAML)",
           "ShortName": "AzureSP",
           "Capability": "AzureSP",
@@ -137,7 +136,6 @@
           "PowerShell": false,
           "BlueprintAllowed": false,
           "CustomAliasAllowed": "Required"
-        },
         }
       ]
     }
