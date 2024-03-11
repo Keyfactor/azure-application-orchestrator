@@ -1,144 +1,165 @@
-
 {
-  "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
-  "integration_type": "orchestrator",
-  "name": "Azure Application and Enterprise Application Orchestrator",
-  "status": "prototype",
-  "update_catalog": false,
-  "link_github": false,
-  "support_level": "kf-supported",
-  "description": "The Azure Application and Enterprise Application Orchestrator extension acts as a proxy between Keyfactor and Azure that allows Keyfactor to manage Application (Auth) and Enterprise Application (SSO/SAML) certificates.",
-  "about": {
-    "orchestrator": {
-      "win": {
-        "supportsCreateStore": false,
-        "supportsDiscovery": true,
-        "supportsManagementAdd": true,
-        "supportsManagementRemove": true,
-        "supportsReenrollment": false,
-        "supportsInventory": true,
-        "platformSupport": "Unused"
-      },
-      "linux": {
-        "supportsCreateStore": false,
-        "supportsDiscovery": true,
-        "supportsManagementAdd": true,
-        "supportsManagementRemove": true,
-        "supportsReenrollment": false,
-        "supportsInventory": true,
-        "platformSupport": "Unused"
-      },
-      "store_types": [
-        {
-          "Name": "Azure Application (Auth)",
-          "ShortName": "AzureApp",
-          "Capability": "AzureApp",
-          "LocalStore": false,
-          "SupportedOperations": {
-            "Add": true,
-            "Create": false,
-            "Discovery": true,
-            "Enrollment": false,
-            "Remove": true
-          },
-          "Properties": [
-            {
-              "StoreTypeId": 279,
-              "Name": "ServerUsername",
-              "DisplayName": "Server Username",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": "",
-              "Required": false
+    "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
+    "integration_type": "orchestrator",
+    "name": "Azure Application and Enterprise Application Orchestrator",
+    "description": "The Azure Application and Enterprise Application Orchestrator extension acts as a proxy between Keyfactor and Azure that allows Keyfactor to manage Application (Auth) and Enterprise Application (SSO/SAML) certificates.",
+    "release_dir": "AzureEnterpriseApplicationOrchestrator\\bin\\Release",
+    "status": "production",
+    "support_level": "kf-supported",
+    "link_github": true,
+    "update_catalog": true,
+    "about": {
+        "orchestrator": {
+            "win": {
+                "supportsCreateStore": false,
+                "supportsDiscovery": true,
+                "supportsManagementAdd": true,
+                "supportsManagementRemove": true,
+                "supportsReenrollment": false,
+                "supportsInventory": true,
+                "platformSupport": "Unused"
             },
-            {
-              "StoreTypeId": 279,
-              "Name": "ServerPassword",
-              "DisplayName": "Server Password",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": "",
-              "Required": false
+            "linux": {
+                "supportsCreateStore": false,
+                "supportsDiscovery": true,
+                "supportsManagementAdd": true,
+                "supportsManagementRemove": true,
+                "supportsReenrollment": false,
+                "supportsInventory": true,
+                "platformSupport": "Unused"
             },
-            {
-              "StoreTypeId": 279,
-              "Name": "ServerUseSsl",
-              "DisplayName": "Use SSL",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "true",
-              "Required": true
+            "store_types": [
+                {
+                    "Name": "Azure Application (Auth)",
+                    "ShortName": "AzureApp",
+                    "Capability": "AzureApp",
+                    "LocalStore": false,
+                    "SupportedOperations": {
+                        "Add": true,
+                        "Create": false,
+                        "Discovery": true,
+                        "Enrollment": false,
+                        "Remove": true
+                    },
+                    "Properties": [
+                        {
+                            "StoreTypeId": 279,
+                            "Name": "ServerUsername",
+                            "DisplayName": "Server Username",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "Required": false
+                        },
+                        {
+                            "StoreTypeId": 279,
+                            "Name": "ServerPassword",
+                            "DisplayName": "Server Password",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "Required": false
+                        },
+                        {
+                            "StoreTypeId": 279,
+                            "Name": "ServerUseSsl",
+                            "DisplayName": "Use SSL",
+                            "Type": "Bool",
+                            "DependsOn": "",
+                            "DefaultValue": "true",
+                            "Required": true
+                        }
+                    ],
+                    "EntryParameters": [],
+                    "PasswordOptions": {
+                        "EntrySupported": false,
+                        "StoreRequired": false,
+                        "Style": "Default"
+                    },
+                    "PrivateKeyAllowed": "Forbidden",
+                    "JobProperties": [],
+                    "ServerRequired": true,
+                    "PowerShell": false,
+                    "BlueprintAllowed": false,
+                    "CustomAliasAllowed": "Required"
+                },
+                {
+                    "Name": "Azure Service Principal (SSO/SAML)",
+                    "ShortName": "AzureSP",
+                    "Capability": "AzureSP",
+                    "LocalStore": false,
+                    "SupportedOperations": {
+                        "Add": true,
+                        "Create": false,
+                        "Discovery": true,
+                        "Enrollment": false,
+                        "Remove": true
+                    },
+                    "Properties": [
+                        {
+                            "StoreTypeId": 280,
+                            "Name": "ServerUsername",
+                            "DisplayName": "Server Username",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "Required": false
+                        },
+                        {
+                            "StoreTypeId": 280,
+                            "Name": "ServerPassword",
+                            "DisplayName": "Server Password",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "Required": false
+                        },
+                        {
+                            "StoreTypeId": 280,
+                            "Name": "ServerUseSsl",
+                            "DisplayName": "Use SSL",
+                            "Type": "Bool",
+                            "DependsOn": "",
+                            "DefaultValue": "true",
+                            "Required": true
+                        }
+                    ],
+                    "EntryParameters": [],
+                    "PasswordOptions": {
+                        "EntrySupported": false,
+                        "StoreRequired": false,
+                        "Style": "Default"
+                    },
+                    "PrivateKeyAllowed": "Required",
+                    "JobProperties": [],
+                    "ServerRequired": true,
+                    "PowerShell": false,
+                    "BlueprintAllowed": false,
+                    "CustomAliasAllowed": "Required"
+                }
+            ],
+            "store_types_metadata": {
+                "AzureApp": {
+                    "ClientMachine": "The Azure Tenant (directory) ID that owns the Service Principal.",
+                    "StorePath": "The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension.",
+                    "Properties": {
+                        "ServerUsername": "The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
+                        "ServerPassword": "A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
+                        "ServerUseSsl": "Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it."
+                    },
+                    "EntryParameters": {}
+                },
+                "AzureSP": {
+                    "ClientMachine": "The Azure Tenant (directory) ID that owns the Service Principal.",
+                    "StorePath": "The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension.",
+                    "Properties": {
+                        "ServerUsername": "The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
+                        "ServerPassword": "A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
+                        "ServerUseSsl": "Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it."
+                    },
+                    "EntryParameters": {}
+                }
             }
-          ],
-          "EntryParameters": [],
-          "PasswordOptions": {
-            "EntrySupported": false,
-            "StoreRequired": false,
-            "Style": "Default"
-          },
-          "PrivateKeyAllowed": "Forbidden",
-          "JobProperties": [],
-          "ServerRequired": true,
-          "PowerShell": false,
-          "BlueprintAllowed": false,
-          "CustomAliasAllowed": "Required"
-        },
-        {
-          "Name": "Azure Service Principal (SSO/SAML)",
-          "ShortName": "AzureSP",
-          "Capability": "AzureSP",
-          "LocalStore": false,
-          "SupportedOperations": {
-            "Add": true,
-            "Create": false,
-            "Discovery": true,
-            "Enrollment": false,
-            "Remove": true
-          },
-          "Properties": [
-            {
-              "StoreTypeId": 280,
-              "Name": "ServerUsername",
-              "DisplayName": "Server Username",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": "",
-              "Required": false
-            },
-            {
-              "StoreTypeId": 280,
-              "Name": "ServerPassword",
-              "DisplayName": "Server Password",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": "",
-              "Required": false
-            },
-            {
-              "StoreTypeId": 280,
-              "Name": "ServerUseSsl",
-              "DisplayName": "Use SSL",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "true",
-              "Required": true
-            }
-          ],
-          "EntryParameters": [],
-          "PasswordOptions": {
-            "EntrySupported": false,
-            "StoreRequired": false,
-            "Style": "Default"
-          },
-          "PrivateKeyAllowed": "Required",
-          "JobProperties": [],
-          "ServerRequired": true,
-          "PowerShell": false,
-          "BlueprintAllowed": false,
-          "CustomAliasAllowed": "Required"
         }
-      ]
     }
-  },
-  "release_dir": ""
 }
