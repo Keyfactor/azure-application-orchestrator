@@ -1,137 +1,116 @@
 {
     "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
-    "integration_type": "orchestrator",
     "name": "Azure Application and Enterprise Application Orchestrator",
-    "description": "The Azure Application and Enterprise Application Orchestrator extension acts as a proxy between Keyfactor and Azure that allows Keyfactor to manage Application (Auth) and Enterprise Application (SSO/SAML) certificates.",
-    "release_dir": "AzureEnterpriseApplicationOrchestrator\\bin\\Release",
+    "integration_type": "orchestrator",
     "status": "production",
+    "description": "The Azure Application and Enterprise Application Orchestrator extension acts as a proxy between Keyfactor and Azure that allows Keyfactor to manage Application (Auth) and Enterprise Application (SSO/SAML) certificates.",
     "support_level": "kf-supported",
+    "release_dir": "AzureEnterpriseApplicationOrchestrator\\bin\\Release",
     "link_github": true,
     "update_catalog": true,
     "about": {
         "orchestrator": {
+            "pam_support": false,
             "win": {
-                "supportsCreateStore": false,
-                "supportsDiscovery": true,
                 "supportsManagementAdd": true,
                 "supportsManagementRemove": true,
+                "supportsCreateStore": false,
+                "supportsDiscovery": true,
                 "supportsReenrollment": false,
-                "supportsInventory": true,
-                "platformSupport": "Unused"
+                "supportsInventory": true
             },
             "linux": {
-                "supportsCreateStore": false,
-                "supportsDiscovery": true,
                 "supportsManagementAdd": true,
                 "supportsManagementRemove": true,
+                "supportsCreateStore": false,
+                "supportsDiscovery": true,
                 "supportsReenrollment": false,
-                "supportsInventory": true,
-                "platformSupport": "Unused"
+                "supportsInventory": true
             },
             "store_types": [
                 {
-                    "Name": "Azure Application (Auth)",
+                    "Name": "Azure App Registration (Application)",
                     "ShortName": "AzureApp",
                     "Capability": "AzureApp",
                     "LocalStore": false,
                     "SupportedOperations": {
                         "Add": true,
-                        "Create": false,
-                        "Discovery": true,
+                        "Remove": true,
                         "Enrollment": false,
-                        "Remove": true
+                        "Discovery": true,
+                        "Inventory": true
                     },
                     "Properties": [
                         {
-                            "StoreTypeId": 279,
                             "Name": "ServerUsername",
                             "DisplayName": "Server Username",
                             "Type": "Secret",
-                            "DependsOn": "",
-                            "DefaultValue": "",
                             "Required": false
                         },
                         {
-                            "StoreTypeId": 279,
                             "Name": "ServerPassword",
                             "DisplayName": "Server Password",
                             "Type": "Secret",
-                            "DependsOn": "",
-                            "DefaultValue": "",
                             "Required": false
                         },
                         {
-                            "StoreTypeId": 279,
                             "Name": "ServerUseSsl",
                             "DisplayName": "Use SSL",
                             "Type": "Bool",
-                            "DependsOn": "",
                             "DefaultValue": "true",
                             "Required": true
                         }
                     ],
-                    "EntryParameters": [],
-                    "PasswordOptions": {
-                        "EntrySupported": false,
-                        "StoreRequired": false,
-                        "Style": "Default"
-                    },
-                    "PrivateKeyAllowed": "Forbidden",
-                    "JobProperties": [],
-                    "ServerRequired": true,
-                    "PowerShell": false,
-                    "BlueprintAllowed": false,
-                    "CustomAliasAllowed": "Required"
-                },
-                {
-                    "Name": "Azure Service Principal (SSO/SAML)",
-                    "ShortName": "AzureSP",
-                    "Capability": "AzureSP",
-                    "LocalStore": false,
-                    "SupportedOperations": {
-                        "Add": true,
-                        "Create": false,
-                        "Discovery": true,
-                        "Enrollment": false,
-                        "Remove": true
-                    },
-                    "Properties": [
-                        {
-                            "StoreTypeId": 280,
-                            "Name": "ServerUsername",
-                            "DisplayName": "Server Username",
-                            "Type": "Secret",
-                            "DependsOn": "",
-                            "DefaultValue": "",
-                            "Required": false
-                        },
-                        {
-                            "StoreTypeId": 280,
-                            "Name": "ServerPassword",
-                            "DisplayName": "Server Password",
-                            "Type": "Secret",
-                            "DependsOn": "",
-                            "DefaultValue": "",
-                            "Required": false
-                        },
-                        {
-                            "StoreTypeId": 280,
-                            "Name": "ServerUseSsl",
-                            "DisplayName": "Use SSL",
-                            "Type": "Bool",
-                            "DependsOn": "",
-                            "DefaultValue": "true",
-                            "Required": true
-                        }
-                    ],
-                    "EntryParameters": [],
                     "PasswordOptions": {
                         "EntrySupported": false,
                         "StoreRequired": false,
                         "Style": "Default"
                     },
                     "PrivateKeyAllowed": "Required",
-                    "JobProperties": [],
+                    "ServerRequired": true,
+                    "PowerShell": false,
+                    "BlueprintAllowed": false,
+                    "CustomAliasAllowed": "Required"
+                },
+                {
+                    "Name": "Azure Enterprise Application (Service Principal)",
+                    "ShortName": "AzureSP",
+                    "Capability": "AzureSP",
+                    "LocalStore": false,
+                    "SupportedOperations": {
+                        "Add": true,
+                        "Remove": true,
+                        "Enrollment": false,
+                        "Discovery": true,
+                        "Inventory": true
+                    },
+                    "Properties": [
+                        {
+                            "Name": "ServerUsername",
+                            "DisplayName": "Server Username",
+                            "Type": "Secret",
+                            "Required": false
+                        },
+                        {
+                            "Name": "ServerPassword",
+                            "DisplayName": "Server Password",
+                            "Type": "Secret",
+                            "Required": false
+                        },
+                        {
+                            "Name": "ServerUseSsl",
+                            "DisplayName": "Use SSL",
+                            "Type": "Bool",
+                            "DefaultValue": "true",
+                            "Required": true
+                        }
+                    ],
+                    "PasswordOptions": {
+                        "EntrySupported": false,
+                        "StoreRequired": false,
+                        "Style": "Default"
+                    },
+                    "PrivateKeyAllowed": "Required",
                     "ServerRequired": true,
                     "PowerShell": false,
                     "BlueprintAllowed": false,
@@ -160,6 +139,7 @@
                     "EntryParameters": {}
                 }
             }
-        }
+        },
+        "pam": {}
     }
 }

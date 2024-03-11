@@ -29,9 +29,17 @@ The Azure App Registration and Enterprise Application Orchestrator extension use
 * [Update Service Principal](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-update?view=graph-rest-1.0&tabs=http) - Used to modify the Enterprise Application to add or remove certificates.
     * Specifically, the extension manipulates the [`keyCredentials` resource](https://learn.microsoft.com/en-us/graph/api/resources/keycredential?view=graph-rest-1.0) of the Service Principal object.
 
+### Discovery Job
+
+The Discovery operation discovers all Azure Enterprise Applications that the Service Principal has access to. The discovered Enterprise Applications (specifically, their Application IDs) are reported back to Command and can be easily added as certificate stores from the Locations tab.
+
+The Discovery operation uses the "Directories to search" field, and accepts input in one of the following formats:
+- `*` - If the asterisk symbol `*` is used, the extension will search for all Azure Enterprise Applications that the Service Principal has access to, but only in the tenant that the discovery job was configured for as specified by the "Client Machine" field in the certificate store configuration.
+- `<tenant-id>,<tenant-id>,...` - If a comma-separated list of tenant IDs is used, the extension will search for all Azure Enterprise Applications available in each tenant specified in the list. The tenant IDs should be the GUIDs associated with each tenant, and it's the user's responsibility to ensure that the service principal has access to the specified tenants.
+
 ## Certificate Store Type Configuration
 
-The recommended method for creating the `AzureSP` Certificate Store Type is to use [kfutil](https:/../.github.com/Keyfactor/kfutil). After installing, use the following command to create the `AzureSP` Certificate Store Type:
+The recommended method for creating the `AzureSP` Certificate Store Type is to use [kfutil](https://github.com/Keyfactor/kfutil). After installing, use the following command to create the `AzureSP` Certificate Store Type:
 
 ```shell
 kfutil store-types create AzureSP
