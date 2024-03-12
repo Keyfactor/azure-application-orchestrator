@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Keyfactor
+// Copyright 2024 Keyfactor
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,16 +15,52 @@
 using System.Collections.Generic;
 using Keyfactor.Orchestrators.Extensions;
 
-namespace AzureEnterpriseApplicationOrchestrator.Client
+namespace AzureEnterpriseApplicationOrchestrator.Client;
+
+public interface IAzureGraphClientBuilder
 {
-    public interface IAzureGraphClient
+    public IAzureGraphClientBuilder WithTenantId(string tenantId);
+    public IAzureGraphClientBuilder WithTargetApplicationId(string applicationId);
+    public IAzureGraphClientBuilder WithApplicationId(string applicationId);
+    public IAzureGraphClientBuilder WithClientSecret(string clientSecret);
+    public IAzureGraphClientBuilder WithAzureCloud(string azureCloud);
+    public IAzureGraphClient Build();
+}
+
+public class OperationResult<T>
+{
+    public T Result { get; set; }
+    public string ErrorSummary { get; set; }
+    public List<string> Messages { get; set; } = new List<string>();
+    public bool Success => Messages.Count == 0;
+
+    public OperationResult(T result)
     {
-        public string TypeString { get; }
-        public void AddCertificate(string certificateName, string certificateData, string certificatePassword);
-        public void ReplaceCertificate(string certificateName, string certificateData, string certificatePassword);
-        public void RemoveCertificate(string certificateName);
-        public bool CertificateExists(string certificateName);
-        public IEnumerable<CurrentInventoryItem> GetInventory();
-        public IEnumerable<string> DiscoverApplicationIds();
+        Result = result;
     }
+
+    public void AddRuntimeErrorMessage(string message)
+    {
+        Messages.Add("  - " + message);
+    }
+
+    public string ErrorMessage => $"{ErrorSummary}\n{string.Join("\n", Messages)}";
+}
+
+public interface IAzureGraphClient
+{
+    // Application
+    public void AddApplicationCertificate(string certificateName, string certificateData, string certificatePassword);
+    public void RemoveApplicationCertificate(string certificateName);
+    public OperationResult<IEnumerable<CurrentInventoryItem>> GetApplicationCertificates();
+    public bool ApplicationCertificateExists(string certificateName);
+
+    // Service Principal
+    public void AddServicePrincipalCertificate(string certificateName, string certificateData, string certificatePassword);
+    public void RemoveServicePrincipalCertificate(string certificateName);
+    public OperationResult<IEnumerable<CurrentInventoryItem>> GetServicePrincipalCertificates();
+    public bool ServicePrincipalCertificateExists(string certificateName);
+
+    // Discovery
+    public OperationResult<IEnumerable<string>> DiscoverApplicationIds();
 }
