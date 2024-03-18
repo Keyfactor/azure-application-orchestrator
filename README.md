@@ -1,9 +1,9 @@
+
 # Azure Application and Enterprise Application Orchestrator
 
 The Azure Application and Enterprise Application Orchestrator extension acts as a proxy between Keyfactor and Azure that allows Keyfactor to manage Application (Auth) and Enterprise Application (SSO/SAML) certificates.
 
-#### Integration status: Prototype - Demonstration quality. Not for use in customer environments.
-
+#### Integration status: Production - Ready for use in production environments.
 
 ## About the Keyfactor Universal Orchestrator Extension
 
@@ -13,19 +13,22 @@ The Universal Orchestrator is part of the Keyfactor software distribution and is
 
 The Universal Orchestrator is the successor to the Windows Orchestrator. This Orchestrator Extension plugin only works with the Universal Orchestrator and does not work with the Windows Orchestrator.
 
-
 ## Support for Azure Application and Enterprise Application Orchestrator
 
-Azure Application and Enterprise Application Orchestrator is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket with your Keyfactor representative.
+Azure Application and Enterprise Application Orchestrator is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com
 
 ###### To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
+
+---
 
 
 ---
 
 
 
+## Keyfactor Version Supported
 
+The minimum version of the Keyfactor Universal Orchestrator Framework needed to run this version of the extension is 10.4
 ## Platform Specific Notes
 
 The Keyfactor Universal Orchestrator may be installed on either Windows or Linux based platforms. The certificate operations supported by a capability may vary based what platform the capability is installed on. The table below indicates what capabilities are supported based on which platform the encompassing Universal Orchestrator is running.
@@ -46,190 +49,49 @@ The Keyfactor Universal Orchestrator may be installed on either Windows or Linux
 
 
 ## Overview
-The Azure Application and Enterprise Application Orchestrator extension remotely manages both 
-Azure App Registration (Application; Auth) certificates and Enterprise Application (Service Principal; SSO/SAML) certificates.
-The extension implements the Inventory, Management Add, Management Remove, and Discovery job types.
+The Azure App Registration and Enterprise Application Orchestrator extension remotely manages both Azure [App Registration/Application](https://learn.microsoft.com/en-us/entra/identity-platform/certificate-credentials) certificates and [Enterprise Application/Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/enterprise-apps-certificate-credentials) certificates. Application certificates are typically public key only and used for client certificate authentication, while Service Principal certificates are commonly used for [SAML Assertion signing](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/tutorial-manage-certificates-for-federated-single-sign-on). The extension implements the Inventory, Management Add, Management Remove, and Discovery job types.
 
-Certificates used for client authentication by Applications (configured in App Registrations)
-are represented by the `AzureApp` store type, and certificates used for SSO/SAML assertion signing are
-represented by the `AzureSP` store type. Both store types are managed by the same extension. The extension is 
-configured with a single Azure Service Principal that is used to authenticate to the Azure Graph API.
+Certificates used for client authentication by Applications (configured in App Registrations) are represented by the [`AzureApp` store type](docs/azureapp.md), and certificates used for SSO/SAML assertion signing are represented by the [`AzureSP` store type](docs/azuresp.md). Both store types are managed by the same extension. The extension is configured with a single Azure Service Principal that is used to authenticate to the [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/use-the-api). The Azure App Registration and Enterprise Application Orchestrator extension manages certificates for Azure App Registrations (Applications) and Enterprise Applications (Service Principals) differently. 
 
-### Azure App Registration Certificate Operations
-The Azure App Registration/Application certificate operations are implemented by the `AzureApp` store type.
-The Management Add operation can add as many certificates as needed to an App Registration.
-These certificates can be used for client authentication, assertion encryption, or other future
-implementations. The Management Remove operation can remove certificates from an App Registration.
-The Discovery operation discovers all App Registrations in the tenant.
+## Installation
+Before installing the Azure App Registration and Enterprise Application Orchestrator extension, it's recommended to install [kfutil](https://github.com/Keyfactor/kfutil). Kfutil is a command-line tool that simplifies the process of creating store types, installing extensions, and instantiating certificate stores in Keyfactor Command.
 
-### Azure Enterprise Application Certificate Operations
-The Azure Enterprise Application/Service Principal certificate operations are implemented by the `AzureSP` store type,
-and supports the management of a single certificate for use in SSO/SAML assertion signing.
-The Management Add operation is only supported with the certificate replacement option,
-since adding a new certificate will replace the existing certificate. The Add operation will
-also set newly added certificates as the active certificate for SSO/SAML usage. The Management
-Remove operation removes the certificate from the Enterprise Application/Service Principal,
-which is the same as removing the SSO/SAML signing certificate. The Discovery operation
-discovers all Enterprise Applications/Service Principals in the tenant.
+1. Follow the Requirements section to configure a Service Account and grant the necessary API permissions.
 
-## Azure Configuration
-The Azure Application and Enterprise Application Orchestrator extension requires an Azure Service Principal
-to authenticate to the Azure Graph API. The Service Principal must have the **_Application_** `Application.ReadWrite.All` permission
-under "API Permissions" (_not_ Delegated), and the permission must have Admin Consent for the tenant. For more 
-information on Admin Consent for App-only access (also called "Application Permissions"), see the
-[primer on application-only access](https://learn.microsoft.com/en-us/azure/active-directory/develop/app-only-access-primer).
+    * [Azure App Registration/Application](docs/azureapp.md#requirements)
+    * [Azure Enterprise Application/Service Principal](docs/azuresp.md#requirements)
 
-The Azure Application and Enterprise Application Orchestrator extension also requires a Client Secret to authenticate
-to the Azure Graph API.
+2. Create Certificate Store Types for the Azure App Registration and Enterprise Application Orchestrator extension. 
 
-## Keyfactor Configuration
-Follow the Keyfactor Orchestrator configuration guide to install the Azure Application Gateway Orchestrator extension.
+    * **Using kfutil**:
 
-This guide uses the `kfutil` Keyfactor command line tool that offers convenient and powerful
-command line access to the Keyfactor platform. Before proceeding, ensure that `kfutil` is installed and configured
-by following the instructions here: [https://github.com/Keyfactor/kfutil](https://github.com/Keyfactor/kfutil)
+        ```shell
+        kfutil store-types create AzureApp
+        kfutil store-types create AzureSP
+        ```
 
-Configuration is done in two steps:
-1. Create a new Keyfactor Certificate Store Type
-2. Create a new Keyfactor Certificate Store
+    * **Manually**:
 
-### Keyfactor Certificate Store Type Configuration
-Keyfactor Certificate Store Types are used to define and configure the platforms that store and use certificates that will be managed
-by Keyfactor Orchestrators. First, create the Azure Service Principal (SSO/SAML) store type. Run the following commands with `kfutil`:
-```bash
-cat <<EOF > ./AzureSP.json
-{
-    "Name": "Azure Service Principal (SSO/SAML)",
-    "ShortName": "AzureSP",
-    "Capability": "AzureSP",
-    "LocalStore": false,
-    "SupportedOperations": {
-        "Add": true,
-        "Create": false,
-        "Discovery": true,
-        "Enrollment": false,
-        "Remove": true
-    },
-    "Properties": [
-        {
-            "StoreTypeId": 280,
-            "Name": "ServerUsername",
-            "DisplayName": "Server Username",
-            "Type": "Secret",
-            "DependsOn": null,
-            "DefaultValue": null,
-            "Required": false
-        },
-        {
-            "StoreTypeId": 280,
-            "Name": "ServerPassword",
-            "DisplayName": "Server Password",
-            "Type": "Secret",
-            "DependsOn": null,
-            "DefaultValue": null,
-            "Required": false
-        },
-        {
-            "StoreTypeId": 280,
-            "Name": "ServerUseSsl",
-            "DisplayName": "Use SSL",
-            "Type": "Bool",
-            "DependsOn": null,
-            "DefaultValue": "true",
-            "Required": true
-        }
-    ],
-    "EntryParameters": [],
-    "PasswordOptions": {
-        "EntrySupported": false,
-        "StoreRequired": false,
-        "Style": "Default"
-    },
-    "PrivateKeyAllowed": "Required",
-    "JobProperties": [],
-    "ServerRequired": true,
-    "PowerShell": false,
-    "BlueprintAllowed": false,
-    "CustomAliasAllowed": "Required"
-}
-EOF
- kfutil store-types create --from-file ./AzureSP.json
-```
+        * [Azure App Registration/Application](docs/azureapp.md#certificate-store-type-configuration)
+        * [Azure Enterprise Application/Service Principal](docs/azuresp.md#certificate-store-type-configuration)
 
-Then, create the Azure App Registration (Application) store type. Run the following commands with `kfutil`:
-```bash
-cat <<EOF > ./AzureApp.json
-{
-    "Name": "Azure Application (Auth)",
-    "ShortName": "AzureApp",
-    "Capability": "AzureApp",
-    "LocalStore": false,
-    "SupportedOperations": {
-        "Add": true,
-        "Create": false,
-        "Discovery": true,
-        "Enrollment": false,
-        "Remove": true
-    },
-    "Properties": [
-        {
-            "StoreTypeId": 279,
-            "Name": "ServerUsername",
-            "DisplayName": "Server Username",
-            "Type": "Secret",
-            "DependsOn": null,
-            "DefaultValue": null,
-            "Required": false
-        },
-        {
-            "StoreTypeId": 279,
-            "Name": "ServerPassword",
-            "DisplayName": "Server Password",
-            "Type": "Secret",
-            "DependsOn": null,
-            "DefaultValue": null,
-            "Required": false
-        },
-        {
-            "StoreTypeId": 279,
-            "Name": "ServerUseSsl",
-            "DisplayName": "Use SSL",
-            "Type": "Bool",
-            "DependsOn": null,
-            "DefaultValue": "true",
-            "Required": true
-        }
-    ],
-    "EntryParameters": [],
-    "PasswordOptions": {
-        "EntrySupported": false,
-        "StoreRequired": false,
-        "Style": "Default"
-    },
-    "PrivateKeyAllowed": "Forbidden",
-    "JobProperties": [],
-    "ServerRequired": true,
-    "PowerShell": false,
-    "BlueprintAllowed": false,
-    "CustomAliasAllowed": "Required"
-}
-EOF
-kfutil store-types create --from-file ./AzureApp.json
-```
+3. Install the Azure App Registration and Enterprise Application Orchestrator extension.
+    
+    * **Using kfutil**: On the server that that hosts the Universal Orchestrator, run the following command:
 
-### Keyfactor Store and Discovery Job Configuration
-To create a new certificate store in Keyfactor Command, select the _Locations_ drop down, select _Certificate Stores_, and click the _Add_ button.
-To schedule a discovery job, select the _Locations_ drop down, select _Certificate Stores_, click on the _Discovery_ button, and click the _Schedule_ button. Since
-Azure App Registrations (Applications) and Azure Enterprise Applications (Service Principals) are linked by the same Application ID, the configuration for both `AzureApp` and `AzureSP`
-is the same. The following table describes the configuration options for the Azure App Registration (Application) and Azure Enterprise Application (Service Principal) store types:
+        ```shell
+        # Windows Server
+        kfutil orchestrator extension -e azure-application-orchestrator@latest --out "C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions"
 
-| Parameter       | Value                                                              | Description                                                                                                   |
-|-----------------|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| Category        | `Azure Application (Auth)` or `Azure Service Principal (SSO/SAML)`  | Name of the store type                                                                                        |
-| Client Machine  | Azure Tenant ID                                                    | The Azure Tenant ID                                                                                           |
-| Store Path      | Application Gateway resource ID                                    | Azure Application ID of the App Registration (Application) or Enterprise Application (Enterprise Application) |
-| Server Username | Application ID                                                     | Application ID of the service principal created to authenticate to the Graph API                              |
-| Server Password | Client Secret                                                      | Secret value of the service principal created to authenticate to the Graph API                                |
+        # Linux
+        kfutil orchestrator extension -e azure-application-orchestrator@latest --out "/opt/keyfactor/orchestrator/extensions"
+        ```
 
-For the discovery job, populate the _Directories to search_ with any value. The extension will discover all Application Gateways accessible by the Azure Service Principal.
+    * **Manually**: Follow the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions) to install the latest [Azure App Registration and Enterprise Application Orchestrator extension](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest).
+
+4. Create new certificate stores in Keyfactor Command for the Azure App Registration and Enterprise Application Orchestrator extension.
+
+    * [Azure App Registration/Application](docs/azureapp.md#certificate-store-configuration)
+    * [Azure Enterprise Application/Service Principal](docs/azuresp.md#certificate-store-configuration)
+
 
