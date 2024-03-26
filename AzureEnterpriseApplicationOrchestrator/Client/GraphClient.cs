@@ -267,7 +267,7 @@ public class GraphClient : IAzureGraphClient {
         {
             if (keyCredential.DisplayName == certificateName)
             {
-                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\" ({keyCredential.KeyId.ToString()})");
+                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\" ({keyCredential.KeyId})");
                 continue;
             }
 
@@ -538,8 +538,8 @@ public class GraphClient : IAzureGraphClient {
 
     private OperationResult<IEnumerable<CurrentInventoryItem>> InventoryFromKeyCredentials(List<KeyCredential> keyCredentials)
     {
-        List<CurrentInventoryItem> inventoryItems = new List<CurrentInventoryItem>();
-        OperationResult<IEnumerable<CurrentInventoryItem>> result = new(inventoryItems);
+        Dictionary<string, CurrentInventoryItem> inventoryItems = new();
+        OperationResult<IEnumerable<CurrentInventoryItem>> result = new(inventoryItems.Values);
 
         if (keyCredentials == null || keyCredentials.Count == 0)
         {
@@ -548,6 +548,7 @@ public class GraphClient : IAzureGraphClient {
         }
 
         // Create a map of strings containing CustomKeyIdentifier to ensure that only one certificate is returned for each key
+        // The boolean value is not used, but is required for the Dictionary type
         Dictionary<string, bool> keyIdMap = new Dictionary<string, bool>();
 
         // Create a map to track certificates that we failed to retrieve. The Add method will always
@@ -555,10 +556,24 @@ public class GraphClient : IAzureGraphClient {
         // track the ones that we failed to serialize, and remove them from the map when we do find the certificate.
         // Finally, we'll log a warning for any certificates that we failed to retrieve.
         Dictionary<string, string> failedCertificateMap = new Dictionary<string, string>();
+        
+        // Create a map to track certificates that we're confident have a private key entry in Azure.
+        // Azure will never return the Private Key with the Graph API, but Keyfactor Command uses 
+        // the presence of a private key to determine how Certificate Renewal should be handled.
+        // We won't use the boolean value, but it's required for the Dictionary type.
+        Dictionary<string, bool> privateKeyMap = new Dictionary<string, bool>();
 
         foreach (KeyCredential keyCredential in keyCredentials)
         {
             string customKeyIdentifier = Encoding.UTF8.GetString(keyCredential.CustomKeyIdentifier);
+            
+            if (!string.IsNullOrWhiteSpace(keyCredential.Usage) && keyCredential.Usage.Equals("Sign", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogDebug($"Certificate with CustomKeyIdentifier \"{customKeyIdentifier}\" has a private key entry");
+                privateKeyMap[customKeyIdentifier] = true;
+            }
+            // We only track the case where the private key exists because there will be several keyCredentials
+            // for Service Principals where one is the certificate and the other is the private key.
 
             X509Certificate2 certificate = GetCertificateFromKeyCredential(keyCredential);
             if (certificate == null)
@@ -595,7 +610,7 @@ public class GraphClient : IAzureGraphClient {
             };
 
             _logger.LogDebug($"Found certificate called \"{keyCredential.DisplayName}\" ({customKeyIdentifier})");
-            inventoryItems.Add(inventoryItem);
+            inventoryItems[customKeyIdentifier] = inventoryItem;
         }
 
         foreach (string key in keyIdMap.Keys)
@@ -608,6 +623,14 @@ public class GraphClient : IAzureGraphClient {
         {
             _logger.LogWarning(failedCertificateMap[key]);
             result.AddRuntimeErrorMessage(failedCertificateMap[key]);
+        }
+        
+        foreach (string key in privateKeyMap.Keys)
+        {
+            if (inventoryItems.ContainsKey(key))
+            {
+                inventoryItems[key].PrivateKeyEntry = true;
+            }
         }
 
         return result;
@@ -673,6 +696,7 @@ public class GraphClient : IAzureGraphClient {
                     CustomKeyIdentifier = keyCredential.CustomKeyIdentifier,
                     DisplayName = keyCredential.DisplayName,
                     Key = keyCredential.Key,
+                    KeyId = keyCredential.KeyId,
                     Type = keyCredential.Type,
                     Usage = keyCredential.Usage,
                     })
@@ -712,7 +736,7 @@ public class GraphClient : IAzureGraphClient {
         string customKeyIdentifier = Encoding.UTF8.GetString(keyCredential.CustomKeyIdentifier);
         if (keyCredential.Key == null || keyCredential.Key.Length == 0)
         {
-            _logger.LogWarning($"Key credential with CustomKeyIdentifier \"{customKeyIdentifier}\" has no key data");
+            _logger.LogWarning($"Key credential with KeyId \"{keyCredential.KeyId}\" has no key data");
             return null;
         }
         // Get the certificate from the key credential
