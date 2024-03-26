@@ -63,6 +63,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         Assert.True(operationResult.Success);
         Assert.NotNull(operationResult.Result);
         Assert.True(operationResult.Result.Any(c => c.Alias == certName));
+        Assert.True(operationResult.Result.Any(c => c.Alias == certName && c.PrivateKeyEntry == false));
         
         // Step 3 - Determine if the certificate exists in the Application
 
@@ -122,6 +123,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         Assert.True(operationResult.Success);
         Assert.NotNull(operationResult.Result);
         Assert.True(operationResult.Result.Any(c => c.Alias == certName));
+        Assert.True(operationResult.Result.Any(c => c.Alias == certName && c.PrivateKeyEntry));
 
         // Step 3 - Determine if the certificate exists in the Service Principal
 
