@@ -32,10 +32,9 @@ public class AzureEnterpriseApplicationOrchestrator_Client
     public void GraphClient_Application_AddGetRemove_ReturnSuccess()
     {
         // Arrange
-        const string password = "passwordpasswordpassword";
         string certName = "AppTest" + Guid.NewGuid().ToString()[..6];
         X509Certificate2 ssCert = GetSelfSignedCert(certName);
-        string b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
+        string b64Cert = Convert.ToBase64String(ssCert.Export(X509ContentType.Cert));
 
         IntegrationTestingFact env = new();
 
@@ -48,7 +47,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
 
         // Step 1 - Add the certificate to the Application
 
-        client.AddApplicationCertificate(certName, b64PfxSslCert, password);
+        client.AddApplicationCertificate(certName, b64Cert);
 
         // Assert
         // The certificate should be added to the Application.
@@ -142,6 +141,9 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         // If this is not the case, RemoveServicePrincipalCertificate will throw an exception.
 
         // Step 5 - Determine if the certificate exists in the Service Principal
+
+        // Wait for changes to replicate
+        Thread.Sleep(5000);
 
         // Act
         exists = client.ServicePrincipalCertificateExists(certName);

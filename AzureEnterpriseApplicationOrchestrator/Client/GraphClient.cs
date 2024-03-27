@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Azure.Core;
@@ -208,10 +209,10 @@ public class GraphClient : IAzureGraphClient {
         return _servicePrincipalObjectId;
     }
 
-    public void AddApplicationCertificate(string certificateName, string certificateData, string certificatePassword)
+    public void AddApplicationCertificate(string certificateName, string certificateData)
     {
         // certificateData is a base64 encoded PFX certificate
-        X509Certificate2 certificate = SerializeCertificate(certificateData, certificatePassword);
+        X509Certificate2 certificate = SerializeCertificate(certificateData, "");
         if (certificate.Thumbprint == null)
             throw new Exception("Could not calculate thumbprint for certificate");
 
@@ -222,6 +223,8 @@ public class GraphClient : IAzureGraphClient {
 
         // Get the application object
         Application application = GetApplication();
+
+        char[] certPem = PemEncoding.Write("CERTIFICATE", certificate.RawData);
 
         // Update the application object
         _logger.LogDebug($"Updating application object for application ID \"{_targetApplicationId}\"");
@@ -239,7 +242,7 @@ public class GraphClient : IAzureGraphClient {
                     StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
                     EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
                     KeyId = Guid.NewGuid(),
-                    Key = certificate.Export(X509ContentType.Cert)
+                    Key = System.Text.Encoding.UTF8.GetBytes(certPem)
                     }
                     }
                     }).Wait();
@@ -267,7 +270,7 @@ public class GraphClient : IAzureGraphClient {
         {
             if (keyCredential.DisplayName == certificateName)
             {
-                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\" ({keyCredential.KeyId})");
+                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\"");
                 continue;
             }
 
@@ -400,7 +403,7 @@ public class GraphClient : IAzureGraphClient {
         {
             if (keyCredential.DisplayName == certificateName)
             {
-                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\" ({keyCredential.KeyId.ToString()})");
+                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\"");
 
                 // Store the GUID of the key to delete
                 if (keyCredential.Usage == "Sign" && keyCredential.CustomKeyIdentifier != null)
@@ -696,7 +699,6 @@ public class GraphClient : IAzureGraphClient {
                     CustomKeyIdentifier = keyCredential.CustomKeyIdentifier,
                     DisplayName = keyCredential.DisplayName,
                     Key = keyCredential.Key,
-                    KeyId = keyCredential.KeyId,
                     Type = keyCredential.Type,
                     Usage = keyCredential.Usage,
                     })
