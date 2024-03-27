@@ -38,10 +38,9 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
     public void AzureApp_Inventory_IntegrationTest_ReturnSuccess()
     {
         // Arrange
-        const string password = "passwordpasswordpassword";
         string certName = "AppTest" + Guid.NewGuid().ToString()[..6];
         X509Certificate2 ssCert = AzureEnterpriseApplicationOrchestrator_Client.GetSelfSignedCert(certName);
-        string b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
+        string b64Cert = Convert.ToBase64String(ssCert.Export(X509ContentType.Cert));
 
         IntegrationTestingFact env = new();
 
@@ -66,7 +65,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
         var inventory = new Inventory();
 
         // Create a certificate in the Application
-        client.AddApplicationCertificate(certName, b64PfxSslCert, password);
+        client.AddApplicationCertificate(certName, b64Cert);
 
         // Act
         JobResult result = inventory.ProcessJob(config, (inventoryItems) =>
@@ -316,8 +315,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             JobCertificate = new ManagementJobCertificate
             {
                 Alias = "test",
-                Contents = "test-certificate-data",
-                PrivateKeyPassword = "test-password"
+                Contents = "test-certificate-data"
             },
             JobHistoryId = 1
         };
@@ -338,9 +336,8 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
     }
 
     [Theory]
-    [InlineData("test", "")]
-    [InlineData("", "test-password")]
     [InlineData("", "")]
+    [InlineData("", "test-password")]
     public void AzureApp_ManagementAdd_ProcessJob_InvalidJobConfig_ReturnFailure(string alias, string pkPassword)
     {
         // Arrange
@@ -444,8 +441,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             JobCertificate = new ManagementJobCertificate
             {
                 Alias = "test",
-                Contents = "new-certificate-data",
-                PrivateKeyPassword = "test-password"
+                Contents = "new-certificate-data"
             },
             JobHistoryId = 1
         };
@@ -473,11 +469,10 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
 
         string testHostname = "azureapplicationUnitTest.com";
         string certName = "AppTest" + Guid.NewGuid().ToString()[..6];
-        string password = "password";
 
         X509Certificate2 ssCert = AzureEnterpriseApplicationOrchestrator_Client.GetSelfSignedCert(testHostname);
 
-        string b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
+        string b64Cert = Convert.ToBase64String(ssCert.Export(X509ContentType.Cert));
 
         // Set up the management job configuration
         var config = new ManagementJobConfiguration
@@ -492,8 +487,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             JobCertificate = new ManagementJobCertificate
             {
                 Alias = certName,
-                Contents = b64PfxSslCert,
-                PrivateKeyPassword = password
+                Contents = b64Cert
             },
         };
 
@@ -510,15 +504,14 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
 
         ssCert = AzureEnterpriseApplicationOrchestrator_Client.GetSelfSignedCert(testHostname);
 
-        b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
+        b64Cert = Convert.ToBase64String(ssCert.Export(X509ContentType.Cert));
         
         config.OperationType = CertStoreOperationType.Add;
         config.Overwrite = true;
         config.JobCertificate = new ManagementJobCertificate
         {
             Alias = certName,
-            Contents = b64PfxSslCert,
-            PrivateKeyPassword = password
+            Contents = b64Cert
         };
 
         // Act

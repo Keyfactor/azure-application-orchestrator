@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Azure.Core;
@@ -208,10 +209,10 @@ public class GraphClient : IAzureGraphClient {
         return _servicePrincipalObjectId;
     }
 
-    public void AddApplicationCertificate(string certificateName, string certificateData, string certificatePassword)
+    public void AddApplicationCertificate(string certificateName, string certificateData)
     {
         // certificateData is a base64 encoded PFX certificate
-        X509Certificate2 certificate = SerializeCertificate(certificateData, certificatePassword);
+        X509Certificate2 certificate = SerializeCertificate(certificateData, "");
         if (certificate.Thumbprint == null)
             throw new Exception("Could not calculate thumbprint for certificate");
 
@@ -222,6 +223,8 @@ public class GraphClient : IAzureGraphClient {
 
         // Get the application object
         Application application = GetApplication();
+
+        char[] certPem = PemEncoding.Write("CERTIFICATE", certificate.RawData);
 
         // Update the application object
         _logger.LogDebug($"Updating application object for application ID \"{_targetApplicationId}\"");
@@ -239,7 +242,7 @@ public class GraphClient : IAzureGraphClient {
                     StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
                     EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
                     KeyId = Guid.NewGuid(),
-                    Key = certificate.Export(X509ContentType.Cert)
+                    Key = System.Text.Encoding.UTF8.GetBytes(certPem)
                     }
                     }
                     }).Wait();
@@ -267,7 +270,7 @@ public class GraphClient : IAzureGraphClient {
         {
             if (keyCredential.DisplayName == certificateName)
             {
-                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\" ({keyCredential.KeyId.ToString()})");
+                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\"");
                 continue;
             }
 
@@ -400,7 +403,7 @@ public class GraphClient : IAzureGraphClient {
         {
             if (keyCredential.DisplayName == certificateName)
             {
-                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\" ({keyCredential.KeyId.ToString()})");
+                _logger.LogDebug($"Removing key credential \"{keyCredential.DisplayName}\"");
 
                 // Store the GUID of the key to delete
                 if (keyCredential.Usage == "Sign" && keyCredential.CustomKeyIdentifier != null)
@@ -538,8 +541,8 @@ public class GraphClient : IAzureGraphClient {
 
     private OperationResult<IEnumerable<CurrentInventoryItem>> InventoryFromKeyCredentials(List<KeyCredential> keyCredentials)
     {
-        List<CurrentInventoryItem> inventoryItems = new List<CurrentInventoryItem>();
-        OperationResult<IEnumerable<CurrentInventoryItem>> result = new(inventoryItems);
+        Dictionary<string, CurrentInventoryItem> inventoryItems = new();
+        OperationResult<IEnumerable<CurrentInventoryItem>> result = new(inventoryItems.Values);
 
         if (keyCredentials == null || keyCredentials.Count == 0)
         {
@@ -548,6 +551,7 @@ public class GraphClient : IAzureGraphClient {
         }
 
         // Create a map of strings containing CustomKeyIdentifier to ensure that only one certificate is returned for each key
+        // The boolean value is not used, but is required for the Dictionary type
         Dictionary<string, bool> keyIdMap = new Dictionary<string, bool>();
 
         // Create a map to track certificates that we failed to retrieve. The Add method will always
@@ -555,10 +559,24 @@ public class GraphClient : IAzureGraphClient {
         // track the ones that we failed to serialize, and remove them from the map when we do find the certificate.
         // Finally, we'll log a warning for any certificates that we failed to retrieve.
         Dictionary<string, string> failedCertificateMap = new Dictionary<string, string>();
+        
+        // Create a map to track certificates that we're confident have a private key entry in Azure.
+        // Azure will never return the Private Key with the Graph API, but Keyfactor Command uses 
+        // the presence of a private key to determine how Certificate Renewal should be handled.
+        // We won't use the boolean value, but it's required for the Dictionary type.
+        Dictionary<string, bool> privateKeyMap = new Dictionary<string, bool>();
 
         foreach (KeyCredential keyCredential in keyCredentials)
         {
             string customKeyIdentifier = Encoding.UTF8.GetString(keyCredential.CustomKeyIdentifier);
+            
+            if (!string.IsNullOrWhiteSpace(keyCredential.Usage) && keyCredential.Usage.Equals("Sign", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogDebug($"Certificate with CustomKeyIdentifier \"{customKeyIdentifier}\" has a private key entry");
+                privateKeyMap[customKeyIdentifier] = true;
+            }
+            // We only track the case where the private key exists because there will be several keyCredentials
+            // for Service Principals where one is the certificate and the other is the private key.
 
             X509Certificate2 certificate = GetCertificateFromKeyCredential(keyCredential);
             if (certificate == null)
@@ -595,7 +613,7 @@ public class GraphClient : IAzureGraphClient {
             };
 
             _logger.LogDebug($"Found certificate called \"{keyCredential.DisplayName}\" ({customKeyIdentifier})");
-            inventoryItems.Add(inventoryItem);
+            inventoryItems[customKeyIdentifier] = inventoryItem;
         }
 
         foreach (string key in keyIdMap.Keys)
@@ -608,6 +626,14 @@ public class GraphClient : IAzureGraphClient {
         {
             _logger.LogWarning(failedCertificateMap[key]);
             result.AddRuntimeErrorMessage(failedCertificateMap[key]);
+        }
+        
+        foreach (string key in privateKeyMap.Keys)
+        {
+            if (inventoryItems.ContainsKey(key))
+            {
+                inventoryItems[key].PrivateKeyEntry = true;
+            }
         }
 
         return result;
@@ -712,7 +738,7 @@ public class GraphClient : IAzureGraphClient {
         string customKeyIdentifier = Encoding.UTF8.GetString(keyCredential.CustomKeyIdentifier);
         if (keyCredential.Key == null || keyCredential.Key.Length == 0)
         {
-            _logger.LogWarning($"Key credential with CustomKeyIdentifier \"{customKeyIdentifier}\" has no key data");
+            _logger.LogWarning($"Key credential with KeyId \"{keyCredential.KeyId}\" has no key data");
             return null;
         }
         // Get the certificate from the key credential
