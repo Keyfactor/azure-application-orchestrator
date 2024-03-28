@@ -93,11 +93,10 @@ public class Management : IManagementJobExtension
     {
         _logger.LogDebug("Beginning AddCertificate operation");
 
-        // If a private key password was not provided, Command didn't return
-        // the certificate in PKCS#12 format.
-        if (string.IsNullOrWhiteSpace(config.JobCertificate.PrivateKeyPassword))
+        // The AzureApp Certificate Store Type doesn't support private key handling
+        if (string.IsNullOrWhiteSpace(config.JobCertificate.PrivateKeyPassword) == false)
         {
-            throw new Exception("Certificate must be in PKCS#12 format - no private key password provided.");
+            throw new Exception("Private key handling is not supported for AzureApp Certificate Store Type.");
         }
 
         if (string.IsNullOrWhiteSpace(config.JobCertificate.Alias))
@@ -112,8 +111,7 @@ public class Management : IManagementJobExtension
 
         Client.AddApplicationCertificate(
                 config.JobCertificate.Alias,
-                config.JobCertificate.Contents,
-                config.JobCertificate.PrivateKeyPassword
+                config.JobCertificate.Contents
                 );
 
         _logger.LogDebug("AddCertificate operation complete");
