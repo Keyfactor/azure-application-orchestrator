@@ -38,7 +38,7 @@ The Keyfactor Universal Orchestrator may be installed on either Windows or Linux
 |Supports Management Remove|&check; |&check; |
 |Supports Create Store|  |  |
 |Supports Discovery|&check; |&check; |
-|Supports Renrollment|  |  |
+|Supports Reenrollment|  |  |
 |Supports Inventory|&check; |&check; |
 
 
@@ -93,5 +93,8 @@ Before installing the Azure App Registration and Enterprise Application Orchestr
 
     * [Azure App Registration/Application](docs/azureapp.md#certificate-store-configuration)
     * [Azure Enterprise Application/Service Principal](docs/azuresp.md#certificate-store-configuration)
+
+
+When creating cert store type manually, that store property names and entry parameter names are case sensitive
 
 
