@@ -1,9 +1,9 @@
 {
     "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
-    "name": "Azure Application and Enterprise Application Orchestrator",
+    "name": "Azure App Registration and Enterprise Application Orchestrator",
     "integration_type": "orchestrator",
     "status": "production",
-    "description": "The Azure Application and Enterprise Application Orchestrator extension acts as a proxy between Keyfactor and Azure that allows Keyfactor to manage Application (Auth) and Enterprise Application (SSO/SAML) certificates.",
+    "description": "The Azure App Registration and Enterprise Application Orchestrator extension remotely manages both Azure App Registration/Application certificates and Enterprise Application/Service Principal certificates.",
     "support_level": "kf-supported",
     "release_dir": "AzureEnterpriseApplicationOrchestrator\\bin\\Release",
     "link_github": true,

@@ -75,7 +75,7 @@ public class FakeClient : IAzureGraphClient
     public IEnumerable<string>? ApplicationIdsAvailableOnFakeTenant { get; set; }
     public Dictionary<string, string>? CertificatesAvailableOnFakeTarget { get; set; }
 
-    public void AddApplicationCertificate(string certificateName, string certificateData, string certificatePassword)
+    public void AddApplicationCertificate(string certificateName, string certificateData)
     {
         _logger.LogDebug($"Adding certificate {certificateName} to fake application");
 
@@ -93,7 +93,7 @@ public class FakeClient : IAzureGraphClient
 
     public void AddServicePrincipalCertificate(string certificateName, string certificateData, string certificatePassword)
     {
-        AddApplicationCertificate(certificateName, certificateData, certificatePassword);
+        AddApplicationCertificate(certificateName, certificateData);
     }
 
     public OperationResult<IEnumerable<string>> DiscoverApplicationIds()

@@ -50,7 +50,7 @@ public class OperationResult<T>
 public interface IAzureGraphClient
 {
     // Application
-    public void AddApplicationCertificate(string certificateName, string certificateData, string certificatePassword);
+    public void AddApplicationCertificate(string certificateName, string certificateData);
     public void RemoveApplicationCertificate(string certificateName);
     public OperationResult<IEnumerable<CurrentInventoryItem>> GetApplicationCertificates();
     public bool ApplicationCertificateExists(string certificateName);
