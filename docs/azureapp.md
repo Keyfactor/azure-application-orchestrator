@@ -61,7 +61,7 @@ Beginning in version 3.0.0, the Azure App Registration and Enterprise Applicatio
 >        ```
 > 7. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) to add the public key certificate to the service principal used for authentication.
 >
-> You will use `clientcert.[pem|pfx].base64` as the **ClientCertificate** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
+> You will use `clientcert.[pem|pfx].base64` as the **ClientCertificate** field in the [Certificate Store Configuration](#certificate-store-configuration) section. 
 
 
 ### Azure App Registration (Application)
