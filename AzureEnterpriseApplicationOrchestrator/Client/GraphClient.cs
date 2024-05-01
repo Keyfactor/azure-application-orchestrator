@@ -64,6 +64,7 @@ public class GraphClient : IAzureGraphClient {
         private string _tenantId { get; set; }
         private string _applicationId { get; set; }
         private string _clientSecret { get; set; }
+        private X509Certificate2 _clientCertificate { get; set; }
         private string _targetApplicationId { get; set; }
         private Uri _azureCloudEndpoint { get; set; }
 
@@ -88,6 +89,12 @@ public class GraphClient : IAzureGraphClient {
         public IAzureGraphClientBuilder WithClientSecret(string clientSecret)
         {
             _clientSecret = clientSecret;
+            return this;
+        }
+
+        public IAzureGraphClientBuilder WithClientCertificate(X509Certificate2 clientCertificate)
+        {
+            _clientCertificate = clientCertificate;
             return this;
         }
 
@@ -129,9 +136,24 @@ public class GraphClient : IAzureGraphClient {
                               AdditionallyAllowedTenants = { "*" } 
             };
 
-            TokenCredential credential = new ClientSecretCredential(
-                    _tenantId, _applicationId, _clientSecret, credentialOptions
-                    );
+            TokenCredential credential;
+            if (!string.IsNullOrWhiteSpace(_clientSecret)) 
+            {
+                credential = new ClientSecretCredential(
+                        _tenantId, _applicationId, _clientSecret, credentialOptions
+                        );
+            }
+            else if (_clientCertificate != null) 
+            {
+                credential = new ClientCertificateCredential(
+                        _tenantId, _applicationId, _clientCertificate, credentialOptions
+                        );
+            }
+            else 
+            {
+                throw new Exception("Client secret or client certificate must be provided.");
+            }
+
 
             string[] scopes = { "https://graph.microsoft.com/.default" };
 
