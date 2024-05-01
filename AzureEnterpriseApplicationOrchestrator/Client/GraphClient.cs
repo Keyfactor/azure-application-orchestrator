@@ -137,9 +137,9 @@ public class GraphClient : IAzureGraphClient {
             };
 
             TokenCredential credential;
-           if (!string.IsNullOrWhiteSpace(_clientSecret)) 
-           {
-                 credential = new ClientSecretCredential(
+            if (!string.IsNullOrWhiteSpace(_clientSecret)) 
+            {
+                credential = new ClientSecretCredential(
                         _tenantId, _applicationId, _clientSecret, credentialOptions
                         );
             }
