@@ -19,6 +19,7 @@ public sealed class IntegrationTestingFact : FactAttribute
     public string TenantId { get; private set; }
     public string ApplicationId { get; private set; }
     public string ClientSecret { get; private set; }
+    public string ClientCertificatePath { get; private set; }
 
     public string TargetApplicationId { get; private set; }
 
@@ -27,6 +28,7 @@ public sealed class IntegrationTestingFact : FactAttribute
         TenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID") ?? string.Empty;
         ApplicationId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID") ?? string.Empty;
         ClientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET") ?? string.Empty;
+        ClientCertificatePath = Environment.GetEnvironmentVariable("AZURE_PATH_TO_CLIENT_CERTIFICATE") ?? string.Empty;
 
         TargetApplicationId = Environment.GetEnvironmentVariable("AZURE_TARGET_APPLICATION_ID") ?? string.Empty;
 
@@ -37,3 +39,27 @@ public sealed class IntegrationTestingFact : FactAttribute
     }
 }
 
+public sealed class IntegrationTestingTheory : TheoryAttribute
+{
+    public string TenantId { get; private set; }
+    public string ApplicationId { get; private set; }
+    public string ClientSecret { get; private set; }
+    public string ClientCertificatePath { get; private set; }
+
+    public string TargetApplicationId { get; private set; }
+
+    public IntegrationTestingTheory()
+    {
+        TenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID") ?? string.Empty;
+        ApplicationId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID") ?? string.Empty;
+        ClientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET") ?? string.Empty;
+        ClientCertificatePath = Environment.GetEnvironmentVariable("AZURE_PATH_TO_CLIENT_CERTIFICATE") ?? string.Empty;
+
+        TargetApplicationId = Environment.GetEnvironmentVariable("AZURE_TARGET_APPLICATION_ID") ?? string.Empty;
+
+        if (string.IsNullOrEmpty(TenantId) || string.IsNullOrEmpty(ApplicationId) || string.IsNullOrEmpty(ClientSecret) || string.IsNullOrEmpty(TargetApplicationId))
+        {
+            Skip = "Integration testing environment variables are not set - Skipping test. Please run `make setup` to set the environment variables.";
+        }
+    }
+}
