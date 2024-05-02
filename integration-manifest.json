@@ -157,29 +157,7 @@
                     "BlueprintAllowed": false,
                     "CustomAliasAllowed": "Required"
                 }
-            ],
-            "store_types_metadata": {
-                "AzureApp": {
-                    "ClientMachine": "The Azure Tenant (directory) ID that owns the Service Principal.",
-                    "StorePath": "The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension.",
-                    "Properties": {
-                        "ServerUsername": "The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
-                        "ServerPassword": "A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
-                        "ServerUseSsl": "Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it."
-                    },
-                    "EntryParameters": {}
-                },
-                "AzureSP": {
-                    "ClientMachine": "The Azure Tenant (directory) ID that owns the Service Principal.",
-                    "StorePath": "The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension.",
-                    "Properties": {
-                        "ServerUsername": "The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
-                        "ServerPassword": "A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
-                        "ServerUseSsl": "Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it."
-                    },
-                    "EntryParameters": {}
-                }
-            }
+            ]
         },
         "pam": {}
     }
