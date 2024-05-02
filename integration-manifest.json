@@ -34,6 +34,8 @@
                     "ShortName": "AzureApp",
                     "Capability": "AzureApp",
                     "LocalStore": false,
+                    "ClientMachineDescription": "The Azure Tenant (directory) ID that owns the Service Principal.",
+                    "StorePathDescription": "The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension.",
                     "SupportedOperations": {
                         "Add": true,
                         "Remove": true,
@@ -46,12 +48,29 @@
                             "Name": "ServerUsername",
                             "DisplayName": "Server Username",
                             "Type": "Secret",
+                            "Description": "The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
                             "Required": false
                         },
                         {
                             "Name": "ServerPassword",
                             "DisplayName": "Server Password",
                             "Type": "Secret",
+                            "Description": "A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate",
+                            "Required": false
+                        },
+                        {
+                            "Name": "ClientCertificate",
+                            "DisplayName": "Client Certificate",
+                            "Type": "Secret",
+                            "Description": "The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information.",
+                            "Required": false
+                        },
+                        {
+                            "Name": "AzureCloud",
+                            "DisplayName": "Azure Global Cloud Authority Host",
+                            "Type": "MultipleChoice",
+                            "DefaultValue": "public,china,germany,government",
+                            "Description": "Specifies the Azure Cloud instance used by the organization.",
                             "Required": false
                         },
                         {
@@ -59,6 +78,7 @@
                             "DisplayName": "Use SSL",
                             "Type": "Bool",
                             "DefaultValue": "true",
+                            "Description": "Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it.",
                             "Required": true
                         }
                     ],
@@ -78,6 +98,8 @@
                     "ShortName": "AzureSP",
                     "Capability": "AzureSP",
                     "LocalStore": false,
+                    "ClientMachineDescription": "The Azure Tenant (directory) ID that owns the Service Principal.",
+                    "StorePathDescription": "The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension.",
                     "SupportedOperations": {
                         "Add": true,
                         "Remove": true,
@@ -90,12 +112,29 @@
                             "Name": "ServerUsername",
                             "DisplayName": "Server Username",
                             "Type": "Secret",
+                            "Description": "The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
                             "Required": false
                         },
                         {
                             "Name": "ServerPassword",
                             "DisplayName": "Server Password",
                             "Type": "Secret",
+                            "Description": "A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate",
+                            "Required": false
+                        },
+                        {
+                            "Name": "ClientCertificate",
+                            "DisplayName": "Client Certificate",
+                            "Type": "Secret",
+                            "Description": "The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information.",
+                            "Required": false
+                        },
+                        {
+                            "Name": "AzureCloud",
+                            "DisplayName": "Azure Global Cloud Authority Host",
+                            "Type": "MultipleChoice",
+                            "DefaultValue": "public,china,germany,government",
+                            "Description": "Specifies the Azure Cloud instance used by the organization.",
                             "Required": false
                         },
                         {
@@ -103,6 +142,7 @@
                             "DisplayName": "Use SSL",
                             "Type": "Bool",
                             "DefaultValue": "true",
+                            "Description": "Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it.",
                             "Required": true
                         }
                     ],
@@ -117,29 +157,7 @@
                     "BlueprintAllowed": false,
                     "CustomAliasAllowed": "Required"
                 }
-            ],
-            "store_types_metadata": {
-                "AzureApp": {
-                    "ClientMachine": "The Azure Tenant (directory) ID that owns the Service Principal.",
-                    "StorePath": "The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension.",
-                    "Properties": {
-                        "ServerUsername": "The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
-                        "ServerPassword": "A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
-                        "ServerUseSsl": "Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it."
-                    },
-                    "EntryParameters": {}
-                },
-                "AzureSP": {
-                    "ClientMachine": "The Azure Tenant (directory) ID that owns the Service Principal.",
-                    "StorePath": "The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension.",
-                    "Properties": {
-                        "ServerUsername": "The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
-                        "ServerPassword": "A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates.",
-                        "ServerUseSsl": "Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it."
-                    },
-                    "EntryParameters": {}
-                }
-            }
+            ]
         },
         "pam": {}
     }
