@@ -99,6 +99,7 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 1. Follow the [requirements section](docs/azureapp.md#requirements) to configure a Service Account and grant necessary API permissions.
 
     <details><summary>Requirements</summary>
+
     ### Azure Service Principal (Graph API Authentication)
 
     The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, Client Secret authentication is supported. The Service Principal must have the following API Permission:
@@ -204,6 +205,7 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 1. Follow the [requirements section](docs/azuresp.md#requirements) to configure a Service Account and grant necessary API permissions.
 
     <details><summary>Requirements</summary>
+
     ### Azure Service Principal (Graph API Authentication)
 
     The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, Client Secret authentication is supported. The Service Principal must have the following API Permission:
