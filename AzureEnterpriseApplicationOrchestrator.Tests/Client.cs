@@ -28,8 +28,10 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         ConfigureLogging();
     }
 
-    [IntegrationTestingFact]
-    public void GraphClient_Application_AddGetRemove_ReturnSuccess()
+    [IntegrationTestingTheory]
+    [InlineData("clientcert")]
+    [InlineData("clientsecret")]
+    public void GraphClient_Application_AddGetRemove_ReturnSuccess(string testAuthMethod)
     {
         // Arrange
         string certName = "AppTest" + Guid.NewGuid().ToString()[..6];
@@ -37,13 +39,22 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         string b64Cert = Convert.ToBase64String(ssCert.Export(X509ContentType.Cert));
 
         IntegrationTestingFact env = new();
-
-        IAzureGraphClient client = new GraphClient.Builder()
+        IAzureGraphClientBuilder clientBuilder = new GraphClient.Builder()
             .WithTenantId(env.TenantId)
             .WithApplicationId(env.ApplicationId)
-            .WithClientSecret(env.ClientSecret)
-            .WithTargetApplicationId(env.TargetApplicationId)
-            .Build();
+            .WithTargetApplicationId(env.TargetApplicationId);
+
+        if (testAuthMethod == "clientcert")
+        {
+            clientBuilder.WithClientSecret(env.ClientSecret);
+        }
+        else
+        {
+            var cert = X509Certificate2.CreateFromPemFile(env.ClientCertificatePath);
+            clientBuilder.WithClientCertificate(cert);
+        }
+        
+        IAzureGraphClient client = clientBuilder.Build();
 
         // Step 1 - Add the certificate to the Application
 
@@ -89,8 +100,10 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         Assert.False(exists);
     }
 
-    [IntegrationTestingFact]
-    public void GraphClient_ServicePrincipal_AddGetRemove_ReturnSuccess()
+    [IntegrationTestingTheory]
+    [InlineData("clientcert")]
+    [InlineData("clientsecret")]
+    public void GraphClient_ServicePrincipal_AddGetRemove_ReturnSuccess(string testAuthMethod)
     {
         // Arrange
         const string password = "passwordpasswordpassword";
@@ -99,13 +112,22 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         string b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
 
         IntegrationTestingFact env = new();
-
-        IAzureGraphClient client = new GraphClient.Builder()
+        IAzureGraphClientBuilder clientBuilder = new GraphClient.Builder()
             .WithTenantId(env.TenantId)
             .WithApplicationId(env.ApplicationId)
-            .WithClientSecret(env.ClientSecret)
-            .WithTargetApplicationId(env.TargetApplicationId)
-            .Build();
+            .WithTargetApplicationId(env.TargetApplicationId);
+
+        if (testAuthMethod == "clientcert")
+        {
+            clientBuilder.WithClientSecret(env.ClientSecret);
+        }
+        else
+        {
+            var cert = X509Certificate2.CreateFromPemFile(env.ClientCertificatePath);
+            clientBuilder.WithClientCertificate(cert);
+        }
+        
+        IAzureGraphClient client = clientBuilder.Build();
 
         // Step 1 - Add the certificate to the Service Principal (and set it as the preferred SAML signing certificate)
 
@@ -152,8 +174,10 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         Assert.False(exists);
     }
 
-    [IntegrationTestingFact]
-    public void GraphClient_DiscoverApplicationIds_ReturnSuccess()
+    [IntegrationTestingTheory]
+    [InlineData("clientcert")]
+    [InlineData("clientsecret")]
+    public void GraphClient_DiscoverApplicationIds_ReturnSuccess(string testAuthMethod)
     {
         // Arrange
         const string password = "passwordpasswordpassword";
@@ -162,13 +186,22 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         string b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
 
         IntegrationTestingFact env = new();
-
-        IAzureGraphClient client = new GraphClient.Builder()
+        IAzureGraphClientBuilder clientBuilder = new GraphClient.Builder()
             .WithTenantId(env.TenantId)
             .WithApplicationId(env.ApplicationId)
-            .WithClientSecret(env.ClientSecret)
-            .WithTargetApplicationId(env.TargetApplicationId)
-            .Build();
+            .WithTargetApplicationId(env.TargetApplicationId);
+
+        if (testAuthMethod == "clientcert")
+        {
+            clientBuilder.WithClientSecret(env.ClientSecret);
+        }
+        else
+        {
+            var cert = X509Certificate2.CreateFromPemFile(env.ClientCertificatePath);
+            clientBuilder.WithClientCertificate(cert);
+        }
+        
+        IAzureGraphClient client = clientBuilder.Build();
 
         // Act
         OperationResult<IEnumerable<string>> operationResult = client.DiscoverApplicationIds();
