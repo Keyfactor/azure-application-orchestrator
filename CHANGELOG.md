@@ -4,3 +4,9 @@
 - 2.0.0
     - Properly report Private Key existence in Inventory job for both AzureSP and AzureApp.
     - Remove Private Key handling from AzureApp Certificate Store Type
+
+- 3.0.0
+    - Implement client certificate authentication as a secondary authentication method to Microsoft Graph API
+
+- 3.1.0
+  - fix(deps): Revert main Azure App Registration and Enterprise Application Orchestrator extension .NET project to .NET 6 from .NET 8.

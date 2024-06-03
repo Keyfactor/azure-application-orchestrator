@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Security.Cryptography.X509Certificates;
 using AzureEnterpriseApplicationOrchestrator.Client;
 using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Common.Enums;
@@ -31,6 +32,7 @@ public class FakeClient : IAzureGraphClient
         public string? _targetApplicationId { get; set; }
         public string? _applicationId { get; set; }
         public string? _clientSecret { get; set; }
+        public X509Certificate2? _clientCertificate { get; set; }
         public string? _azureCloudEndpoint { get; set; }
 
         public IAzureGraphClientBuilder WithTenantId(string tenantId)
@@ -54,6 +56,12 @@ public class FakeClient : IAzureGraphClient
         public IAzureGraphClientBuilder WithClientSecret(string clientSecret)
         {
             _clientSecret = clientSecret;
+            return this;
+        }
+
+        public IAzureGraphClientBuilder WithClientCertificate(X509Certificate2 clientCertificate)
+        {
+            _clientCertificate = clientCertificate;
             return this;
         }
 

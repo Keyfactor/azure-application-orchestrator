@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Keyfactor.Orchestrators.Extensions;
 
 namespace AzureEnterpriseApplicationOrchestrator.Client;
@@ -23,6 +24,7 @@ public interface IAzureGraphClientBuilder
     public IAzureGraphClientBuilder WithTargetApplicationId(string applicationId);
     public IAzureGraphClientBuilder WithApplicationId(string applicationId);
     public IAzureGraphClientBuilder WithClientSecret(string clientSecret);
+    public IAzureGraphClientBuilder WithClientCertificate(X509Certificate2 clientCertificate);
     public IAzureGraphClientBuilder WithAzureCloud(string azureCloud);
     public IAzureGraphClient Build();
 }
