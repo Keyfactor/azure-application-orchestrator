@@ -13,3 +13,4 @@
 
 - 3.1.1
   - fix(deps): Revert main Azure App Registration and Enterprise Application Orchestrator extension .NET project to .NET 6 from .NET 8.
+
