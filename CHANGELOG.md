@@ -13,3 +13,6 @@
 
 - 3.1.1
   - fix(deps): Revert main Azure App Registration and Enterprise Application Orchestrator extension .NET project to .NET 6 from .NET 8.
+
+- 3.2.0
+  - chore(docs): Upgrade GitHub Actions to use Bootstrap Workflow v3 to support Doctool

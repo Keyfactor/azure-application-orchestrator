@@ -1,53 +1,3 @@
-
-# Azure App Registration and Enterprise Application Orchestrator
-
-The Azure App Registration and Enterprise Application Orchestrator extension remotely manages both Azure App Registration/Application certificates and Enterprise Application/Service Principal certificates.
-
-#### Integration status: Production - Ready for use in production environments.
-
-## About the Keyfactor Universal Orchestrator Extension
-
-This repository contains a Universal Orchestrator Extension which is a plugin to the Keyfactor Universal Orchestrator. Within the Keyfactor Platform, Orchestrators are used to manage “certificate stores” &mdash; collections of certificates and roots of trust that are found within and used by various applications.
-
-The Universal Orchestrator is part of the Keyfactor software distribution and is available via the Keyfactor customer portal. For general instructions on installing Extensions, see the “Keyfactor Command Orchestrator Installation and Configuration Guide” section of the Keyfactor documentation. For configuration details of this specific Extension see below in this readme.
-
-The Universal Orchestrator is the successor to the Windows Orchestrator. This Orchestrator Extension plugin only works with the Universal Orchestrator and does not work with the Windows Orchestrator.
-
-## Support for Azure App Registration and Enterprise Application Orchestrator
-
-Azure App Registration and Enterprise Application Orchestrator is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com
-
-###### To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
-
----
-
-
----
-
-
-
-## Keyfactor Version Supported
-
-The minimum version of the Keyfactor Universal Orchestrator Framework needed to run this version of the extension is 10.4
-## Platform Specific Notes
-
-The Keyfactor Universal Orchestrator may be installed on either Windows or Linux based platforms. The certificate operations supported by a capability may vary based what platform the capability is installed on. The table below indicates what capabilities are supported based on which platform the encompassing Universal Orchestrator is running.
-| Operation | Win | Linux |
-|-----|-----|------|
-|Supports Management Add|&check; |&check; |
-|Supports Management Remove|&check; |&check; |
-|Supports Create Store|  |  |
-|Supports Discovery|&check; |&check; |
-|Supports Reenrollment|  |  |
-|Supports Inventory|&check; |&check; |
-
-
-
-
-
----
-
-
 <h1 align="center" style="border-bottom: none">
     Azure App Registration and Enterprise Application Universal Orchestrator Extension
 </h1>
@@ -86,6 +36,15 @@ The Azure App Registration and Enterprise Application Orchestrator extension rem
 
 Certificates used for client authentication by Applications (configured in App Registrations) are represented by the [`AzureApp` store type](docs/azureapp.md), and certificates used for SSO/SAML assertion signing are represented by the [`AzureSP` store type](docs/azuresp.md). Both store types are managed by the same extension. The extension is configured with a single Azure Service Principal that is used to authenticate to the [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/use-the-api). The Azure App Registration and Enterprise Application Orchestrator extension manages certificates for Azure App Registrations (Applications) and Enterprise Applications (Service Principals) differently.
 
+## Compatibility
+
+This integration is compatible with Keyfactor Universal Orchestrator version 10.4 and later.
+
+## Support
+The Azure App Registration and Enterprise Application Universal Orchestrator extension is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket with your Keyfactor representative. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com. 
+ 
+> To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
+
 ## Installation
 Before installing the Azure App Registration and Enterprise Application Universal Orchestrator extension, it's recommended to install [kfutil](https://github.com/Keyfactor/kfutil). Kfutil is a command-line tool that simplifies the process of creating store types, installing extensions, and instantiating certificate stores in Keyfactor Command.
 
@@ -100,7 +59,7 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
     <details><summary>Requirements</summary>
 
-    ### Azure Service Principal (Graph API Authentication)
+    #### Azure Service Principal (Graph API Authentication)
 
     The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, Client Secret authentication is supported. The Service Principal must have the following API Permission:
     - **_Microsoft Graph Application Permissions_**:
@@ -110,7 +69,7 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
     Alternatively, the Service Principal can be granted the `Application.ReadWrite.OwnedBy` permission if the Service Principal is only intended to manage its own App Registration/Application.
 
-    #### Client Certificate or Client Secret
+    ##### Client Certificate or Client Secret
 
     Beginning in version 3.0.0, the Azure App Registration and Enterprise Application Orchestrator extension supports both [client certificate authentication](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) and [client secret](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-2-add-a-client-secret) authentication.
 
@@ -159,13 +118,11 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
     >
     > You will use `clientcert.[pem|pfx].base64` as the **ClientCertificate** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
 
-    ### Azure App Registration (Application)
+    #### Azure App Registration (Application)
 
-    #### Application Certificates
+    ##### Application Certificates
 
     Application certificates are used for client authentication and are typically public key only. No additional configuration in Azure is necessary to manage Application certificates since all App Registrations can contain any number of [Certificates and Secrets](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app#add-credentials). Unless the Discovery job is used, you should collect the Application IDs for each App Registration that contains certificates to be managed.
-
-
 
     </details>
 
@@ -196,7 +153,10 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
     * **Manually**: Follow the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions) to install the latest [Azure App Registration and Enterprise Application Universal Orchestrator extension](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest).
 
 4. Create new certificate stores in Keyfactor Command for the Sample Universal Orchestrator extension.
+
     * [Azure App Registration (Application)](docs/azureapp.md#certificate-store-configuration)
+
+
 </details>
 
 <details><summary>Azure Enterprise Application (Service Principal)</summary>
@@ -206,7 +166,7 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
     <details><summary>Requirements</summary>
 
-    ### Azure Service Principal (Graph API Authentication)
+    #### Azure Service Principal (Graph API Authentication)
 
     The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, Client Secret authentication is supported. The Service Principal must have the following API Permission:
     - **_Microsoft Graph Application Permissions_**:
@@ -216,7 +176,7 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
     Alternatively, the Service Principal can be granted the `Application.ReadWrite.OwnedBy` permission if the Service Principal is only intended to manage its own App Registration/Application.
 
-    #### Client Certificate or Client Secret
+    ##### Client Certificate or Client Secret
 
     Beginning in version 3.0.0, the Azure App Registration and Enterprise Application Orchestrator extension supports both [client certificate authentication](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) and [client secret](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-2-add-a-client-secret) authentication.
 
@@ -265,13 +225,11 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
     >
     > You will use `clientcert.[pem|pfx].base64` as the **ClientCertificate** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
 
-    ### Enterprise Application (Service Principal)
+    #### Enterprise Application (Service Principal)
 
-    #### Service Principal Certificates
+    ##### Service Principal Certificates
 
     Service Principal certificates are typically used for SAML Token signing. Service Principals are created from Enterprise Applications, and will mostly be configured with a variation of Microsoft's [SAML-based single sign-on](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/add-application-portal) documentation. For more information on the mechanics of the Service Principal certificate management capabilities of this extension, please see the [mechanics](#extension-mechanics) section.
-
-
 
     </details>
 
@@ -302,7 +260,10 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
     * **Manually**: Follow the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions) to install the latest [Azure App Registration and Enterprise Application Universal Orchestrator extension](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest).
 
 4. Create new certificate stores in Keyfactor Command for the Sample Universal Orchestrator extension.
+
     * [Azure Enterprise Application (Service Principal)](docs/azuresp.md#certificate-store-configuration)
+
+
 </details>
 
 
@@ -313,7 +274,3 @@ Apache License 2.0, see [LICENSE](LICENSE).
 ## Related Integrations
 
 See all [Keyfactor Universal Orchestrator extensions](https://github.com/orgs/Keyfactor/repositories?q=orchestrator).
-
-When creating cert store type manually, that store property names and entry parameter names are case sensitive
-
-
