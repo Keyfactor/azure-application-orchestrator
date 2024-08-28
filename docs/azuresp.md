@@ -17,7 +17,7 @@ The Azure Enterprise Application/Service Principal certificate operations are im
 
 ## Requirements
 
-### Azure Service Principal (Graph API Authentication)
+#### Azure Service Principal (Graph API Authentication)
 
 The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, Client Secret authentication is supported. The Service Principal must have the following API Permission:
 - **_Microsoft Graph Application Permissions_**:
@@ -27,7 +27,7 @@ The Azure App Registration and Enterprise Application Orchestrator extension use
 
 Alternatively, the Service Principal can be granted the `Application.ReadWrite.OwnedBy` permission if the Service Principal is only intended to manage its own App Registration/Application.
 
-#### Client Certificate or Client Secret
+##### Client Certificate or Client Secret
 
 Beginning in version 3.0.0, the Azure App Registration and Enterprise Application Orchestrator extension supports both [client certificate authentication](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) and [client secret](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-2-add-a-client-secret) authentication.
 
@@ -76,37 +76,16 @@ Beginning in version 3.0.0, the Azure App Registration and Enterprise Applicatio
 >
 > You will use `clientcert.[pem|pfx].base64` as the **ClientCertificate** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
 
-### Enterprise Application (Service Principal)
+#### Enterprise Application (Service Principal)
 
-#### Service Principal Certificates
+##### Service Principal Certificates
 
 Service Principal certificates are typically used for SAML Token signing. Service Principals are created from Enterprise Applications, and will mostly be configured with a variation of Microsoft's [SAML-based single sign-on](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/add-application-portal) documentation. For more information on the mechanics of the Service Principal certificate management capabilities of this extension, please see the [mechanics](#extension-mechanics) section.
 
 
-
-## Extension Mechanics
-
-The Azure App Registration and Enterprise Application Orchestrator extension uses the [Microsoft Dotnet Graph SDK](https://learn.microsoft.com/en-us/graph/sdks/sdks-overview) to interact with the Microsoft Graph API. The extension uses the following Graph API endpoints to manage Service Principal certificates:
-
-* [Get Service Principal](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-get?view=graph-rest-1.0&tabs=http) - Used to obtain the Object ID of the Enterprise Application, and to download the certificates owned by the Service Principal.
-* [Update Service Principal](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-update?view=graph-rest-1.0&tabs=http) - Used to modify the Enterprise Application to add or remove certificates.
-    * Specifically, the extension manipulates the [`keyCredentials` resource](https://learn.microsoft.com/en-us/graph/api/resources/keycredential?view=graph-rest-1.0) of the Service Principal object.
-
-### Discovery Job
-
-The Discovery operation discovers all Azure Enterprise Applications that the Service Principal has access to. The discovered Enterprise Applications (specifically, their Application IDs) are reported back to Command and can be easily added as certificate stores from the Locations tab.
-
-The Discovery operation uses the "Directories to search" field, and accepts input in one of the following formats:
-- `*` - If the asterisk symbol `*` is used, the extension will search for all Azure Enterprise Applications that the Service Principal has access to, but only in the tenant that the discovery job was configured for as specified by the "Client Machine" field in the certificate store configuration.
-- `<tenant-id>,<tenant-id>,...` - If a comma-separated list of tenant IDs is used, the extension will search for all Azure Enterprise Applications available in each tenant specified in the list. The tenant IDs should be the GUIDs associated with each tenant, and it's the user's responsibility to ensure that the service principal has access to the specified tenants.
-
-> The Discovery Job only supports Client Secret authentication.
-
-
-
 ## Certificate Store Type Configuration
 
-The recommended method for creating the `AzureSP` Certificate Store Type is to use [kfutil](https://github.com/Keyfactor/kfutil). After installing, use the following command to create the `` Certificate Store Type:
+The recommended method for creating the `AzureSP` Certificate Store Type is to use [kfutil](https://github.com/Keyfactor/kfutil). After installing, use the following command to create the `AzureSP` Certificate Store Type:
 
 ```shell
 kfutil store-types create AzureSP
@@ -169,24 +148,47 @@ The Custom Fields tab should look like this:
 
 </details>
 
+
+## Extension Mechanics
+
+The Azure App Registration and Enterprise Application Orchestrator extension uses the [Microsoft Dotnet Graph SDK](https://learn.microsoft.com/en-us/graph/sdks/sdks-overview) to interact with the Microsoft Graph API. The extension uses the following Graph API endpoints to manage Service Principal certificates:
+
+* [Get Service Principal](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-get?view=graph-rest-1.0&tabs=http) - Used to obtain the Object ID of the Enterprise Application, and to download the certificates owned by the Service Principal.
+* [Update Service Principal](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-update?view=graph-rest-1.0&tabs=http) - Used to modify the Enterprise Application to add or remove certificates.
+    * Specifically, the extension manipulates the [`keyCredentials` resource](https://learn.microsoft.com/en-us/graph/api/resources/keycredential?view=graph-rest-1.0) of the Service Principal object.
+
+#### Discovery Job
+
+The Discovery operation discovers all Azure Enterprise Applications that the Service Principal has access to. The discovered Enterprise Applications (specifically, their Application IDs) are reported back to Command and can be easily added as certificate stores from the Locations tab.
+
+The Discovery operation uses the "Directories to search" field, and accepts input in one of the following formats:
+- `*` - If the asterisk symbol `*` is used, the extension will search for all Azure Enterprise Applications that the Service Principal has access to, but only in the tenant that the discovery job was configured for as specified by the "Client Machine" field in the certificate store configuration.
+- `<tenant-id>,<tenant-id>,...` - If a comma-separated list of tenant IDs is used, the extension will search for all Azure Enterprise Applications available in each tenant specified in the list. The tenant IDs should be the GUIDs associated with each tenant, and it's the user's responsibility to ensure that the service principal has access to the specified tenants.
+
+> The Discovery Job only supports Client Secret authentication.
+
+
+
+
+
 ## Certificate Store Configuration
 
 After creating the `AzureSP` Certificate Store Type and installing the Azure App Registration and Enterprise Application Universal Orchestrator extension, you can create new [Certificate Stores](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store) to manage certificates in the remote platform.
 
 The following table describes the required and optional fields for the `AzureSP` certificate store type.
 
-| Attribute | Description |
-| --------- | ----------- |
-| Category | Select "Azure Enterprise Application (Service Principal)" or the customized certificate store name from the previous step. |
-| Container | Optional container to associate certificate store with. |
-| Client Machine | The Azure Tenant (directory) ID that owns the Service Principal. |
-| Store Path | The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension. |
-| Orchestrator | Select an approved orchestrator capable of managing `AzureSP` certificates. Specifically, one with the `AzureSP` capability. |
-| ServerUsername | The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. |
-| ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate |
-| ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. |
-| AzureCloud | Specifies the Azure Cloud instance used by the organization. |
-| ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |
+| Attribute | Description | Attribute is PAM Eligible |
+| --------- | ----------- | ------------------------- |
+| Category | Select "Azure Enterprise Application (Service Principal)" or the customized certificate store name from the previous step. | |
+| Container | Optional container to associate certificate store with. | |
+| Client Machine | The Azure Tenant (directory) ID that owns the Service Principal. | |
+| Store Path | The Application ID of the target Application/Service Principal that will be managed by the Azure App Registration and Enterprise Application Orchestrator extension. | |
+| Orchestrator | Select an approved orchestrator capable of managing `AzureSP` certificates. Specifically, one with the `AzureSP` capability. | |
+| ServerUsername | The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. |  |
+| ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate |  |
+| ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. |  |
+| AzureCloud | Specifies the Azure Cloud instance used by the organization. |  |
+| ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |  |
 
 * **Using kfutil**
 
@@ -201,3 +203,4 @@ The following table describes the required and optional fields for the `AzureSP`
     ```
 
 * **Manually with the Command UI**: In Keyfactor Command, navigate to Certificate Stores from the Locations Menu. Click the Add button to create a new Certificate Store using the attributes in the table above.
+

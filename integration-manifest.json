@@ -1,5 +1,5 @@
 {
-    "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
+    "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
     "name": "Azure App Registration and Enterprise Application Orchestrator",
     "integration_type": "orchestrator",
     "status": "production",
@@ -158,7 +158,6 @@
                     "CustomAliasAllowed": "Required"
                 }
             ]
-        },
-        "pam": {}
+        }
     }
 }
