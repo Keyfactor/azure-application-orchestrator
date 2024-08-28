@@ -85,7 +85,7 @@ Application certificates are used for client authentication and are typically pu
 
 ## Certificate Store Type Configuration
 
-The recommended method for creating the `AzureApp` Certificate Store Type is to use [kfutil](https://github.com/Keyfactor/kfutil). After installing, use the following command to create the `` Certificate Store Type:
+The recommended method for creating the `AzureApp` Certificate Store Type is to use [kfutil](https://github.com/Keyfactor/kfutil). After installing, use the following command to create the `AzureApp` Certificate Store Type:
 
 ```shell
 kfutil store-types create AzureApp

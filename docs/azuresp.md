@@ -85,7 +85,7 @@ Service Principal certificates are typically used for SAML Token signing. Servic
 
 ## Certificate Store Type Configuration
 
-The recommended method for creating the `AzureSP` Certificate Store Type is to use [kfutil](https://github.com/Keyfactor/kfutil). After installing, use the following command to create the `` Certificate Store Type:
+The recommended method for creating the `AzureSP` Certificate Store Type is to use [kfutil](https://github.com/Keyfactor/kfutil). After installing, use the following command to create the `AzureSP` Certificate Store Type:
 
 ```shell
 kfutil store-types create AzureSP
