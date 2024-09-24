@@ -21,7 +21,8 @@ public sealed class IntegrationTestingFact : FactAttribute
     public string ClientSecret { get; private set; }
     public string ClientCertificatePath { get; private set; }
 
-    public string TargetApplicationId { get; private set; }
+    public string TargetApplicationObjectId { get; private set; }
+    public string TargetServicePrincipalObjectId { get; private set; }
 
     public IntegrationTestingFact()
     {
@@ -30,9 +31,10 @@ public sealed class IntegrationTestingFact : FactAttribute
         ClientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET") ?? string.Empty;
         ClientCertificatePath = Environment.GetEnvironmentVariable("AZURE_PATH_TO_CLIENT_CERTIFICATE") ?? string.Empty;
 
-        TargetApplicationId = Environment.GetEnvironmentVariable("AZURE_TARGET_APPLICATION_ID") ?? string.Empty;
+        TargetApplicationObjectId = Environment.GetEnvironmentVariable("AZURE_TARGET_APPLICATION_OBJECT_ID") ?? string.Empty;
+        TargetServicePrincipalObjectId = Environment.GetEnvironmentVariable("AZURE_TARGET_SERVICEPRINCIPAL_OBJECT_ID") ?? string.Empty;
 
-        if (string.IsNullOrEmpty(TenantId) || string.IsNullOrEmpty(ApplicationId) || string.IsNullOrEmpty(ClientSecret) || string.IsNullOrEmpty(TargetApplicationId))
+        if (string.IsNullOrEmpty(TenantId) || string.IsNullOrEmpty(ApplicationId) || string.IsNullOrEmpty(ClientSecret) || string.IsNullOrEmpty(TargetApplicationObjectId) || string.IsNullOrEmpty(TargetApplicationObjectId))
         {
             Skip = "Integration testing environment variables are not set - Skipping test. Please run `make setup` to set the environment variables.";
         }
@@ -46,7 +48,8 @@ public sealed class IntegrationTestingTheory : TheoryAttribute
     public string ClientSecret { get; private set; }
     public string ClientCertificatePath { get; private set; }
 
-    public string TargetApplicationId { get; private set; }
+    public string TargetApplicationObjectId { get; private set; }
+    public string TargetServicePrincipalObjectId { get; private set; }
 
     public IntegrationTestingTheory()
     {
@@ -55,9 +58,10 @@ public sealed class IntegrationTestingTheory : TheoryAttribute
         ClientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET") ?? string.Empty;
         ClientCertificatePath = Environment.GetEnvironmentVariable("AZURE_PATH_TO_CLIENT_CERTIFICATE") ?? string.Empty;
 
-        TargetApplicationId = Environment.GetEnvironmentVariable("AZURE_TARGET_APPLICATION_ID") ?? string.Empty;
+        TargetApplicationObjectId = Environment.GetEnvironmentVariable("AZURE_TARGET_APPLICATION_OBJECT_ID") ?? string.Empty;
+        TargetServicePrincipalObjectId = Environment.GetEnvironmentVariable("AZURE_TARGET_SERVICEPRINCIPAL_OBJECT_ID") ?? string.Empty;
 
-        if (string.IsNullOrEmpty(TenantId) || string.IsNullOrEmpty(ApplicationId) || string.IsNullOrEmpty(ClientSecret) || string.IsNullOrEmpty(TargetApplicationId))
+        if (string.IsNullOrEmpty(TenantId) || string.IsNullOrEmpty(ApplicationId) || string.IsNullOrEmpty(ClientSecret) || string.IsNullOrEmpty(TargetApplicationObjectId) || string.IsNullOrEmpty(TargetApplicationObjectId))
         {
             Skip = "Integration testing environment variables are not set - Skipping test. Please run `make setup` to set the environment variables.";
         }

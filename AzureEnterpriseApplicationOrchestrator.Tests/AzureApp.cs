@@ -25,7 +25,7 @@ namespace AzureEnterpriseApplicationOrchestrator.Tests;
 
 public class AzureEnterpriseApplicationOrchestrator_AzureApp
 {
-    ILogger _logger { get; set;}
+    ILogger _logger { get; set; }
 
     public AzureEnterpriseApplicationOrchestrator_AzureApp()
     {
@@ -48,7 +48,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             .WithTenantId(env.TenantId)
             .WithApplicationId(env.ApplicationId)
             .WithClientSecret(env.ClientSecret)
-            .WithTargetApplicationId(env.TargetApplicationId)
+            .WithTargetObjectId(env.TargetApplicationObjectId)
             .Build();
 
         // Set up the inventory job configuration
@@ -57,8 +57,8 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             CertificateStoreDetails = new CertificateStore
             {
                 ClientMachine = env.TenantId,
-                              StorePath = env.TargetApplicationId,
-                              Properties = $"{{\"ServerUsername\":\"{env.ApplicationId}\",\"ServerPassword\":\"{env.ClientSecret}\",\"AzureCloud\":\"\"}}"
+                StorePath = env.TargetApplicationObjectId,
+                Properties = $"{{\"ServerUsername\":\"{env.ApplicationId}\",\"ServerPassword\":\"{env.ClientSecret}\",\"AzureCloud\":\"\"}}"
             }
         };
 
@@ -110,21 +110,21 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             CertificateStoreDetails = new CertificateStore
             {
                 ClientMachine = "test",
-                              StorePath = "test",
-                              Properties = "{\"ServerUsername\":\"test\",\"ServerPassword\":\"test\",\"AzureCloud\":\"test\"}"
+                StorePath = "test",
+                Properties = "{\"ServerUsername\":\"test\",\"ServerPassword\":\"test\",\"AzureCloud\":\"test\"}"
             },
-                JobHistoryId = 1
+            JobHistoryId = 1
         };
 
         // Act
         JobResult result = inventory.ProcessJob(config, (inventoryItems) =>
                 {
-                // Assert
-                Assert.Equal(1, inventoryItems.Count());
-                Assert.Equal("test", inventoryItems.First().Alias);
+                    // Assert
+                    Assert.Equal(1, inventoryItems.Count());
+                    Assert.Equal("test", inventoryItems.First().Alias);
 
-                _logger.LogInformation("AzureApp_Inventory_ProcessJob_ValidClient_ReturnSuccess - Success");
-                return true;
+                    _logger.LogInformation("AzureApp_Inventory_ProcessJob_ValidClient_ReturnSuccess - Success");
+                    return true;
                 });
 
         // Assert
@@ -149,10 +149,10 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             CertificateStoreDetails = new CertificateStore
             {
                 ClientMachine = "test",
-                              StorePath = "test",
-                              Properties = "{\"ServerUsername\":\"test\",\"ServerPassword\":\"test\",\"AzureCloud\":\"test\"}"
+                StorePath = "test",
+                Properties = "{\"ServerUsername\":\"test\",\"ServerPassword\":\"test\",\"AzureCloud\":\"test\"}"
             },
-                JobHistoryId = 1
+            JobHistoryId = 1
         };
 
         bool callbackCalled = false;
@@ -215,7 +215,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
         // Arrange
         IAzureGraphClient client = new FakeClient
         {
-            ApplicationIdsAvailableOnFakeTenant = new List<string> { "test" }
+            ObjectIdsAvailableOnFakeTenant = new List<string> { "test" }
         };
 
         // Set up the discovery job with the fake client
@@ -481,8 +481,8 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             CertificateStoreDetails = new CertificateStore
             {
                 ClientMachine = env.TenantId,
-                              StorePath = env.TargetApplicationId,
-                              Properties = $"{{\"ServerUsername\":\"{env.ApplicationId}\",\"ServerPassword\":\"{env.ClientSecret}\",\"AzureCloud\":\"\"}}"
+                StorePath = env.TargetApplicationObjectId,
+                Properties = $"{{\"ServerUsername\":\"{env.ApplicationId}\",\"ServerPassword\":\"{env.ClientSecret}\",\"AzureCloud\":\"\"}}"
             },
             JobCertificate = new ManagementJobCertificate
             {
@@ -505,7 +505,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
         ssCert = AzureEnterpriseApplicationOrchestrator_Client.GetSelfSignedCert(testHostname);
 
         b64Cert = Convert.ToBase64String(ssCert.Export(X509ContentType.Cert));
-        
+
         config.OperationType = CertStoreOperationType.Add;
         config.Overwrite = true;
         config.JobCertificate = new ManagementJobCertificate
@@ -554,7 +554,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
 
         LogHandler.Factory = LoggerFactory.Create(builder =>
                 {
-                builder.AddNLog();
+                    builder.AddNLog();
                 });
     }
 }
