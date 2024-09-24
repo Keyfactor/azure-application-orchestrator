@@ -46,224 +46,84 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 > To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
 
 ## Installation
-Before installing the Azure App Registration and Enterprise Application Universal Orchestrator extension, it's recommended to install [kfutil](https://github.com/Keyfactor/kfutil). Kfutil is a command-line tool that simplifies the process of creating store types, installing extensions, and instantiating certificate stores in Keyfactor Command.
 
-The Azure App Registration and Enterprise Application Universal Orchestrator extension implements 2 Certificate Store Types. Depending on your use case, you may elect to install one, or all of these Certificate Store Types. An overview for each type is linked below:
-* [Azure App Registration (Application)](docs/azureapp.md)
-* [Azure Enterprise Application (Service Principal)](docs/azuresp.md)
+Before installing the Azure App Registration and Enterprise Application Universal Orchestrator extension, we recommend that you install [kfutil](https://github.com/Keyfactor/kfutil). Kfutil is a command-line tool that simplifies the process of creating store types, installing extensions, and instantiating certificate stores in Keyfactor Command.
 
-<details><summary>Azure App Registration (Application)</summary>
+1. **Create Certificate Store Types in Keyfactor Command**  
+The Azure App Registration and Enterprise Application Universal Orchestrator extension implements 2 Certificate Store Types. Depending on your use case, you may elect to install one, or all of these Certificate Store Types.
+
+    <details><summary>Azure App Registration (Application)</summary>
 
 
-1. Follow the [requirements section](docs/azureapp.md#requirements) to configure a Service Account and grant necessary API permissions.
+    > More information on the Azure App Registration (Application) Certificate Store Type can be found [here](docs/azureapp.md).
 
-    <details><summary>Requirements</summary>
-
-    #### Azure Service Principal (Graph API Authentication)
-
-    The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, Client Secret authentication is supported. The Service Principal must have the following API Permission:
-    - **_Microsoft Graph Application Permissions_**:
-      - `Application.ReadWrite.All` (_not_ Delegated; Admin Consent) - Allows the app to create, read, update and delete applications and service principals without a signed-in user.
-
-    > For more information on Admin Consent for App-only access (also called "Application Permissions"), see the [primer on application-only access](https://learn.microsoft.com/en-us/azure/active-directory/develop/app-only-access-primer).
-
-    Alternatively, the Service Principal can be granted the `Application.ReadWrite.OwnedBy` permission if the Service Principal is only intended to manage its own App Registration/Application.
-
-    ##### Client Certificate or Client Secret
-
-    Beginning in version 3.0.0, the Azure App Registration and Enterprise Application Orchestrator extension supports both [client certificate authentication](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) and [client secret](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-2-add-a-client-secret) authentication.
-
-    * **Client Secret** - Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-2-add-a-client-secret) to create a Client Secret. This secret will be used as the **Server Password** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
-    * **Client Certificate** - Create a client certificate key pair with the Client Authentication extended key usage. The client certificate will be used in the ClientCertificate field in the [Certificate Store Configuration](#certificate-store-configuration) section. If you have access to Keyfactor Command, the instructions in this section walk you through enrolling a certificate and ensuring that it's in the correct format. Once enrolled, follow [Microsoft's documentation](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) to add the _public key_ certificate (no private key) to the service principal used for authentication.
-
-        The certificate can be in either of the following formats:
-        * Base64-encoded PKCS#12 (PFX) with a matching private key.
-        * Base64-encoded PEM-encoded certificate _and_ PEM-encoded PKCS8 private key. Make sure that the certificate and private key are separated with a newline. The order doesn't matter - the extension will determine which is which.
-
-        If the private key is encrypted, the encryption password will replace the **Server Password** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
-
-    > **Creating and Formatting a Client Certificate using Keyfactor Command**
-    >
-    > To get started quickly, you can follow the instructions below to create and properly format a client certificate to authenticate to the Microsoft Graph API.
-    >
-    > 1. In Keyfactor Command, hover over **Enrollment** and select **PFX Enrollment**.
-    > 2. Select a **Template** that supports Client Authentication as an extended key usage.
-    > 3. Populate the certificate subject as appropriate for the Template. It may be sufficient to only populate the Common Name, but consult your IT policy to ensure that this certificate is compliant.
-    > 4. At the bottom of the page, uncheck the box for **Include Chain**, and select either **PFX** or **PEM** as the certificate Format.
-    > 5. Make a note of the password on the next page - it won't be shown again.
-    > 6. Prepare the certificate and private key for Azure and the Orchestrator extension:
-    >     * If you downloaded the certificate in PEM format, use the commands below:
-    >
-    >        ```shell
-    >        # Verify that the certificate downloaded from Command contains the certificate and private key. They should be in the same file
-    >        cat <your_certificate.pem>
-    >
-    >        # Separate the certificate from the private key
-    >        openssl x509 -in <your_certificate.pem> -out pubkeycert.pem
-    >
-    >        # Base64 encode the certificate and private key
-    >        cat <your_certificate.pem> | base64 > clientcertkeypair.pem.base64
-    >        ```
-    >
-    >    * If you downloaded the certificate in PFX format, use the commands below:
-    >
-    >        ```shell
-    >        # Export the certificate from the PFX file
-    >        openssl pkcs12 -in <your_certificate.pfx> -clcerts -nokeys -out pubkeycert.pem
-    >
-    >        # Base64 encode the PFX file
-    >        cat <your_certificate.pfx> | base64 > clientcert.pfx.base64
-    >        ```
-    > 7. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) to add the public key certificate to the service principal used for authentication.
-    >
-    > You will use `clientcert.[pem|pfx].base64` as the **ClientCertificate** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
-
-    #### Azure App Registration (Application)
-
-    ##### Application Certificates
-
-    Application certificates are used for client authentication and are typically public key only. No additional configuration in Azure is necessary to manage Application certificates since all App Registrations can contain any number of [Certificates and Secrets](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app#add-credentials). Unless the Discovery job is used, you should collect the Application IDs for each App Registration that contains certificates to be managed.
-
-    </details>
-
-2. Create Certificate Store Types for the Azure App Registration and Enterprise Application Orchestrator extension. 
-
-    * **Using kfutil**:
+    * **Create AzureApp using kfutil**:
 
         ```shell
         # Azure App Registration (Application)
         kfutil store-types create AzureApp
         ```
 
-    * **Manually**:
-        * [Azure App Registration (Application)](docs/azureapp.md#certificate-store-type-configuration)
-
-3. Install the Azure App Registration and Enterprise Application Universal Orchestrator extension.
-    
-    * **Using kfutil**: On the server that that hosts the Universal Orchestrator, run the following command:
-
-        ```shell
-        # Windows Server
-        kfutil orchestrator extension -e azure-application-orchestrator@latest --out "C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions"
-
-        # Linux
-        kfutil orchestrator extension -e azure-application-orchestrator@latest --out "/opt/keyfactor/orchestrator/extensions"
-        ```
-
-    * **Manually**: Follow the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions) to install the latest [Azure App Registration and Enterprise Application Universal Orchestrator extension](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest).
-
-4. Create new certificate stores in Keyfactor Command for the Sample Universal Orchestrator extension.
-
-    * [Azure App Registration (Application)](docs/azureapp.md#certificate-store-configuration)
-
-
-</details>
-
-<details><summary>Azure Enterprise Application (Service Principal)</summary>
-
-
-1. Follow the [requirements section](docs/azuresp.md#requirements) to configure a Service Account and grant necessary API permissions.
-
-    <details><summary>Requirements</summary>
-
-    #### Azure Service Principal (Graph API Authentication)
-
-    The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, Client Secret authentication is supported. The Service Principal must have the following API Permission:
-    - **_Microsoft Graph Application Permissions_**:
-      - `Application.ReadWrite.All` (_not_ Delegated; Admin Consent) - Allows the app to create, read, update and delete applications and service principals without a signed-in user.
-
-    > For more information on Admin Consent for App-only access (also called "Application Permissions"), see the [primer on application-only access](https://learn.microsoft.com/en-us/azure/active-directory/develop/app-only-access-primer).
-
-    Alternatively, the Service Principal can be granted the `Application.ReadWrite.OwnedBy` permission if the Service Principal is only intended to manage its own App Registration/Application.
-
-    ##### Client Certificate or Client Secret
-
-    Beginning in version 3.0.0, the Azure App Registration and Enterprise Application Orchestrator extension supports both [client certificate authentication](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) and [client secret](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-2-add-a-client-secret) authentication.
-
-    * **Client Secret** - Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-2-add-a-client-secret) to create a Client Secret. This secret will be used as the **Server Password** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
-    * **Client Certificate** - Create a client certificate key pair with the Client Authentication extended key usage. The client certificate will be used in the ClientCertificate field in the [Certificate Store Configuration](#certificate-store-configuration) section. If you have access to Keyfactor Command, the instructions in this section walk you through enrolling a certificate and ensuring that it's in the correct format. Once enrolled, follow [Microsoft's documentation](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) to add the _public key_ certificate (no private key) to the service principal used for authentication.
-
-        The certificate can be in either of the following formats:
-        * Base64-encoded PKCS#12 (PFX) with a matching private key.
-        * Base64-encoded PEM-encoded certificate _and_ PEM-encoded PKCS8 private key. Make sure that the certificate and private key are separated with a newline. The order doesn't matter - the extension will determine which is which.
-
-        If the private key is encrypted, the encryption password will replace the **Server Password** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
-
-    > **Creating and Formatting a Client Certificate using Keyfactor Command**
-    >
-    > To get started quickly, you can follow the instructions below to create and properly format a client certificate to authenticate to the Microsoft Graph API.
-    >
-    > 1. In Keyfactor Command, hover over **Enrollment** and select **PFX Enrollment**.
-    > 2. Select a **Template** that supports Client Authentication as an extended key usage.
-    > 3. Populate the certificate subject as appropriate for the Template. It may be sufficient to only populate the Common Name, but consult your IT policy to ensure that this certificate is compliant.
-    > 4. At the bottom of the page, uncheck the box for **Include Chain**, and select either **PFX** or **PEM** as the certificate Format.
-    > 5. Make a note of the password on the next page - it won't be shown again.
-    > 6. Prepare the certificate and private key for Azure and the Orchestrator extension:
-    >     * If you downloaded the certificate in PEM format, use the commands below:
-    >
-    >        ```shell
-    >        # Verify that the certificate downloaded from Command contains the certificate and private key. They should be in the same file
-    >        cat <your_certificate.pem>
-    >
-    >        # Separate the certificate from the private key
-    >        openssl x509 -in <your_certificate.pem> -out pubkeycert.pem
-    >
-    >        # Base64 encode the certificate and private key
-    >        cat <your_certificate.pem> | base64 > clientcertkeypair.pem.base64
-    >        ```
-    >
-    >    * If you downloaded the certificate in PFX format, use the commands below:
-    >
-    >        ```shell
-    >        # Export the certificate from the PFX file
-    >        openssl pkcs12 -in <your_certificate.pfx> -clcerts -nokeys -out pubkeycert.pem
-    >
-    >        # Base64 encode the PFX file
-    >        cat <your_certificate.pfx> | base64 > clientcert.pfx.base64
-    >        ```
-    > 7. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/graph/auth-register-app-v2#option-1-add-a-certificate) to add the public key certificate to the service principal used for authentication.
-    >
-    > You will use `clientcert.[pem|pfx].base64` as the **ClientCertificate** field in the [Certificate Store Configuration](#certificate-store-configuration) section.
-
-    #### Enterprise Application (Service Principal)
-
-    ##### Service Principal Certificates
-
-    Service Principal certificates are typically used for SAML Token signing. Service Principals are created from Enterprise Applications, and will mostly be configured with a variation of Microsoft's [SAML-based single sign-on](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/add-application-portal) documentation. For more information on the mechanics of the Service Principal certificate management capabilities of this extension, please see the [mechanics](#extension-mechanics) section.
-
+    * **Create AzureApp manually in the Command UI**:
+        
+        Refer to the [Azure App Registration (Application)](docs/azureapp.md#certificate-store-type-configuration) creation docs.
     </details>
 
-2. Create Certificate Store Types for the Azure App Registration and Enterprise Application Orchestrator extension. 
+    <details><summary>Azure Enterprise Application (Service Principal)</summary>
 
-    * **Using kfutil**:
+
+    > More information on the Azure Enterprise Application (Service Principal) Certificate Store Type can be found [here](docs/azuresp.md).
+
+    * **Create AzureSP using kfutil**:
 
         ```shell
         # Azure Enterprise Application (Service Principal)
         kfutil store-types create AzureSP
         ```
 
-    * **Manually**:
-        * [Azure Enterprise Application (Service Principal)](docs/azuresp.md#certificate-store-type-configuration)
+    * **Create AzureSP manually in the Command UI**:
+        
+        Refer to the [Azure Enterprise Application (Service Principal)](docs/azuresp.md#certificate-store-type-configuration) creation docs.
+    </details>
 
-3. Install the Azure App Registration and Enterprise Application Universal Orchestrator extension.
+2. **Download the latest Azure App Registration and Enterprise Application Universal Orchestrator extension from GitHub.** 
+
+    On the [Azure App Registration and Enterprise Application Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest), click the `azure-application-orchestrator` asset to download the zip archive. Unzip the archive containing extension assemblies to a known location.
+
+3. **Locate the Universal Orchestrator extensions directory.**
+
+    * **Default on Windows** - `C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions`
+    * **Default on Linux** - `/opt/keyfactor/orchestrator/extensions`
     
-    * **Using kfutil**: On the server that that hosts the Universal Orchestrator, run the following command:
+4. **Create a new directory for the Azure App Registration and Enterprise Application Universal Orchestrator extension inside the extensions directory.**
+        
+    Create a new directory called `azure-application-orchestrator`.
+    > The directory name does not need to match any names used elsewhere; it just has to be unique within the extensions directory.
 
-        ```shell
-        # Windows Server
-        kfutil orchestrator extension -e azure-application-orchestrator@latest --out "C:\Program Files\Keyfactor\Keyfactor Orchestrator\extensions"
+5. **Copy the contents of the downloaded and unzipped assemblies from __step 2__ to the `azure-application-orchestrator` directory.**
 
-        # Linux
-        kfutil orchestrator extension -e azure-application-orchestrator@latest --out "/opt/keyfactor/orchestrator/extensions"
-        ```
+6. **Restart the Universal Orchestrator service.**
 
-    * **Manually**: Follow the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions) to install the latest [Azure App Registration and Enterprise Application Universal Orchestrator extension](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest).
-
-4. Create new certificate stores in Keyfactor Command for the Sample Universal Orchestrator extension.
-
-    * [Azure Enterprise Application (Service Principal)](docs/azuresp.md#certificate-store-configuration)
+    Refer to [Starting/Restarting the Universal Orchestrator service](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/StarttheService.htm).
 
 
+
+> The above installation steps can be supplimented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions).
+
+## Configuration and Usage
+
+The Azure App Registration and Enterprise Application Universal Orchestrator extension implements 2 Certificate Store Types, each of which implements different functionality. Refer to the individual instructions below for each Certificate Store Type that you deemed necessary for your use case from the installation section.
+
+<details><summary>Azure App Registration (Application)</summary>
+
+1. Refer to the [requirements section](docs/azureapp.md#requirements) to ensure all prerequisites are met before using the Azure App Registration (Application) Certificate Store Type.
+2. Create new [Azure App Registration (Application)](docs/azureapp.md#certificate-store-configuration) Certificate Stores in Keyfactor Command.
+</details>
+
+<details><summary>Azure Enterprise Application (Service Principal)</summary>
+
+1. Refer to the [requirements section](docs/azuresp.md#requirements) to ensure all prerequisites are met before using the Azure Enterprise Application (Service Principal) Certificate Store Type.
+2. Create new [Azure Enterprise Application (Service Principal)](docs/azuresp.md#certificate-store-configuration) Certificate Stores in Keyfactor Command.
 </details>
 
 
