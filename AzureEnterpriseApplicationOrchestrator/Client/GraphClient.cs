@@ -29,8 +29,8 @@ using Microsoft.Graph.Models;
 
 namespace AzureEnterpriseApplicationOrchestrator.Client;
 
-public class GraphClient : IAzureGraphClient {
-
+public class GraphClient : IAzureGraphClient
+{
     private ILogger _logger { get; set; }
     private TokenCredential _credential { get; set; }
     private string _tenantId { get; set; }
@@ -100,7 +100,7 @@ public class GraphClient : IAzureGraphClient {
 
         public IAzureGraphClientBuilder WithAzureCloud(string azureCloud)
         {
-            if (string.IsNullOrWhiteSpace(azureCloud)) 
+            if (string.IsNullOrWhiteSpace(azureCloud))
             {
                 azureCloud = "public";
             }
@@ -133,23 +133,25 @@ public class GraphClient : IAzureGraphClient {
             DefaultAzureCredentialOptions credentialOptions = new DefaultAzureCredentialOptions
             {
                 AuthorityHost = _azureCloudEndpoint,
-                              AdditionallyAllowedTenants = { "*" } 
+                AdditionallyAllowedTenants = { "*" }
             };
 
             TokenCredential credential;
-            if (!string.IsNullOrWhiteSpace(_clientSecret)) 
+            if (!string.IsNullOrWhiteSpace(_clientSecret))
             {
+                logger.LogDebug($"Creating ClientSecretCredential");
                 credential = new ClientSecretCredential(
                         _tenantId, _applicationId, _clientSecret, credentialOptions
                         );
             }
-            else if (_clientCertificate != null) 
+            else if (_clientCertificate != null)
             {
+                logger.LogDebug($"Creating ClientCertificateCredential");
                 credential = new ClientCertificateCredential(
                         _tenantId, _applicationId, _clientCertificate, credentialOptions
                         );
             }
-            else 
+            else
             {
                 throw new Exception("Client secret or client certificate must be provided.");
             }
@@ -182,10 +184,11 @@ public class GraphClient : IAzureGraphClient {
         {
             apps = _graphClient.Applications.GetAsync(requestConfiguration =>
                     {
-                    requestConfiguration.QueryParameters.Filter = $"(appId eq '{_targetApplicationId}')";
-                    requestConfiguration.QueryParameters.Top = 1;
+                        requestConfiguration.QueryParameters.Filter = $"(appId eq '{_targetApplicationId}')";
+                        requestConfiguration.QueryParameters.Top = 1;
                     }).Result;
-        } catch (AggregateException e)
+        }
+        catch (AggregateException e)
         {
             _logger.LogError($"Unable to query MS Graph for Application \"{_targetApplicationId}\": {e}");
             throw;
@@ -213,10 +216,11 @@ public class GraphClient : IAzureGraphClient {
         {
             sps = _graphClient.ServicePrincipals.GetAsync(requestConfiguration =>
                     {
-                    requestConfiguration.QueryParameters.Filter = $"(appId eq '{_targetApplicationId}')";
-                    requestConfiguration.QueryParameters.Top = 1;
+                        requestConfiguration.QueryParameters.Filter = $"(appId eq '{_targetApplicationId}')";
+                        requestConfiguration.QueryParameters.Top = 1;
                     }).Result;
-        } catch (AggregateException e)
+        }
+        catch (AggregateException e)
         {
             _logger.LogError($"Unable to query MS Graph for ServicePrincipal \"{_targetApplicationId}\": {e}");
             throw;
@@ -253,21 +257,21 @@ public class GraphClient : IAzureGraphClient {
         try
         {
             _graphClient.Applications[GetApplicationObjectId()].PatchAsync(new Application
-                    {
-                    KeyCredentials = new List<KeyCredential>(DeepCopyKeyList(application.KeyCredentials))
-                    {
+            {
+                KeyCredentials = new List<KeyCredential>(DeepCopyKeyList(application.KeyCredentials))
+                {
                     new KeyCredential {
-                    DisplayName = certificateName,
-                    Type = "AsymmetricX509Cert",
-                    Usage = "Verify",
-                    CustomKeyIdentifier = customKeyId,
-                    StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
-                    EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
-                    KeyId = Guid.NewGuid(),
-                    Key = System.Text.Encoding.UTF8.GetBytes(certPem)
+                        DisplayName = certificateName,
+                        Type = "AsymmetricX509Cert",
+                        Usage = "Verify",
+                        CustomKeyIdentifier = customKeyId,
+                        StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
+                        EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
+                        KeyId = Guid.NewGuid(),
+                        Key = System.Text.Encoding.UTF8.GetBytes(certPem)
                     }
-                    }
-                    }).Wait();
+                }
+            }).Wait();
         }
         catch (AggregateException e)
         {
@@ -303,9 +307,9 @@ public class GraphClient : IAzureGraphClient {
         try
         {
             _graphClient.Applications[GetApplicationObjectId()].PatchAsync(new Application
-                    {
-                    KeyCredentials = keysToKeep
-                    }).Wait();
+            {
+                KeyCredentials = keysToKeep
+            }).Wait();
         }
         catch (AggregateException e)
         {
@@ -346,31 +350,31 @@ public class GraphClient : IAzureGraphClient {
         try
         {
             _graphClient.ServicePrincipals[GetServicePrincipalObjectId()].PatchAsync(new ServicePrincipal
-                    {
-                    KeyCredentials = new List<KeyCredential>()
-                    {
+            {
+                KeyCredentials = new List<KeyCredential>()
+                {
                     new KeyCredential {
-                    DisplayName = certificateName,
-                    Type = "AsymmetricX509Cert",
-                    Usage = "Verify",
-                    CustomKeyIdentifier = customKeyId,
-                    StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
-                    EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
-                    KeyId = Guid.NewGuid(),
-                    Key = certificate.Export(X509ContentType.Cert)
+                        DisplayName = certificateName,
+                        Type = "AsymmetricX509Cert",
+                        Usage = "Verify",
+                        CustomKeyIdentifier = customKeyId,
+                        StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
+                        EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
+                        KeyId = Guid.NewGuid(),
+                        Key = certificate.Export(X509ContentType.Cert)
                     },
                     new KeyCredential {
-                    DisplayName = certificateName,
-                    Type = "X509CertAndPassword",
-                    Usage = "Sign",
-                    CustomKeyIdentifier = customKeyId,
-                    StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
-                    EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
-                    KeyId = privKeyGuid,
-                    Key = certificate.Export(X509ContentType.Pfx, certificatePassword)
+                        DisplayName = certificateName,
+                        Type = "X509CertAndPassword",
+                        Usage = "Sign",
+                        CustomKeyIdentifier = customKeyId,
+                        StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
+                        EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
+                        KeyId = privKeyGuid,
+                        Key = certificate.Export(X509ContentType.Pfx, certificatePassword)
                     }
-                    },
-                        PasswordCredentials = new List<PasswordCredential>()
+                },
+                PasswordCredentials = new List<PasswordCredential>()
                         {
                             new PasswordCredential
                             {
@@ -381,8 +385,9 @@ public class GraphClient : IAzureGraphClient {
                                 SecretText = certificatePassword,
                             }
                         }
-                    }).Wait();
-        } catch (AggregateException e)
+            }).Wait();
+        }
+        catch (AggregateException e)
         {
             _logger.LogWarning($"Failed to update service principal object: {e}");
             // TODO remove certificates to avoid leaving the service principal in a bad state
@@ -393,9 +398,9 @@ public class GraphClient : IAzureGraphClient {
         try
         {
             _graphClient.ServicePrincipals[GetServicePrincipalObjectId()].PatchAsync(new ServicePrincipal
-                    {
-                    PreferredTokenSigningKeyThumbprint = certificate.Thumbprint
-                    }).Wait();
+            {
+                PreferredTokenSigningKeyThumbprint = certificate.Thumbprint
+            }).Wait();
         }
         catch (AggregateException e)
         {
@@ -453,11 +458,12 @@ public class GraphClient : IAzureGraphClient {
         try
         {
             _graphClient.ServicePrincipals[GetServicePrincipalObjectId()].PatchAsync(new ServicePrincipal
-                    {
-                    KeyCredentials = keysToKeep,
-                    PasswordCredentials = passwordsToKeep
-                    });
-        } catch (AggregateException e)
+            {
+                KeyCredentials = keysToKeep,
+                PasswordCredentials = passwordsToKeep
+            });
+        }
+        catch (AggregateException e)
         {
             _logger.LogWarning($"Failed to update service principal object with updated certificate list: {e}");
             throw;
@@ -487,9 +493,9 @@ public class GraphClient : IAzureGraphClient {
         try
         {
             apps = _graphClient.Applications.GetAsync((requestConfiguration) =>
-                    {
-                    requestConfiguration.QueryParameters.Top = 999;
-                    }).Result;
+            {
+                requestConfiguration.QueryParameters.Top = 999;
+            }).Result;
         }
         catch (AggregateException e)
         {
@@ -514,51 +520,10 @@ public class GraphClient : IAzureGraphClient {
                 continue;
             }
 
-            appIds.Add(app.AppId);
+            appIds.Add($"{app.AppId} ({app.DisplayName})");
         }
 
         return result;
-    }
-
-    public IEnumerable<string> DiscoverApplicationIds()
-    {
-        List<string> appIds = new();
-
-        _logger.LogDebug($"Retrieving application registrations for tenant ID \"{_tenantId}\"");
-        ApplicationCollectionResponse apps;
-        try
-        {
-            apps = _graphClient.Applications.GetAsync((requestConfiguration) =>
-                    {
-                    requestConfiguration.QueryParameters.Top = 999;
-                    }).Result;
-        }
-        catch (AggregateException e)
-        {
-            _logger.LogError($"Unable to retrieve application registrations for tenant ID \"{_tenantId}\": {e}");
-            throw;
-        }
-
-        if (apps?.Value == null || apps.Value.Count == 0)
-        {
-            _logger.LogWarning($"No application registrations found for tenant ID \"{_tenantId}\"");
-            return appIds;
-        }
-
-        foreach (Application app in apps.Value)
-        {
-            _logger.LogDebug($"Found application \"{app.DisplayName}\" ({app.Id})");
-
-            if (app.AppId == null)
-            {
-                _logger.LogWarning($"Application \"{app.DisplayName}\" ({app.Id}) does not have an AppID");
-                continue;
-            }
-
-            appIds.Add(app.AppId);
-        }
-
-        return appIds;
     }
 
     private OperationResult<IEnumerable<CurrentInventoryItem>> InventoryFromKeyCredentials(List<KeyCredential> keyCredentials)
@@ -581,7 +546,7 @@ public class GraphClient : IAzureGraphClient {
         // track the ones that we failed to serialize, and remove them from the map when we do find the certificate.
         // Finally, we'll log a warning for any certificates that we failed to retrieve.
         Dictionary<string, string> failedCertificateMap = new Dictionary<string, string>();
-        
+
         // Create a map to track certificates that we're confident have a private key entry in Azure.
         // Azure will never return the Private Key with the Graph API, but Keyfactor Command uses 
         // the presence of a private key to determine how Certificate Renewal should be handled.
@@ -591,7 +556,7 @@ public class GraphClient : IAzureGraphClient {
         foreach (KeyCredential keyCredential in keyCredentials)
         {
             string customKeyIdentifier = Encoding.UTF8.GetString(keyCredential.CustomKeyIdentifier);
-            
+
             if (!string.IsNullOrWhiteSpace(keyCredential.Usage) && keyCredential.Usage.Equals("Sign", StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogDebug($"Certificate with CustomKeyIdentifier \"{customKeyIdentifier}\" has a private key entry");
@@ -628,10 +593,10 @@ public class GraphClient : IAzureGraphClient {
             CurrentInventoryItem inventoryItem = new CurrentInventoryItem()
             {
                 Alias = keyCredential.DisplayName,
-                      PrivateKeyEntry = false,
-                      ItemStatus = OrchestratorInventoryItemStatus.Unknown,
-                      UseChainLevel = true,
-                      Certificates = certificates
+                PrivateKeyEntry = false,
+                ItemStatus = OrchestratorInventoryItemStatus.Unknown,
+                UseChainLevel = true,
+                Certificates = certificates
             };
 
             _logger.LogDebug($"Found certificate called \"{keyCredential.DisplayName}\" ({customKeyIdentifier})");
@@ -649,7 +614,7 @@ public class GraphClient : IAzureGraphClient {
             _logger.LogWarning(failedCertificateMap[key]);
             result.AddRuntimeErrorMessage(failedCertificateMap[key]);
         }
-        
+
         foreach (string key in privateKeyMap.Keys)
         {
             if (inventoryItems.ContainsKey(key))
@@ -672,7 +637,7 @@ public class GraphClient : IAzureGraphClient {
             app = _graphClient.Applications[GetApplicationObjectId()].GetAsync(
                     requestConfiguration =>
                     {
-                    requestConfiguration.QueryParameters.Select = new[] { "id","appId","keyCredentials","passwordCredentials" };
+                        requestConfiguration.QueryParameters.Select = new[] { "id", "appId", "keyCredentials", "passwordCredentials" };
                     }
                     ).Result;
         }
@@ -695,7 +660,7 @@ public class GraphClient : IAzureGraphClient {
         {
             sp = _graphClient.ServicePrincipals[GetServicePrincipalObjectId()].GetAsync(requestConfiguration =>
                     {
-                    requestConfiguration.QueryParameters.Select = new[] { "id","appId","keyCredentials","passwordCredentials" };
+                        requestConfiguration.QueryParameters.Select = new[] { "id", "appId", "keyCredentials", "passwordCredentials" };
                     }).Result;
         }
         catch (AggregateException ex)
@@ -717,13 +682,13 @@ public class GraphClient : IAzureGraphClient {
         else
         {
             deepKeyList = keyCredentials.Select(keyCredential => new KeyCredential
-                    {
-                    CustomKeyIdentifier = keyCredential.CustomKeyIdentifier,
-                    DisplayName = keyCredential.DisplayName,
-                    Key = keyCredential.Key,
-                    Type = keyCredential.Type,
-                    Usage = keyCredential.Usage,
-                    })
+            {
+                CustomKeyIdentifier = keyCredential.CustomKeyIdentifier,
+                DisplayName = keyCredential.DisplayName,
+                Key = keyCredential.Key,
+                Type = keyCredential.Type,
+                Usage = keyCredential.Usage,
+            })
             .ToList();
         }
 
@@ -741,14 +706,14 @@ public class GraphClient : IAzureGraphClient {
         else
         {
             deepPasswordList = passwordList.Select(passwordCredential => new PasswordCredential
-                    {
-                    CustomKeyIdentifier = passwordCredential.CustomKeyIdentifier,
-                    DisplayName = passwordCredential.DisplayName,
-                    EndDateTime = passwordCredential.EndDateTime,
-                    KeyId = passwordCredential.KeyId,
-                    SecretText = passwordCredential.SecretText,
-                    StartDateTime = passwordCredential.StartDateTime,
-                    })
+            {
+                CustomKeyIdentifier = passwordCredential.CustomKeyIdentifier,
+                DisplayName = passwordCredential.DisplayName,
+                EndDateTime = passwordCredential.EndDateTime,
+                KeyId = passwordCredential.KeyId,
+                SecretText = passwordCredential.SecretText,
+                StartDateTime = passwordCredential.StartDateTime,
+            })
             .ToList();
         }
 
