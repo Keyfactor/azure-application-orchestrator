@@ -47,11 +47,15 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
         _logger.LogTrace($"Builder - StorePath      => TargetApplicationId: {details.StorePath}");
         _logger.LogTrace($"Builder - ServerUsername => ApplicationId:       {properties.ServerUsername}");
         _logger.LogTrace($"Builder - AzureCloud     => AzureCloud:          {properties.AzureCloud}");
-        
+
+        // The Discovery Job returns Application IDs in the format `<app ID> (<friendly name>)`.
+        // We split out the first part to get the Application ID.
+        string normalizedApplicationID = details.StorePath.Split(" ")[0];
+
         _builder
             .WithTenantId(details.ClientMachine)
             .WithApplicationId(properties.ServerUsername)
-            .WithTargetApplicationId(details.StorePath)
+            .WithTargetApplicationId(normalizedApplicationID)
             .WithAzureCloud(properties.AzureCloud);
 
         if (string.IsNullOrWhiteSpace(properties.ClientCertificate))
@@ -95,15 +99,16 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
     {
         // clientCertificate is a Base64 encoded certificate that's either PEM or PKCS#12 encoded.
         // We expect that it includes a private key compatible with the dotnet standard crypto libraries.
-        
+
         byte[] rawCertBytes = Convert.FromBase64String(clientCertificate);
         X509Certificate2 serializedCertificate = null;
-        
+
         // Try to serialize the certificate without any special handling
         try
         {
             serializedCertificate = new X509Certificate2(rawCertBytes, password, X509KeyStorageFlags.Exportable);
-            if (serializedCertificate.HasPrivateKey) {
+            if (serializedCertificate.HasPrivateKey)
+            {
                 _logger.LogTrace("Successfully serialized certificate using standard X509Certificate2");
                 return serializedCertificate;
             }
@@ -129,7 +134,7 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
     {
         _logger.LogDebug($"Attempting to serialize client certificate and private key from PEM encoding");
         ReadOnlySpan<char> utf8Cert = Encoding.UTF8.GetChars(Convert.FromBase64String(clientCertificate));
-        
+
         _logger.LogTrace("Finding all PEM objects in ClientCertificate");
 
         ReadOnlySpan<char> certificate = new char[0];
@@ -164,7 +169,7 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
             // Copy over the slice before the start of the range
             utf8Cert.Slice(0, start).CopyTo(newUtf8Cert);
             // Copy over the slice after the end of the range
-            utf8Cert.Slice(end).CopyTo(newUtf8Cert.AsSpan(start));            
+            utf8Cert.Slice(end).CopyTo(newUtf8Cert.AsSpan(start));
 
             utf8Cert = newUtf8Cert;
         }
