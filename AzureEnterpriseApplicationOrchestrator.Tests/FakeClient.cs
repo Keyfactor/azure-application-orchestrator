@@ -41,7 +41,7 @@ public class FakeClient : IAzureGraphClient
             return this;
         }
 
-        public IAzureGraphClientBuilder WithTargetApplicationId(string applicationId)
+        public IAzureGraphClientBuilder WithTargetObjectId(string applicationId)
         {
             _targetApplicationId = applicationId;
             return this;
@@ -80,7 +80,7 @@ public class FakeClient : IAzureGraphClient
 
     ILogger _logger = LogHandler.GetClassLogger<FakeClient>();
 
-    public IEnumerable<string>? ApplicationIdsAvailableOnFakeTenant { get; set; }
+    public IEnumerable<string>? ObjectIdsAvailableOnFakeTenant { get; set; }
     public Dictionary<string, string>? CertificatesAvailableOnFakeTarget { get; set; }
 
     public void AddApplicationCertificate(string certificateName, string certificateData)
@@ -104,14 +104,24 @@ public class FakeClient : IAzureGraphClient
         AddApplicationCertificate(certificateName, certificateData);
     }
 
-    public OperationResult<IEnumerable<string>> DiscoverApplicationIds()
+    public OperationResult<IEnumerable<string>> DiscoverApplicationObjectIds()
     {
-        if (ApplicationIdsAvailableOnFakeTenant == null)
+        if (ObjectIdsAvailableOnFakeTenant == null)
         {
             throw new Exception("Discover Application IDs method failure - no application ids set");
         }
 
-        return new OperationResult<IEnumerable<string>>(ApplicationIdsAvailableOnFakeTenant);
+        return new OperationResult<IEnumerable<string>>(ObjectIdsAvailableOnFakeTenant);
+    }
+
+    public OperationResult<IEnumerable<string>> DiscoverServicePrincipalObjectIds()
+    {
+        if (ObjectIdsAvailableOnFakeTenant == null)
+        {
+            throw new Exception("Discover Application IDs method failure - no application ids set");
+        }
+
+        return new OperationResult<IEnumerable<string>>(ObjectIdsAvailableOnFakeTenant);
     }
 
     public OperationResult<IEnumerable<CurrentInventoryItem>> GetApplicationCertificates()
