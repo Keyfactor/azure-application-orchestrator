@@ -49,8 +49,8 @@ Azure [App Registration/Application certificates](https://learn.microsoft.com/en
 <details><summary>Azure Enterprise Application (Service Principal) (AzureSP)</summary>
 
 ### AzureSP
+> **WARNING** AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** "Azure Enterprise Application 2 (Service Principal)" instead.
 
-> **WARNING** AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** "Azure Enterprise Application 2 (Service Principal)" instead. 
 
 The Azure Enterprise Application/Service Principal certificate operations are implemented by the `AzureSP` store type, and supports the management of a single certificate for use in SSO/SAML assertion signing. The Management Add operation is only supported with the certificate replacement option, since adding a new certificate will replace the existing certificate. The Add operation will also set newly added certificates as the active certificate for SSO/SAML usage. The Management Remove operation removes the certificate from the Enterprise Application/Service Principal, which is the same as removing the SSO/SAML signing certificate. The Discovery operation discovers all Enterprise Applications/Service Principals in the tenant.
 </details>
@@ -163,6 +163,8 @@ Application certificates are used for client authentication and are typically pu
 <details><summary>Azure Enterprise Application (Service Principal) (AzureSP)</summary>
 
 ### Azure Enterprise Application (Service Principal) Requirements
+> **WARNING** AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** "Azure Enterprise Application 2 (Service Principal)" instead.
+
 
 #### Enterprise Application (Service Principal)
 
@@ -277,6 +279,8 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 </details>
 
 <details><summary>Azure Enterprise Application (Service Principal) (AzureSP)</summary>
+
+> **WARNING** AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** "Azure Enterprise Application 2 (Service Principal)" instead.
 
 
 * **Create AzureSP using kfutil**:
@@ -597,6 +601,8 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
 <details><summary>Azure Enterprise Application (Service Principal) (AzureSP)</summary>
 
+> **WARNING** AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** "Azure Enterprise Application 2 (Service Principal)" instead.
+
 
 * **Manually with the Command UI**
 
@@ -835,6 +841,8 @@ The Discovery operation uses the "Directories to search" field, and accepts inpu
 
 
 ### Azure Enterprise Application (Service Principal) Discovery Job
+> **WARNING** AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** "Azure Enterprise Application 2 (Service Principal)" instead.
+
 
 The Discovery operation discovers all Azure Enterprise Applications that the Service Principal has access to. The discovered Enterprise Applications (specifically, their Application IDs) are reported back to Command and can be easily added as certificate stores from the Locations tab.
 
