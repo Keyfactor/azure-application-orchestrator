@@ -21,25 +21,23 @@ using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace AzureEnterpriseApplicationOrchestrator.AzureAppJobs;
+namespace AzureEnterpriseApplicationOrchestrator.AzureSP2Jobs;
 
 public class Inventory : IInventoryJobExtension
 {
     public IAzureGraphClient Client { get; set; }
-    public string ExtensionName => "AzureApp";
+    public string ExtensionName => "AzureSP2";
 
     ILogger _logger = LogHandler.GetClassLogger<Inventory>();
 
     public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate cb)
     {
-        _logger.LogWarning("Azure Application (App Registration/Application) is DEPRICATED and will be removed in a future version. Please migrate to AzureApp2");
-
-        _logger.LogDebug($"Beginning Azure Application (App Registration/Application) Inventory Job");
+        _logger.LogDebug($"Beginning Azure Service Principal 2 (Enterprise Application/Service Principal) Inventory Job");
 
         if (Client == null)
         {
             Client = new GraphJobClientBuilder<GraphClient.Builder>()
-                .WithV1CertificateStoreDetails(config.CertificateStoreDetails, ExtensionName)
+                .WithV2CertificateStoreDetails(config.CertificateStoreDetails)
                 .Build();
         }
 
@@ -53,7 +51,7 @@ public class Inventory : IInventoryJobExtension
 
         try
         {
-            OperationResult<IEnumerable<CurrentInventoryItem>> inventoryResult = Client.GetApplicationCertificates();
+            OperationResult<IEnumerable<CurrentInventoryItem>> inventoryResult = Client.GetServicePrincipalCertificates();
             if (!inventoryResult.Success)
             {
                 // Aggregate the messages into the failure message. Since an exception wasn't thrown,
@@ -81,15 +79,16 @@ public class Inventory : IInventoryJobExtension
             // if there are no certificates in the Application, or if we weren't able to assemble
             // the list of certificates into a CurrentInventoryItem.
 
-            _logger.LogError(ex, "Error getting Application Certificates:\n" + ex.Message);
+            _logger.LogError(ex, "Error getting Service Principal (SAML) Certificates:\n" + ex.Message);
             result.FailureMessage = "Error getting Application Certificates:\n" + ex.Message;
             return result;
         }
 
-        _logger.LogDebug($"Found {inventoryItems.Count} certificates in Application");
+        _logger.LogDebug($"Found {inventoryItems.Count} certificates in Service Principal (SAML) Application.");
 
         cb(inventoryItems);
 
         return result;
     }
 }
+

@@ -35,12 +35,14 @@ public class Discovery : IDiscoveryJobExtension
     {
         if (Client != null) _clientInitializedByInjection = true;
 
+        _logger.LogWarning("Azure Application (App Registration/Application) is DEPRICATED and will be removed in a future version. Please migrate to AzureApp2");
+
         _logger.LogDebug("Beginning Azure Application (App Registration/Application) Discovery Job");
 
         JobResult result = new JobResult
         {
             Result = OrchestratorJobStatusJobResult.Failure,
-                   JobHistoryId = config.JobHistoryId
+            JobHistoryId = config.JobHistoryId
         };
 
         List<string> discoveredApplicationIds = new();
@@ -60,7 +62,7 @@ public class Discovery : IDiscoveryJobExtension
 
             try
             {
-                var operationResult = Client.DiscoverApplicationIds();
+                var operationResult = Client.DiscoverApplicationApplicationIds();
                 if (!operationResult.Success)
                 {
                     result.FailureMessage += operationResult.ErrorMessage;
@@ -68,7 +70,8 @@ public class Discovery : IDiscoveryJobExtension
                     continue;
                 }
                 discoveredApplicationIds.AddRange(operationResult.Result);
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error processing discovery job:\n {ex.Message}");
                 result.FailureMessage = ex.Message;
@@ -80,7 +83,8 @@ public class Discovery : IDiscoveryJobExtension
         {
             callback(discoveredApplicationIds);
             result.Result = OrchestratorJobStatusJobResult.Success;
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             _logger.LogError(ex, $"Error processing discovery job:\n {ex.Message}");
             result.FailureMessage = ex.Message;

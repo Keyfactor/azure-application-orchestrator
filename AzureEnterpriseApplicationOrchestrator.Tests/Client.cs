@@ -42,7 +42,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         IAzureGraphClientBuilder clientBuilder = new GraphClient.Builder()
             .WithTenantId(env.TenantId)
             .WithApplicationId(env.ApplicationId)
-            .WithTargetApplicationId(env.TargetApplicationId);
+            .WithTargetObjectId(env.TargetApplicationObjectId);
 
         if (testAuthMethod == "clientcert")
         {
@@ -53,7 +53,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
             var cert = X509Certificate2.CreateFromPemFile(env.ClientCertificatePath);
             clientBuilder.WithClientCertificate(cert);
         }
-        
+
         IAzureGraphClient client = clientBuilder.Build();
 
         // Step 1 - Add the certificate to the Application
@@ -68,13 +68,13 @@ public class AzureEnterpriseApplicationOrchestrator_Client
 
         // Act
         OperationResult<IEnumerable<Keyfactor.Orchestrators.Extensions.CurrentInventoryItem>> operationResult = client.GetApplicationCertificates();
-        
+
         // Assert
         Assert.True(operationResult.Success);
         Assert.NotNull(operationResult.Result);
         Assert.True(operationResult.Result.Any(c => c.Alias == certName));
         Assert.True(operationResult.Result.Any(c => c.Alias == certName && c.PrivateKeyEntry == false));
-        
+
         // Step 3 - Determine if the certificate exists in the Application
 
         // Act
@@ -115,7 +115,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         IAzureGraphClientBuilder clientBuilder = new GraphClient.Builder()
             .WithTenantId(env.TenantId)
             .WithApplicationId(env.ApplicationId)
-            .WithTargetApplicationId(env.TargetApplicationId);
+            .WithTargetObjectId(env.TargetServicePrincipalObjectId);
 
         if (testAuthMethod == "clientcert")
         {
@@ -126,7 +126,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
             var cert = X509Certificate2.CreateFromPemFile(env.ClientCertificatePath);
             clientBuilder.WithClientCertificate(cert);
         }
-        
+
         IAzureGraphClient client = clientBuilder.Build();
 
         // Step 1 - Add the certificate to the Service Principal (and set it as the preferred SAML signing certificate)
@@ -177,7 +177,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
     [IntegrationTestingTheory]
     [InlineData("clientcert")]
     [InlineData("clientsecret")]
-    public void GraphClient_DiscoverApplicationIds_ReturnSuccess(string testAuthMethod)
+    public void GraphClient_DiscoverApplicationObjectIds_ReturnSuccess(string testAuthMethod)
     {
         // Arrange
         const string password = "passwordpasswordpassword";
@@ -189,7 +189,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         IAzureGraphClientBuilder clientBuilder = new GraphClient.Builder()
             .WithTenantId(env.TenantId)
             .WithApplicationId(env.ApplicationId)
-            .WithTargetApplicationId(env.TargetApplicationId);
+            .WithTargetObjectId(env.TargetApplicationObjectId);
 
         if (testAuthMethod == "clientcert")
         {
@@ -200,11 +200,49 @@ public class AzureEnterpriseApplicationOrchestrator_Client
             var cert = X509Certificate2.CreateFromPemFile(env.ClientCertificatePath);
             clientBuilder.WithClientCertificate(cert);
         }
-        
+
         IAzureGraphClient client = clientBuilder.Build();
 
         // Act
-        OperationResult<IEnumerable<string>> operationResult = client.DiscoverApplicationIds();
+        OperationResult<IEnumerable<string>> operationResult = client.DiscoverApplicationObjectIds();
+
+        // Assert
+        Assert.True(operationResult.Success);
+        Assert.NotNull(operationResult.Result);
+        Assert.True(operationResult.Result.Any());
+    }
+
+    [IntegrationTestingTheory]
+    [InlineData("clientcert")]
+    [InlineData("clientsecret")]
+    public void GraphClient_DiscoverServicePrincipalObjectIds_ReturnSuccess(string testAuthMethod)
+    {
+        // Arrange
+        const string password = "passwordpasswordpassword";
+        string certName = "SPTest" + Guid.NewGuid().ToString()[..6];
+        X509Certificate2 ssCert = GetSelfSignedCert(certName);
+        string b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
+
+        IntegrationTestingFact env = new();
+        IAzureGraphClientBuilder clientBuilder = new GraphClient.Builder()
+            .WithTenantId(env.TenantId)
+            .WithApplicationId(env.ApplicationId)
+            .WithTargetObjectId(env.TargetServicePrincipalObjectId);
+
+        if (testAuthMethod == "clientcert")
+        {
+            clientBuilder.WithClientSecret(env.ClientSecret);
+        }
+        else
+        {
+            var cert = X509Certificate2.CreateFromPemFile(env.ClientCertificatePath);
+            clientBuilder.WithClientCertificate(cert);
+        }
+
+        IAzureGraphClient client = clientBuilder.Build();
+
+        // Act
+        OperationResult<IEnumerable<string>> operationResult = client.DiscoverServicePrincipalObjectIds();
 
         // Assert
         Assert.True(operationResult.Success);
@@ -221,7 +259,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
         SubjectAlternativeNameBuilder subjectAlternativeNameBuilder = new SubjectAlternativeNameBuilder();
         subjectAlternativeNameBuilder.AddDnsName(hostname);
         req.CertificateExtensions.Add(subjectAlternativeNameBuilder.Build());
-        req.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DataEncipherment | X509KeyUsageFlags.KeyEncipherment | X509KeyUsageFlags.DigitalSignature, false));        
+        req.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DataEncipherment | X509KeyUsageFlags.KeyEncipherment | X509KeyUsageFlags.DigitalSignature, false));
         req.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection { new Oid("2.5.29.32.0"), new Oid("1.3.6.1.5.5.7.3.1") }, false));
 
         X509Certificate2 selfSignedCert = req.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(5));
@@ -245,7 +283,7 @@ public class AzureEnterpriseApplicationOrchestrator_Client
 
         LogHandler.Factory = LoggerFactory.Create(builder =>
                 {
-                builder.AddNLog();
+                    builder.AddNLog();
                 });
     }
 
