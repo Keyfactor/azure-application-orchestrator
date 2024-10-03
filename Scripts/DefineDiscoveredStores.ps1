@@ -30,10 +30,13 @@ param(
     [string]$CertificateStoreType,  # Short name of the certificate store type
 
     [Parameter(Mandatory = $true)]
-    [string]$ServerUsername,
+    [string]$ServicePrincipalClientID,
 
     [Parameter(Mandatory = $true)]
-    [string]$ServerPassword
+    [string]$ServicePrincipalClientSecret,
+
+    [Parameter(Mandatory = $true)]
+    [string]$WhitelistCsvPath  # Path to the whitelist CSV file
 )
 
 # Validate parameters
@@ -69,15 +72,21 @@ if ([string]::IsNullOrEmpty($CertificateStoreType))
     $errorsPresent = $true
 }
 
-if ([string]::IsNullOrEmpty($ServerUsername))
+if ([string]::IsNullOrEmpty($ServicePrincipalClientID))
 {
-    Write-Error "ServerUsername is required"
+    Write-Error "ServicePrincipalClientID is required"
     $errorsPresent = $true
 }
 
-if ([string]::IsNullOrEmpty($ServerPassword))
+if ([string]::IsNullOrEmpty($ServicePrincipalClientSecret))
 {
-    Write-Error "ServerPassword is required"
+    Write-Error "ServicePrincipalClientSecret is required"
+    $errorsPresent = $true
+}
+
+if (-not (Test-Path $WhitelistCsvPath))
+{
+    Write-Error "Whitelist CSV file '$WhitelistCsvPath' does not exist."
     $errorsPresent = $true
 }
 
@@ -86,6 +95,16 @@ if ($errorsPresent)
     exit 1
 }
 
+# Read the whitelist CSV file
+try
+{
+    $whitelistData = Import-Csv -Path $WhitelistCsvPath
+    $whitelistGuids = $whitelistData | Select-Object -ExpandProperty id
+} catch
+{
+    Write-Error "Error reading or processing the whitelist CSV file: $_"
+    exit 1
+}
 
 function Submit-RESTRequest
 {
@@ -193,16 +212,25 @@ Write-Host "Found $storesToProcessLength Discovered Certificate Stores of type $
 
 foreach ($store in $storesToProcess)
 {
+    # Truncate Storepath to extract GUID
+    $storePathGuid = $store.Storepath.Split(" ")[0]
+
+    if (-not ($whitelistGuids -contains $storePathGuid))
+    {
+        Write-Host "Skipping store with Id $($store.Id) as its Storepath GUID '$storePathGuid' is not in the whitelist."
+        continue
+    }
+
     # Add/update the properties
     $properties = @{
         ServerUsername = @{
             value = @{
-                SecretValue = $ServerUsername
+                SecretValue = $ServicePrincipalClientID
             }
         }
         ServerPassword = @{
             value = @{
-                SecretValue = $ServerPassword
+                SecretValue = $ServicePrincipalClientSecret
             }
         }
         ClientCertificate = @{
@@ -236,7 +264,7 @@ foreach ($store in $storesToProcess)
     # Convert body to JSON
     $bodyJson = $body | ConvertTo-Json -Depth 10
 
-    # Submit POST request
+    # Submit PUT request
     $response = Submit-RESTRequest -Method PUT -Path "CertificateStores" -Body $bodyJson
 
     Write-Host "Updated Certificate Store with Id $($response.Id)"
