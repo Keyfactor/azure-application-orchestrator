@@ -20,12 +20,12 @@ using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace AzureEnterpriseApplicationOrchestrator.AzureSPJobs;
+namespace AzureEnterpriseApplicationOrchestrator.AzureSP2Jobs;
 
 public class Discovery : IDiscoveryJobExtension
 {
     public IAzureGraphClient Client { get; set; }
-    public string ExtensionName => "AzureSP";
+    public string ExtensionName => "AzureSP2";
 
     private bool _clientInitializedByInjection = false;
 
@@ -35,9 +35,7 @@ public class Discovery : IDiscoveryJobExtension
     {
         if (Client != null) _clientInitializedByInjection = true;
 
-        _logger.LogWarning("Azure Service Principal (Enterprise Application/Service Principal) is DEPRICATED and will be removed in a future version. Please use AzureSP2");
-
-        _logger.LogDebug("Beginning Azure Service Principal (Enterprise Application/Service Principal) Discovery Job");
+        _logger.LogDebug("Beginning Azure Service Principal 2 (Enterprise Application/Service Principal) Discovery Job");
 
         JobResult result = new JobResult
         {
@@ -62,7 +60,7 @@ public class Discovery : IDiscoveryJobExtension
 
             try
             {
-                var operationResult = Client.DiscoverServicePrincipalApplicationIds();
+                var operationResult = Client.DiscoverServicePrincipalObjectIds();
                 if (!operationResult.Success)
                 {
                     result.FailureMessage += operationResult.ErrorMessage;
@@ -112,3 +110,4 @@ public class Discovery : IDiscoveryJobExtension
         return tenantIdsToSearch;
     }
 }
+
