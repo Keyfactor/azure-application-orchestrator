@@ -1,30 +1,54 @@
 ﻿{
-  "extensions": {
-    "Keyfactor.Orchestrators.Extensions.IOrchestratorJobExtension": {
-      "CertStores.AzureApp.Inventory": {
-        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
-        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureAppJobs.Inventory"
-      },
-      "CertStores.AzureApp.Management": {
-        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
-        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureAppJobs.Management"
-      },
-      "CertStores.AzureApp.Discovery": {
-        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
-        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureAppJobs.Discovery"
-      },
-      "CertStores.AzureSP.Inventory": {
-        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
-        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureSPJobs.Inventory"
-      },
-      "CertStores.AzureSP.Management": {
-        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
-        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureSPJobs.Management"
-      },
-      "CertStores.AzureSP.Discovery": {
-        "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
-        "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureSPJobs.Discovery"
-      }
+    "extensions": {
+        "Keyfactor.Orchestrators.Extensions.IOrchestratorJobExtension": {
+            "CertStores.AzureApp.Inventory": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureAppJobs.Inventory"
+            },
+            "CertStores.AzureApp.Management": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureAppJobs.Management"
+            },
+            "CertStores.AzureApp.Discovery": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureAppJobs.Discovery"
+            },
+            "CertStores.AzureSP.Inventory": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureSPJobs.Inventory"
+            },
+            "CertStores.AzureSP.Management": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureSPJobs.Management"
+            },
+            "CertStores.AzureSP.Discovery": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureSPJobs.Discovery"
+            },
+            "CertStores.AzureApp2.Inventory": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureApp2Jobs.Inventory"
+            },
+            "CertStores.AzureApp2.Management": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureApp2Jobs.Management"
+            },
+            "CertStores.AzureApp2.Discovery": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureApp2Jobs.Discovery"
+            },
+            "CertStores.AzureSP2.Inventory": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureSP2Jobs.Inventory"
+            },
+            "CertStores.AzureSP2.Management": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureSP2Jobs.Management"
+            },
+            "CertStores.AzureSP2.Discovery": {
+                "assemblypath": "AzureEnterpriseApplicationOrchestrator.dll",
+                "TypeFullName": "AzureEnterpriseApplicationOrchestrator.AzureSP2Jobs.Discovery"
+            }
+        }
     }
-  }
 }

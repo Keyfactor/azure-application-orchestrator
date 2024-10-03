@@ -30,19 +30,21 @@ public class Management : IManagementJobExtension
 
     public JobResult ProcessJob(ManagementJobConfiguration config)
     {
+        _logger.LogWarning("Azure Service Principal (Enterprise Application/Service Principal) is DEPRICATED and will be removed in a future version. Please use AzureSP2");
+
         _logger.LogDebug("Beginning Service Principal (Enterprise Application/Service Principal) Management Job");
 
         if (Client == null)
         {
             Client = new GraphJobClientBuilder<GraphClient.Builder>()
-                .WithCertificateStoreDetails(config.CertificateStoreDetails)
+                .WithV1CertificateStoreDetails(config.CertificateStoreDetails, ExtensionName)
                 .Build();
         }
 
         JobResult result = new JobResult
         {
             Result = OrchestratorJobStatusJobResult.Failure,
-                   JobHistoryId = config.JobHistoryId
+            JobHistoryId = config.JobHistoryId
         };
 
         try
@@ -51,10 +53,10 @@ public class Management : IManagementJobExtension
             result.Result = operation switch
             {
                 OperationType.Replace => ReplaceCertificate(config),
-                    OperationType.Add => AddCertificate(config),
-                    OperationType.Remove => RemoveCertificate(config),
-                    OperationType.DoNothing => OrchestratorJobStatusJobResult.Success,
-                    _ => throw new Exception($"Invalid Management operation type [{config.OperationType}]")
+                OperationType.Add => AddCertificate(config),
+                OperationType.Remove => RemoveCertificate(config),
+                OperationType.DoNothing => OrchestratorJobStatusJobResult.Success,
+                _ => throw new Exception($"Invalid Management operation type [{config.OperationType}]")
             };
         }
         catch (Exception ex)
