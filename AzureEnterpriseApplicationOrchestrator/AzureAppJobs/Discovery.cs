@@ -35,6 +35,8 @@ public class Discovery : IDiscoveryJobExtension
     {
         if (Client != null) _clientInitializedByInjection = true;
 
+        _logger.LogWarning("Azure Application (App Registration/Application) is DEPRICATED and will be removed in a future version. Please migrate to AzureApp2");
+
         _logger.LogDebug("Beginning Azure Application (App Registration/Application) Discovery Job");
 
         JobResult result = new JobResult
@@ -60,7 +62,7 @@ public class Discovery : IDiscoveryJobExtension
 
             try
             {
-                var operationResult = Client.DiscoverApplicationObjectIds();
+                var operationResult = Client.DiscoverApplicationApplicationIds();
                 if (!operationResult.Success)
                 {
                     result.FailureMessage += operationResult.ErrorMessage;

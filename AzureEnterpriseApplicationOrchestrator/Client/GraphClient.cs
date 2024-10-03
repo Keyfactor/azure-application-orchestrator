@@ -55,6 +55,7 @@ public class GraphClient : IAzureGraphClient
 
     public class Builder : IAzureGraphClientBuilder
     {
+        ILogger _logger = LogHandler.GetClassLogger<GraphClient>();
         private GraphClient _client = new();
 
         private string _tenantId { get; set; }
@@ -62,6 +63,8 @@ public class GraphClient : IAzureGraphClient
         private string _clientSecret { get; set; }
         private X509Certificate2 _clientCertificate { get; set; }
         private string _targetObjectId { get; set; }
+        private string _targetServicePrincipalApplicationId { get; set; }
+        private string _targetApplicationApplicationId { get; set; }
         private Uri _azureCloudEndpoint { get; set; }
 
         public IAzureGraphClientBuilder WithTenantId(string tenantId)
@@ -73,6 +76,18 @@ public class GraphClient : IAzureGraphClient
         public IAzureGraphClientBuilder WithTargetObjectId(string objectId)
         {
             _targetObjectId = objectId;
+            return this;
+        }
+
+        public IAzureGraphClientBuilder WithTargetServicePrincipalApplicationId(string applicationId)
+        {
+            _targetServicePrincipalApplicationId = applicationId;
+            return this;
+        }
+
+        public IAzureGraphClientBuilder WithTargetApplicationApplicationId(string applicationId)
+        {
+            _targetApplicationApplicationId = applicationId;
             return this;
         }
 
@@ -120,10 +135,60 @@ public class GraphClient : IAzureGraphClient
             return this;
         }
 
+        private string GetApplicationObjectId(GraphServiceClient client, string applicationApplicationId)
+        {
+            ApplicationCollectionResponse apps;
+            try
+            {
+                apps = client.Applications.GetAsync(requestConfiguration =>
+                        {
+                            requestConfiguration.QueryParameters.Filter = $"(appId eq '{applicationApplicationId}')";
+                            requestConfiguration.QueryParameters.Top = 1;
+                        }).Result;
+            }
+            catch (AggregateException e)
+            {
+                _logger.LogError($"Unable to query MS Graph for Application \"{applicationApplicationId}\": {e}");
+                throw;
+            }
+
+            if (apps?.Value == null || apps.Value.Count == 0 || string.IsNullOrEmpty(apps.Value.FirstOrDefault()?.Id))
+            {
+                throw new Exception($"Application with Application ID \"{applicationApplicationId}\" not found in tenant \"{_tenantId}\"");
+            }
+
+            return apps.Value.FirstOrDefault()?.Id; ;
+        }
+
+        private string GetServicePrincipalObjectId(GraphServiceClient client, string servicePrincipalApplicationId)
+        {
+            ServicePrincipalCollectionResponse sps;
+            try
+            {
+                sps = client.ServicePrincipals.GetAsync(requestConfiguration =>
+                        {
+                            requestConfiguration.QueryParameters.Filter = $"(appId eq '{servicePrincipalApplicationId}')";
+                            requestConfiguration.QueryParameters.Top = 1;
+                        }).Result;
+            }
+            catch (AggregateException e)
+            {
+                _logger.LogError($"Unable to query MS Graph for ServicePrincipal \"{servicePrincipalApplicationId}\": {e}");
+                throw;
+            }
+
+            if (sps?.Value == null || sps.Value.Count == 0 || string.IsNullOrEmpty(sps.Value.FirstOrDefault()?.Id))
+            {
+                throw new Exception($"Service Principal with Application ID \"{servicePrincipalApplicationId}\" not found in tenant \"{_tenantId}\"");
+            }
+
+            return sps.Value.FirstOrDefault()?.Id; ;
+        }
+
         public IAzureGraphClient Build()
         {
-            ILogger logger = LogHandler.GetClassLogger<GraphClient>();
-            logger.LogDebug($"Creating Graph Client for tenant ID '{_tenantId}' to target application ID '{_applicationId}'.");
+
+            _logger.LogDebug($"Creating Graph Client for tenant ID '{_tenantId}' to target application ID '{_applicationId}'.");
 
             // Setting up credentials for Azure Resource Management.
             DefaultAzureCredentialOptions credentialOptions = new DefaultAzureCredentialOptions
@@ -135,15 +200,11 @@ public class GraphClient : IAzureGraphClient
             TokenCredential credential;
             if (!string.IsNullOrWhiteSpace(_clientSecret))
             {
-                credential = new ClientSecretCredential(
-                        _tenantId, _applicationId, _clientSecret, credentialOptions
-                        );
+                credential = new ClientSecretCredential(_tenantId, _applicationId, _clientSecret, credentialOptions);
             }
             else if (_clientCertificate != null)
             {
-                credential = new ClientCertificateCredential(
-                        _tenantId, _applicationId, _clientCertificate, credentialOptions
-                        );
+                credential = new ClientCertificateCredential(_tenantId, _applicationId, _clientCertificate, credentialOptions);
             }
             else
             {
@@ -155,12 +216,20 @@ public class GraphClient : IAzureGraphClient
 
             // Creating Graph Client with the specified credentials.
             GraphServiceClient graphClient = new GraphServiceClient(credential, scopes);
+
+            if (string.IsNullOrEmpty(_targetObjectId))
+            {
+                if (!string.IsNullOrEmpty(_targetApplicationApplicationId)) _targetObjectId = GetApplicationObjectId(graphClient, _targetApplicationApplicationId);
+                else if (!string.IsNullOrEmpty(_targetServicePrincipalApplicationId)) _targetObjectId = GetServicePrincipalObjectId(graphClient, _targetServicePrincipalApplicationId);
+                // Discovery job doesn't require a target object ID.
+            }
+
             _client._graphClient = graphClient;
             _client._credential = credential;
             _client._tenantId = _tenantId;
             _client._targetObjectId = _targetObjectId;
 
-            logger.LogTrace("Azure Resource Management client created.");
+            _logger.LogTrace("Azure Resource Management client created.");
             return _client;
         }
     }
@@ -189,18 +258,18 @@ public class GraphClient : IAzureGraphClient
             _graphClient.Applications[_targetObjectId].PatchAsync(new Application
             {
                 KeyCredentials = new List<KeyCredential>(DeepCopyKeyList(application.KeyCredentials))
-                    {
+                {
                     new KeyCredential {
-                    DisplayName = certificateName,
-                    Type = "AsymmetricX509Cert",
-                    Usage = "Verify",
-                    CustomKeyIdentifier = customKeyId,
-                    StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
-                    EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
-                    KeyId = Guid.NewGuid(),
-                    Key = System.Text.Encoding.UTF8.GetBytes(certPem)
+                        DisplayName = certificateName,
+                        Type = "AsymmetricX509Cert",
+                        Usage = "Verify",
+                        CustomKeyIdentifier = customKeyId,
+                        StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
+                        EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
+                        KeyId = Guid.NewGuid(),
+                        Key = System.Text.Encoding.UTF8.GetBytes(certPem)
                     }
-                    }
+                }
             }).Wait();
         }
         catch (AggregateException e)
@@ -282,45 +351,44 @@ public class GraphClient : IAzureGraphClient
             _graphClient.ServicePrincipals[_targetObjectId].PatchAsync(new ServicePrincipal
             {
                 KeyCredentials = new List<KeyCredential>()
-                    {
+                {
                     new KeyCredential {
-                    DisplayName = certificateName,
-                    Type = "AsymmetricX509Cert",
-                    Usage = "Verify",
-                    CustomKeyIdentifier = customKeyId,
-                    StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
-                    EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
-                    KeyId = Guid.NewGuid(),
-                    Key = certificate.Export(X509ContentType.Cert)
+                        DisplayName = certificateName,
+                        Type = "AsymmetricX509Cert",
+                        Usage = "Verify",
+                        CustomKeyIdentifier = customKeyId,
+                        StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
+                        EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
+                        KeyId = Guid.NewGuid(),
+                        Key = certificate.Export(X509ContentType.Cert)
                     },
                     new KeyCredential {
-                    DisplayName = certificateName,
-                    Type = "X509CertAndPassword",
-                    Usage = "Sign",
-                    CustomKeyIdentifier = customKeyId,
-                    StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
-                    EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
-                    KeyId = privKeyGuid,
-                    Key = certificate.Export(X509ContentType.Pfx, certificatePassword)
+                        DisplayName = certificateName,
+                        Type = "X509CertAndPassword",
+                        Usage = "Sign",
+                        CustomKeyIdentifier = customKeyId,
+                        StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
+                        EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
+                        KeyId = privKeyGuid,
+                        Key = certificate.Export(X509ContentType.Pfx, certificatePassword)
                     }
-                    },
+                },
                 PasswordCredentials = new List<PasswordCredential>()
+                    {
+                        new PasswordCredential
                         {
-                            new PasswordCredential
-                            {
-                                CustomKeyIdentifier = customKeyId,
-                                KeyId = privKeyGuid,
-                                StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
-                                EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
-                                SecretText = certificatePassword,
-                            }
+                            CustomKeyIdentifier = customKeyId,
+                            KeyId = privKeyGuid,
+                            StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
+                            EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
+                            SecretText = certificatePassword,
                         }
+                    }
             }).Wait();
         }
         catch (AggregateException e)
         {
             _logger.LogWarning($"Failed to update service principal object: {e}");
-            // TODO remove certificates to avoid leaving the service principal in a bad state
             throw;
         }
 
@@ -335,7 +403,6 @@ public class GraphClient : IAzureGraphClient
         catch (AggregateException e)
         {
             _logger.LogWarning($"Failed to set preferred SAML certificate: {e}");
-            // TODO remove certificates to avoid leaving the service principal in a bad state
             throw;
         }
     }
@@ -443,10 +510,10 @@ public class GraphClient : IAzureGraphClient
         {
             _logger.LogDebug($"Found application \"{app.DisplayName}\" ({app.Id})");
 
-            if (app.Id == null)
+            if (string.IsNullOrEmpty(app.Id))
             {
-                _logger.LogWarning($"Application \"{app.DisplayName}\" ({app.Id}) does not have an Object ID");
-                result.AddRuntimeErrorMessage($"Application \"{app.DisplayName}\" ({app.Id}) does not have an Object ID");
+                _logger.LogWarning($"Application \"{app.DisplayName}\" ({app.AppId}) does not have an Object ID");
+                result.AddRuntimeErrorMessage($"Application \"{app.DisplayName}\" ({app.AppId}) does not have an Object ID");
                 continue;
             }
 
@@ -486,6 +553,92 @@ public class GraphClient : IAzureGraphClient
         {
             _logger.LogDebug($"Found SP \"{sp.DisplayName}\" ({sp.Id})");
 
+            if (string.IsNullOrEmpty(sp.Id))
+            {
+                _logger.LogWarning($"Service Principal \"{sp.DisplayName}\" ({sp.Id}) does not have an Object ID");
+                result.AddRuntimeErrorMessage($"Service Principal \"{sp.DisplayName}\" ({sp.Id}) does not have an Object ID");
+                continue;
+            }
+
+            oids.Add($"{sp.Id} ({sp.DisplayName})");
+        }
+
+        return result;
+    }
+
+    public OperationResult<IEnumerable<string>> DiscoverApplicationApplicationIds()
+    {
+        List<string> appIds = new();
+        OperationResult<IEnumerable<string>> result = new(appIds);
+
+        _logger.LogDebug($"Retrieving application registrations for tenant ID \"{_tenantId}\"");
+        ApplicationCollectionResponse apps;
+        try
+        {
+            apps = _graphClient.Applications.GetAsync((requestConfiguration) =>
+                    {
+                        requestConfiguration.QueryParameters.Top = 999;
+                    }).Result;
+        }
+        catch (AggregateException e)
+        {
+            _logger.LogError($"Unable to retrieve application registrations for tenant ID \"{_tenantId}\": {e}");
+            throw;
+        }
+
+        if (apps?.Value == null || apps.Value.Count == 0)
+        {
+            _logger.LogWarning($"No application registrations found for tenant ID \"{_tenantId}\"");
+            return result;
+        }
+
+        foreach (Application app in apps.Value)
+        {
+            _logger.LogDebug($"Found application \"{app.DisplayName}\" ({app.Id})");
+
+            if (string.IsNullOrEmpty(app.AppId))
+            {
+                _logger.LogWarning($"Application \"{app.DisplayName}\" ({app.Id}) does not have an App ID");
+                result.AddRuntimeErrorMessage($"Application \"{app.DisplayName}\" ({app.Id}) does not have an App ID");
+                continue;
+            }
+
+            appIds.Add($"{app.AppId} ({app.DisplayName})");
+        }
+
+        return result;
+    }
+
+    public OperationResult<IEnumerable<string>> DiscoverServicePrincipalApplicationIds()
+    {
+        List<string> appIds = new();
+        OperationResult<IEnumerable<string>> result = new(appIds);
+
+        _logger.LogDebug($"Retrieving Service Principals for tenant ID \"{_tenantId}\"");
+        ServicePrincipalCollectionResponse sps;
+        try
+        {
+            sps = _graphClient.ServicePrincipals.GetAsync((requestConfiguration) =>
+            {
+                requestConfiguration.QueryParameters.Top = 999;
+            }).Result;
+        }
+        catch (AggregateException e)
+        {
+            _logger.LogError($"Unable to retrieve Service Principals for tenant ID \"{_tenantId}\": {e}");
+            throw;
+        }
+
+        if (sps?.Value == null || sps.Value.Count == 0)
+        {
+            _logger.LogWarning($"No Service Principals found for tenant ID \"{_tenantId}\"");
+            return result;
+        }
+
+        foreach (ServicePrincipal sp in sps.Value)
+        {
+            _logger.LogDebug($"Found SP \"{sp.DisplayName}\" ({sp.Id})");
+
             if (sp.AppId == null)
             {
                 _logger.LogWarning($"Service Principal \"{sp.DisplayName}\" ({sp.Id}) does not have an AppID");
@@ -493,7 +646,7 @@ public class GraphClient : IAzureGraphClient
                 continue;
             }
 
-            oids.Add($"{sp.Id} ({sp.DisplayName})");
+            appIds.Add($"{sp.AppId} ({sp.DisplayName})");
         }
 
         return result;

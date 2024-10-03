@@ -23,13 +23,14 @@ namespace AzureEnterpriseApplicationOrchestrator.Tests;
 
 public class FakeClient : IAzureGraphClient
 {
-
     public class FakeBuilder : IAzureGraphClientBuilder
     {
         private FakeClient _client = new FakeClient();
 
         public string? _tenantId { get; set; }
-        public string? _targetApplicationId { get; set; }
+        public string? _targetObjectId { get; set; }
+        public string? _targetApplicationApplicationId { get; set; }
+        public string? _targetServicePrincipalApplicationId { get; set; }
         public string? _applicationId { get; set; }
         public string? _clientSecret { get; set; }
         public X509Certificate2? _clientCertificate { get; set; }
@@ -41,9 +42,21 @@ public class FakeClient : IAzureGraphClient
             return this;
         }
 
-        public IAzureGraphClientBuilder WithTargetObjectId(string applicationId)
+        public IAzureGraphClientBuilder WithTargetObjectId(string objectId)
         {
-            _targetApplicationId = applicationId;
+            _targetObjectId = objectId;
+            return this;
+        }
+
+        public IAzureGraphClientBuilder WithTargetServicePrincipalApplicationId(string applicationId)
+        {
+            _targetServicePrincipalApplicationId = applicationId;
+            return this;
+        }
+
+        public IAzureGraphClientBuilder WithTargetApplicationApplicationId(string applicationId)
+        {
+            _targetApplicationApplicationId = applicationId;
             return this;
         }
 
@@ -108,13 +121,33 @@ public class FakeClient : IAzureGraphClient
     {
         if (ObjectIdsAvailableOnFakeTenant == null)
         {
-            throw new Exception("Discover Application IDs method failure - no application ids set");
+            throw new Exception("Discover Object IDs method failure - no application ids set");
         }
 
         return new OperationResult<IEnumerable<string>>(ObjectIdsAvailableOnFakeTenant);
     }
 
     public OperationResult<IEnumerable<string>> DiscoverServicePrincipalObjectIds()
+    {
+        if (ObjectIdsAvailableOnFakeTenant == null)
+        {
+            throw new Exception("Discover Object IDs method failure - no application ids set");
+        }
+
+        return new OperationResult<IEnumerable<string>>(ObjectIdsAvailableOnFakeTenant);
+    }
+
+    public OperationResult<IEnumerable<string>> DiscoverApplicationApplicationIds()
+    {
+        if (ObjectIdsAvailableOnFakeTenant == null)
+        {
+            throw new Exception("Discover Application IDs method failure - no application ids set");
+        }
+
+        return new OperationResult<IEnumerable<string>>(ObjectIdsAvailableOnFakeTenant);
+    }
+
+    public OperationResult<IEnumerable<string>> DiscoverServicePrincipalApplicationIds()
     {
         if (ObjectIdsAvailableOnFakeTenant == null)
         {

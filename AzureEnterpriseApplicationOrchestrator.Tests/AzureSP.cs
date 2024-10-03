@@ -49,7 +49,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureSP
             .WithTenantId(env.TenantId)
             .WithApplicationId(env.ApplicationId)
             .WithClientSecret(env.ClientSecret)
-            .WithTargetObjectId(env.TargetServicePrincipalObjectId)
+            .WithTargetServicePrincipalApplicationId(env.TargetApplicationApplicationId)
             .Build();
 
         // Set up the inventory job configuration
@@ -58,7 +58,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureSP
             CertificateStoreDetails = new CertificateStore
             {
                 ClientMachine = env.TenantId,
-                StorePath = env.TargetServicePrincipalObjectId,
+                StorePath = env.TargetApplicationApplicationId,
                 Properties = $"{{\"ServerUsername\":\"{env.ApplicationId}\",\"ServerPassword\":\"{env.ClientSecret}\",\"AzureCloud\":\"\"}}"
             }
         };
@@ -486,7 +486,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureSP
             CertificateStoreDetails = new CertificateStore
             {
                 ClientMachine = env.TenantId,
-                StorePath = env.TargetServicePrincipalObjectId,
+                StorePath = env.TargetApplicationApplicationId,
                 Properties = $"{{\"ServerUsername\":\"{env.ApplicationId}\",\"ServerPassword\":\"{env.ClientSecret}\",\"AzureCloud\":\"\"}}"
             },
             JobCertificate = new ManagementJobCertificate

@@ -21,25 +21,23 @@ using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace AzureEnterpriseApplicationOrchestrator.AzureAppJobs;
+namespace AzureEnterpriseApplicationOrchestrator.AzureApp2Jobs;
 
 public class Inventory : IInventoryJobExtension
 {
     public IAzureGraphClient Client { get; set; }
-    public string ExtensionName => "AzureApp";
+    public string ExtensionName => "AzureApp2";
 
     ILogger _logger = LogHandler.GetClassLogger<Inventory>();
 
     public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate cb)
     {
-        _logger.LogWarning("Azure Application (App Registration/Application) is DEPRICATED and will be removed in a future version. Please migrate to AzureApp2");
-
-        _logger.LogDebug($"Beginning Azure Application (App Registration/Application) Inventory Job");
+        _logger.LogDebug($"Beginning Azure Application 2 (App Registration/Application) Inventory Job");
 
         if (Client == null)
         {
             Client = new GraphJobClientBuilder<GraphClient.Builder>()
-                .WithV1CertificateStoreDetails(config.CertificateStoreDetails, ExtensionName)
+                .WithV2CertificateStoreDetails(config.CertificateStoreDetails)
                 .Build();
         }
 
@@ -93,3 +91,4 @@ public class Inventory : IInventoryJobExtension
         return result;
     }
 }
+
