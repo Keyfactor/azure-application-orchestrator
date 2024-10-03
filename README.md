@@ -40,7 +40,8 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 <details><summary>Azure App Registration (Application) (AzureApp)</summary>
 
 ### AzureApp
-> **WARNING** AzureApp "Azure App Registration (Application)" is **Depricated**. Please use **AzureApp2** "Azure App Registration 2 (Application)" instead. 
+> **WARNING** AzureApp "Azure App Registration (Application)" is **Depricated**. Please use **AzureApp2** "Azure App Registration 2 (Application)" instead.
+
 
 Azure [App Registration/Application certificates](https://learn.microsoft.com/en-us/entra/identity-platform/certificate-credentials) are typically used for client authentication by applications and are typically public key only in Azure. The general model by which these credentials are consumed is that the certificate and private key are accessible by the Application using the App Registration, and are passed to the service that is authenticating the Application. The Azure App Registration and Enterprise Application Orchestrator extension implements the Inventory, Management Add, Management Remove, and Discovery job types for managing these certificates.
 </details>
@@ -48,6 +49,7 @@ Azure [App Registration/Application certificates](https://learn.microsoft.com/en
 <details><summary>Azure Enterprise Application (Service Principal) (AzureSP)</summary>
 
 ### AzureSP
+
 > **WARNING** AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** "Azure Enterprise Application 2 (Service Principal)" instead. 
 
 The Azure Enterprise Application/Service Principal certificate operations are implemented by the `AzureSP` store type, and supports the management of a single certificate for use in SSO/SAML assertion signing. The Management Add operation is only supported with the certificate replacement option, since adding a new certificate will replace the existing certificate. The Add operation will also set newly added certificates as the active certificate for SSO/SAML usage. The Management Remove operation removes the certificate from the Enterprise Application/Service Principal, which is the same as removing the SSO/SAML signing certificate. The Discovery operation discovers all Enterprise Applications/Service Principals in the tenant.
@@ -56,12 +58,14 @@ The Azure Enterprise Application/Service Principal certificate operations are im
 <details><summary>Azure App Registration 2 (Application) (AzureApp2)</summary>
 
 ### AzureApp2
+
 Azure [App Registration/Application certificates](https://learn.microsoft.com/en-us/entra/identity-platform/certificate-credentials) are typically used for client authentication by applications and are typically public key only in Azure. The general model by which these credentials are consumed is that the certificate and private key are accessible by the Application using the App Registration, and are passed to the service that is authenticating the Application. The Azure App Registration and Enterprise Application Orchestrator extension implements the Inventory, Management Add, Management Remove, and Discovery job types for managing these certificates.
 </details>
 
 <details><summary>Azure Enterprise Application 2 (Service Principal) (AzureSP2)</summary>
 
 ### AzureSP2
+
 The Azure Enterprise Application/Service Principal certificate operations are implemented by the `AzureSP` store type, and supports the management of a single certificate for use in SSO/SAML assertion signing. The Management Add operation is only supported with the certificate replacement option, since adding a new certificate will replace the existing certificate. The Add operation will also set newly added certificates as the active certificate for SSO/SAML usage. The Management Remove operation removes the certificate from the Enterprise Application/Service Principal, which is the same as removing the SSO/SAML signing certificate. The Discovery operation discovers all Enterprise Applications/Service Principals in the tenant.
 </details>
 
@@ -82,7 +86,9 @@ Before installing the Azure App Registration and Enterprise Application Universa
 
 ### Azure Service Principal (Graph API Authentication)
 
-The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, both Client Secret authentication and Client Certificate authentication (mTLS) are supported. The Service Principal must have the following API Permission:
+The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, both Client Secret authentication and Client Certificate authentication (mTLS) are supported. 
+
+The Service Principal must have the following API Permission:
 - **_Microsoft Graph Application Permissions_**:
   - `Application.ReadWrite.All` (_not_ Delegated; Admin Consent) - Allows the app to create, read, update and delete applications and service principals without a signed-in user.
 
@@ -142,6 +148,8 @@ Beginning in version 3.0.0, the Azure App Registration and Enterprise Applicatio
 <details><summary>Azure App Registration (Application) (AzureApp)</summary>
 
 ### Azure App Registration (Application) Requirements
+> **WARNING** AzureApp "Azure App Registration (Application)" is **Depricated**. Please use **AzureApp2** "Azure App Registration 2 (Application)" instead.
+
 
 #### Azure App Registration (Application)
 
@@ -200,6 +208,8 @@ To use the Azure App Registration and Enterprise Application Universal Orchestra
 The Azure App Registration and Enterprise Application Universal Orchestrator extension implements 4 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types.
 
 <details><summary>Azure App Registration (Application) (AzureApp)</summary>
+
+> **WARNING** AzureApp "Azure App Registration (Application)" is **Depricated**. Please use **AzureApp2** "Azure App Registration 2 (Application)" instead.
 
 
 * **Create AzureApp using kfutil**:
@@ -513,6 +523,8 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
 <details><summary>Azure App Registration (Application) (AzureApp)</summary>
 
+> **WARNING** AzureApp "Azure App Registration (Application)" is **Depricated**. Please use **AzureApp2** "Azure App Registration 2 (Application)" instead.
+
 
 * **Manually with the Command UI**
 
@@ -806,6 +818,8 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
 
 ### Azure App Registration (Application) Discovery Job
+> **WARNING** AzureApp "Azure App Registration (Application)" is **Depricated**. Please use **AzureApp2** "Azure App Registration 2 (Application)" instead.
+
 
 The Discovery operation discovers all Azure App Registrations that the Service Principal has access to. The discovered App Registrations (specifically, their Application IDs) are reported back to Command and can be easily added as certificate stores from the Locations tab.
 
