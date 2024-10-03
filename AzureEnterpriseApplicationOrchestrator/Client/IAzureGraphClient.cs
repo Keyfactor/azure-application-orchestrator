@@ -20,13 +20,15 @@ namespace AzureEnterpriseApplicationOrchestrator.Client;
 
 public interface IAzureGraphClientBuilder
 {
-    public IAzureGraphClientBuilder WithTenantId(string tenantId);
-    public IAzureGraphClientBuilder WithTargetApplicationId(string applicationId);
-    public IAzureGraphClientBuilder WithApplicationId(string applicationId);
-    public IAzureGraphClientBuilder WithClientSecret(string clientSecret);
-    public IAzureGraphClientBuilder WithClientCertificate(X509Certificate2 clientCertificate);
-    public IAzureGraphClientBuilder WithAzureCloud(string azureCloud);
-    public IAzureGraphClient Build();
+    IAzureGraphClientBuilder WithTenantId(string tenantId);
+    IAzureGraphClientBuilder WithTargetObjectId(string applicationId);
+    IAzureGraphClientBuilder WithTargetServicePrincipalApplicationId(string applicationId);
+    IAzureGraphClientBuilder WithTargetApplicationApplicationId(string applicationId);
+    IAzureGraphClientBuilder WithApplicationId(string applicationId);
+    IAzureGraphClientBuilder WithClientSecret(string clientSecret);
+    IAzureGraphClientBuilder WithClientCertificate(X509Certificate2 clientCertificate);
+    IAzureGraphClientBuilder WithAzureCloud(string azureCloud);
+    IAzureGraphClient Build();
 }
 
 public class OperationResult<T>
@@ -64,5 +66,9 @@ public interface IAzureGraphClient
     public bool ServicePrincipalCertificateExists(string certificateName);
 
     // Discovery
-    public OperationResult<IEnumerable<string>> DiscoverApplicationIds();
+    public OperationResult<IEnumerable<string>> DiscoverApplicationObjectIds();
+    public OperationResult<IEnumerable<string>> DiscoverApplicationApplicationIds();
+
+    public OperationResult<IEnumerable<string>> DiscoverServicePrincipalObjectIds();
+    public OperationResult<IEnumerable<string>> DiscoverServicePrincipalApplicationIds();
 }
