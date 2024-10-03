@@ -82,7 +82,9 @@ Before installing the Azure App Registration and Enterprise Application Universa
 
 ### Azure Service Principal (Graph API Authentication)
 
-The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, both Client Secret authentication and Client Certificate authentication (mTLS) are supported. The Service Principal must have the following API Permission:
+The Azure App Registration and Enterprise Application Orchestrator extension uses an [Azure Service Principal](https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser) for authentication. Follow [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) to create a service principal. Currently, both Client Secret authentication and Client Certificate authentication (mTLS) are supported. 
+
+The Service Principal must have the following API Permission:
 - **_Microsoft Graph Application Permissions_**:
   - `Application.ReadWrite.All` (_not_ Delegated; Admin Consent) - Allows the app to create, read, update and delete applications and service principals without a signed-in user.
 
