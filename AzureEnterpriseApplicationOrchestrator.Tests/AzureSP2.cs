@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Security.Cryptography.X509Certificates;
-using AzureEnterpriseApplicationOrchestrator.AzureAppJobs;
+using AzureEnterpriseApplicationOrchestrator.AzureSP2Jobs;
 using AzureEnterpriseApplicationOrchestrator.Client;
 using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Common.Enums;
@@ -23,24 +23,25 @@ using NLog.Extensions.Logging;
 
 namespace AzureEnterpriseApplicationOrchestrator.Tests;
 
-public class AzureEnterpriseApplicationOrchestrator_AzureApp
+public class AzureEnterpriseApplicationOrchestrator_AzureSP2
 {
     ILogger _logger { get; set; }
 
-    public AzureEnterpriseApplicationOrchestrator_AzureApp()
+    public AzureEnterpriseApplicationOrchestrator_AzureSP2()
     {
         ConfigureLogging();
 
-        _logger = LogHandler.GetClassLogger<AzureEnterpriseApplicationOrchestrator_AzureApp>();
+        _logger = LogHandler.GetClassLogger<AzureEnterpriseApplicationOrchestrator_AzureSP2>();
     }
 
     [IntegrationTestingFact]
-    public void AzureApp_Inventory_IntegrationTest_ReturnSuccess()
+    public void AzureSP2_Inventory_IntegrationTest_ReturnSuccess()
     {
         // Arrange
-        string certName = "AppTest" + Guid.NewGuid().ToString()[..6];
+        const string password = "passwordpasswordpassword";
+        string certName = "SPTest" + Guid.NewGuid().ToString()[..6];
         X509Certificate2 ssCert = AzureEnterpriseApplicationOrchestrator_Client.GetSelfSignedCert(certName);
-        string b64Cert = Convert.ToBase64String(ssCert.Export(X509ContentType.Cert));
+        string b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
 
         IntegrationTestingFact env = new();
 
@@ -48,7 +49,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             .WithTenantId(env.TenantId)
             .WithApplicationId(env.ApplicationId)
             .WithClientSecret(env.ClientSecret)
-            .WithTargetApplicationApplicationId(env.TargetApplicationApplicationId)
+            .WithTargetObjectId(env.TargetServicePrincipalObjectId)
             .Build();
 
         // Set up the inventory job configuration
@@ -57,7 +58,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             CertificateStoreDetails = new CertificateStore
             {
                 ClientMachine = env.TenantId,
-                StorePath = env.TargetApplicationApplicationId,
+                StorePath = env.TargetServicePrincipalObjectId,
                 Properties = $"{{\"ServerUsername\":\"{env.ApplicationId}\",\"ServerPassword\":\"{env.ClientSecret}\",\"AzureCloud\":\"\"}}"
             }
         };
@@ -65,7 +66,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
         var inventory = new Inventory();
 
         // Create a certificate in the Application
-        client.AddApplicationCertificate(certName, b64Cert);
+        client.AddServicePrincipalCertificate(certName, b64PfxSslCert, password);
 
         // Act
         JobResult result = inventory.ProcessJob(config, (inventoryItems) =>
@@ -74,7 +75,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             Assert.NotNull(inventoryItems);
             Assert.NotEmpty(inventoryItems);
 
-            _logger.LogInformation("AzureApp_Inventory_IntegrationTest_ReturnSuccess - Success");
+            _logger.LogInformation("AzureSP2_Inventory_IntegrationTest_ReturnSuccess - Success");
             return true;
         });
 
@@ -83,11 +84,11 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
 
 
         // Clean up
-        client.RemoveApplicationCertificate(certName);
+        client.RemoveServicePrincipalCertificate(certName);
     }
 
     [Fact]
-    public void AzureApp_Inventory_ProcessJob_ValidClient_ReturnSuccess()
+    public void AzureSP2_Inventory_ProcessJob_ValidClient_ReturnSuccess()
     {
         // Arrange
         IAzureGraphClient client = new FakeClient
@@ -118,21 +119,21 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
 
         // Act
         JobResult result = inventory.ProcessJob(config, (inventoryItems) =>
-            {
-                // Assert
-                Assert.Equal(1, inventoryItems.Count());
-                Assert.Equal("test", inventoryItems.First().Alias);
+                {
+                    // Assert
+                    Assert.Equal(1, inventoryItems.Count());
+                    Assert.Equal("test", inventoryItems.First().Alias);
 
-                _logger.LogInformation("AzureApp_Inventory_ProcessJob_ValidClient_ReturnSuccess - Success");
-                return true;
-            });
+                    _logger.LogInformation("AzureSP2_Inventory_ProcessJob_ValidClient_ReturnSuccess - Success");
+                    return true;
+                });
 
         // Assert
         Assert.Equal(OrchestratorJobStatusJobResult.Success, result.Result);
     }
 
     [Fact]
-    public void AzureApp_Inventory_ProcessJob_InvalidClient_ReturnFailure()
+    public void AzureSP2_Inventory_ProcessJob_InvalidClient_ReturnFailure()
     {
         // Arrange
         IAzureGraphClient client = new FakeClient();
@@ -171,11 +172,11 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
         Assert.False(callbackCalled);
         Assert.Equal(OrchestratorJobStatusJobResult.Failure, result.Result);
 
-        _logger.LogInformation("AzureApp_Inventory_ProcessJob_InvalidClient_ReturnFailure - Success");
+        _logger.LogInformation("AzureSP2_Inventory_ProcessJob_InvalidClient_ReturnFailure - Success");
     }
 
     [IntegrationTestingFact]
-    public void AzureApp_Discovery_IntegrationTest_ReturnSuccess()
+    public void AzureSP2_Discovery_IntegrationTest_ReturnSuccess()
     {
         // Arrange
         IntegrationTestingFact env = new();
@@ -201,7 +202,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             Assert.NotNull(discoveredApplicationIds);
             Assert.NotEmpty(discoveredApplicationIds);
 
-            _logger.LogInformation("AzureApp_Discovery_IntegrationTest_ReturnSuccess - Success");
+            _logger.LogInformation("AzureSP2_Discovery_IntegrationTest_ReturnSuccess - Success");
             return true;
         });
 
@@ -210,7 +211,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
     }
 
     [Fact]
-    public void AzureApp_Discovery_ProcessJob_ValidClient_ReturnSuccess()
+    public void AzureSP2_Discovery_ProcessJob_ValidClient_ReturnSuccess()
     {
         // Arrange
         IAzureGraphClient client = new FakeClient
@@ -250,11 +251,11 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
         // Assert
         Assert.Equal(OrchestratorJobStatusJobResult.Success, result.Result);
 
-        _logger.LogInformation("AzureApp_Discovery_ProcessJob_ValidClient_ReturnSuccess - Success");
+        _logger.LogInformation("AzureSP2_Discovery_ProcessJob_ValidClient_ReturnSuccess - Success");
     }
 
     [Fact]
-    public void AzureApp_Discovery_ProcessJob_InvalidClient_ReturnFailure()
+    public void AzureSP2_Discovery_ProcessJob_InvalidClient_ReturnFailure()
     {
         // Arrange
         IAzureGraphClient client = new FakeClient();
@@ -293,11 +294,11 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
         Assert.False(callbackCalled);
         Assert.Equal(OrchestratorJobStatusJobResult.Failure, result.Result);
 
-        _logger.LogInformation("AzureApp_Discovery_ProcessJob_InvalidClient_ReturnFailure - Success");
+        _logger.LogInformation("AzureSP2_Discovery_ProcessJob_InvalidClient_ReturnFailure - Success");
     }
 
     [Fact]
-    public void AzureApp_ManagementAdd_ProcessJob_ValidClient_ReturnSuccess()
+    public void AzureSP2_ManagementAdd_ProcessJob_ValidClient_ReturnSuccess()
     {
         // Arrange
         FakeClient client = new FakeClient();
@@ -315,7 +316,8 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             JobCertificate = new ManagementJobCertificate
             {
                 Alias = "test",
-                Contents = "test-certificate-data"
+                Contents = "test-certificate-data",
+                PrivateKeyPassword = "test-password"
             },
             JobHistoryId = 1
         };
@@ -332,13 +334,14 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             Assert.True(client.CertificatesAvailableOnFakeTarget.ContainsKey("test"));
         }
 
-        _logger.LogInformation("AzureApp_ManagementAdd_ProcessJob_ValidClient_ReturnSuccess - Success");
+        _logger.LogInformation("AzureSP2_ManagementAdd_ProcessJob_ValidClient_ReturnSuccess - Success");
     }
 
     [Theory]
-    [InlineData("", "")]
+    [InlineData("test", "")]
     [InlineData("", "test-password")]
-    public void AzureApp_ManagementAdd_ProcessJob_InvalidJobConfig_ReturnFailure(string alias, string pkPassword)
+    [InlineData("", "")]
+    public void AzureSP2_ManagementAdd_ProcessJob_InvalidJobConfig_ReturnFailure(string alias, string pkPassword)
     {
         // Arrange
         FakeClient client = new FakeClient();
@@ -369,11 +372,11 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
         Assert.Equal(OrchestratorJobStatusJobResult.Failure, result.Result);
         Assert.Equal(1, result.JobHistoryId);
 
-        _logger.LogInformation("AzureApp_ManagementAdd_ProcessJob_InvalidJobConfig_ReturnFailure - Success");
+        _logger.LogInformation("AzureSP2_ManagementAdd_ProcessJob_InvalidJobConfig_ReturnFailure - Success");
     }
 
     [Fact]
-    public void AzureApp_ManagementRemove_ProcessJob_ValidClient_ReturnSuccess()
+    public void AzureSP2_ManagementRemove_ProcessJob_ValidClient_ReturnSuccess()
     {
         // Arrange
         FakeClient client = new FakeClient
@@ -412,11 +415,11 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             Assert.False(client.CertificatesAvailableOnFakeTarget.ContainsKey("test"));
         }
 
-        _logger.LogInformation("AzureApp_ManagementRemove_ProcessJob_ValidClient_ReturnSuccess - Success");
+        _logger.LogInformation("AzureSP2_ManagementRemove_ProcessJob_ValidClient_ReturnSuccess - Success");
     }
 
     [Fact]
-    public void AzureApp_ManagementReplace_ProcessJob_ValidClient_ReturnSuccess()
+    public void AzureSP2_ManagementReplace_ProcessJob_ValidClient_ReturnSuccess()
     {
         // Arrange
         FakeClient client = new FakeClient
@@ -441,7 +444,8 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             JobCertificate = new ManagementJobCertificate
             {
                 Alias = "test",
-                Contents = "new-certificate-data"
+                Contents = "new-certificate-data",
+                PrivateKeyPassword = "test-password"
             },
             JobHistoryId = 1
         };
@@ -458,21 +462,22 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             Assert.Equal("new-certificate-data", client.CertificatesAvailableOnFakeTarget["test"]);
         }
 
-        _logger.LogInformation("AzureApp_ManagementReplace_ProcessJob_ValidClient_ReturnSuccess - Success");
+        _logger.LogInformation("AzureSP2_ManagementReplace_ProcessJob_ValidClient_ReturnSuccess - Success");
     }
 
     [IntegrationTestingFact]
-    public void AzureApp_Management_IntegrationTest_ReturnSuccess()
+    public void AzureSP2_Management_IntegrationTest_ReturnSuccess()
     {
         // Arrange
         IntegrationTestingFact env = new();
 
         string testHostname = "azureapplicationUnitTest.com";
         string certName = "AppTest" + Guid.NewGuid().ToString()[..6];
+        string password = "password";
 
         X509Certificate2 ssCert = AzureEnterpriseApplicationOrchestrator_Client.GetSelfSignedCert(testHostname);
 
-        string b64Cert = Convert.ToBase64String(ssCert.Export(X509ContentType.Cert));
+        string b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
 
         // Set up the management job configuration
         var config = new ManagementJobConfiguration
@@ -481,13 +486,14 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
             CertificateStoreDetails = new CertificateStore
             {
                 ClientMachine = env.TenantId,
-                StorePath = env.TargetApplicationApplicationId,
+                StorePath = env.TargetServicePrincipalObjectId,
                 Properties = $"{{\"ServerUsername\":\"{env.ApplicationId}\",\"ServerPassword\":\"{env.ClientSecret}\",\"AzureCloud\":\"\"}}"
             },
             JobCertificate = new ManagementJobCertificate
             {
                 Alias = certName,
-                Contents = b64Cert
+                Contents = b64PfxSslCert,
+                PrivateKeyPassword = password
             },
         };
 
@@ -504,14 +510,15 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
 
         ssCert = AzureEnterpriseApplicationOrchestrator_Client.GetSelfSignedCert(testHostname);
 
-        b64Cert = Convert.ToBase64String(ssCert.Export(X509ContentType.Cert));
+        b64PfxSslCert = Convert.ToBase64String(ssCert.Export(X509ContentType.Pfx, password));
 
         config.OperationType = CertStoreOperationType.Add;
         config.Overwrite = true;
         config.JobCertificate = new ManagementJobCertificate
         {
             Alias = certName,
-            Contents = b64Cert
+            Contents = b64PfxSslCert,
+            PrivateKeyPassword = password
         };
 
         // Act
@@ -535,7 +542,7 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
         // Assert
         Assert.Equal(OrchestratorJobStatusJobResult.Success, result.Result);
 
-        _logger.LogInformation("AzureApp_Management_IntegrationTest_ReturnSuccess - Success");
+        _logger.LogInformation("AzureSP2_Management_IntegrationTest_ReturnSuccess - Success");
     }
 
     static void ConfigureLogging()
@@ -558,3 +565,4 @@ public class AzureEnterpriseApplicationOrchestrator_AzureApp
                 });
     }
 }
+

@@ -19,7 +19,7 @@ using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace AzureEnterpriseApplicationOrchestrator.AzureAppJobs;
+namespace AzureEnterpriseApplicationOrchestrator.AzureApp2Jobs;
 
 public class Management : IManagementJobExtension
 {
@@ -30,14 +30,12 @@ public class Management : IManagementJobExtension
 
     public JobResult ProcessJob(ManagementJobConfiguration config)
     {
-        _logger.LogWarning("Azure Application (App Registration/Application) is DEPRICATED and will be removed in a future version. Please migrate to AzureApp2");
-
-        _logger.LogDebug("Beginning Application (App Registration/Application) Management Job");
+        _logger.LogDebug("Beginning Application 2 (App Registration/Application) Management Job");
 
         if (Client == null)
         {
             Client = new GraphJobClientBuilder<GraphClient.Builder>()
-                .WithV1CertificateStoreDetails(config.CertificateStoreDetails, ExtensionName)
+                .WithV2CertificateStoreDetails(config.CertificateStoreDetails)
                 .Build();
         }
 
@@ -148,3 +146,4 @@ public class Management : IManagementJobExtension
         return OrchestratorJobStatusJobResult.Success;
     }
 }
+
