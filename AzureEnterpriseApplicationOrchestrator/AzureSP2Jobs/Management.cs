@@ -19,25 +19,23 @@ using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace AzureEnterpriseApplicationOrchestrator.AzureAppJobs;
+namespace AzureEnterpriseApplicationOrchestrator.AzureSP2Jobs;
 
 public class Management : IManagementJobExtension
 {
     public IAzureGraphClient Client { get; set; }
-    public string ExtensionName => "AzureApp";
+    public string ExtensionName => "AzureSP2";
 
     ILogger _logger = LogHandler.GetClassLogger<Management>();
 
     public JobResult ProcessJob(ManagementJobConfiguration config)
     {
-        _logger.LogWarning("Azure Application (App Registration/Application) is DEPRICATED and will be removed in a future version. Please migrate to AzureApp2");
-
-        _logger.LogDebug("Beginning Application (App Registration/Application) Management Job");
+        _logger.LogDebug("Beginning Service Principal 2 (Enterprise Application/Service Principal) Management Job");
 
         if (Client == null)
         {
             Client = new GraphJobClientBuilder<GraphClient.Builder>()
-                .WithV1CertificateStoreDetails(config.CertificateStoreDetails, ExtensionName)
+                .WithV2CertificateStoreDetails(config.CertificateStoreDetails)
                 .Build();
         }
 
@@ -95,10 +93,11 @@ public class Management : IManagementJobExtension
     {
         _logger.LogDebug("Beginning AddCertificate operation");
 
-        // The AzureApp Certificate Store Type doesn't support private key handling
-        if (string.IsNullOrWhiteSpace(config.JobCertificate.PrivateKeyPassword) == false)
+        // If a private key password was not provided, Command didn't return
+        // the certificate in PKCS#12 format.
+        if (string.IsNullOrWhiteSpace(config.JobCertificate.PrivateKeyPassword))
         {
-            throw new Exception("Private key handling is not supported for AzureApp Certificate Store Type.");
+            throw new Exception("Certificate must be in PKCS#12 format - no private key password provided.");
         }
 
         if (string.IsNullOrWhiteSpace(config.JobCertificate.Alias))
@@ -111,9 +110,10 @@ public class Management : IManagementJobExtension
         // Don't check if the certificate already exists; Command shouldn't allow non-unique
         // aliases to be added and if the certificate already exists, the operation should fail.
 
-        Client.AddApplicationCertificate(
+        Client.AddServicePrincipalCertificate(
                 config.JobCertificate.Alias,
-                config.JobCertificate.Contents
+                config.JobCertificate.Contents,
+                config.JobCertificate.PrivateKeyPassword
                 );
 
         _logger.LogDebug("AddCertificate operation complete");
@@ -141,10 +141,11 @@ public class Management : IManagementJobExtension
 
         // If the certificate doesn't exist, the operation should fail.
 
-        Client.RemoveApplicationCertificate(config.JobCertificate.Alias);
+        Client.RemoveServicePrincipalCertificate(config.JobCertificate.Alias);
 
         _logger.LogDebug("RemoveCertificate operation complete");
 
         return OrchestratorJobStatusJobResult.Success;
     }
 }
+

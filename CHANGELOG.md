@@ -16,3 +16,9 @@
 
 - 3.2.0
   - chore(docs): Upgrade GitHub Actions to use Bootstrap Workflow v3 to support Doctool
+
+- 4.0.0
+  - Depricate AzureApp and AzureSP in favor of AzureApp2 and AzureSP2 that interpret the Store Path field as the Object ID instead of App ID.
+  - Discovery job modified to return available Certificate Stores with Store Path in the format `<ID GUID> (<Friendly Name>)`.
+  - Before other jobs operate on Certificate Stores, the contents after the ID GUID will be truncated, maintaining backward compatibility.
+
