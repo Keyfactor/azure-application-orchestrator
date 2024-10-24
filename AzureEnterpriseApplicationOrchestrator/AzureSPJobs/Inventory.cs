@@ -30,21 +30,23 @@ public class Inventory : IInventoryJobExtension
 
     ILogger _logger = LogHandler.GetClassLogger<Inventory>();
 
-    public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate cb) 
+    public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate cb)
     {
+        _logger.LogWarning("Azure Service Principal (Enterprise Application/Service Principal) is DEPRICATED and will be removed in a future version. Please use AzureSP2");
+
         _logger.LogDebug($"Beginning Azure Service Principal (Enterprise Application/Service Principal) Inventory Job");
 
         if (Client == null)
         {
             Client = new GraphJobClientBuilder<GraphClient.Builder>()
-                .WithCertificateStoreDetails(config.CertificateStoreDetails)
+                .WithV1CertificateStoreDetails(config.CertificateStoreDetails, ExtensionName)
                 .Build();
         }
 
         JobResult result = new JobResult
         {
             Result = OrchestratorJobStatusJobResult.Failure,
-                   JobHistoryId = config.JobHistoryId
+            JobHistoryId = config.JobHistoryId
         };
 
         List<CurrentInventoryItem> inventoryItems;
@@ -56,10 +58,10 @@ public class Inventory : IInventoryJobExtension
             {
                 // Aggregate the messages into the failure message. Since an exception wasn't thrown,
                 // we still have a partial success. We want to return a warning.
-                result.FailureMessage += inventoryResult.ErrorMessage; 
+                result.FailureMessage += inventoryResult.ErrorMessage;
                 result.Result = OrchestratorJobStatusJobResult.Warning;
                 _logger.LogWarning(result.FailureMessage);
-            } 
+            }
             else
             {
                 result.Result = OrchestratorJobStatusJobResult.Success;
@@ -69,7 +71,8 @@ public class Inventory : IInventoryJobExtension
             // that we were able to pull down.
             inventoryItems = inventoryResult.Result.ToList();
 
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
 
             // Exception is triggered if we weren't able to pull down the list of certificates

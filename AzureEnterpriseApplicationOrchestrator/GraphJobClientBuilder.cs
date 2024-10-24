@@ -37,21 +37,44 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
         public string AzureCloud { get; init; }
     }
 
-    public GraphJobClientBuilder<TBuilder> WithCertificateStoreDetails(CertificateStore details)
+    public record CertificateStoreV2Properties
     {
-        _logger.LogDebug($"Builder - Setting values from Certificate Store Details: {JsonConvert.SerializeObject(details)}");
+        public string ServerUsername { get; init; }
+        public string ServerPassword { get; init; }
+        public string ClientCertificate { get; init; }
+        public string ClientCertificatePassword { get; init; }
+        public string AzureCloud { get; init; }
+    }
+
+    public GraphJobClientBuilder<TBuilder> WithV1CertificateStoreDetails(CertificateStore details, string storeTypeShortName)
+    {
+        _logger.LogDebug($"Builder - Setting values from V1 Certificate Store Details: {JsonConvert.SerializeObject(details)}");
 
         CertificateStoreProperties properties = JsonConvert.DeserializeObject<CertificateStoreProperties>(details.Properties);
 
         _logger.LogTrace($"Builder - ClientMachine  => TenantId:            {details.ClientMachine}");
-        _logger.LogTrace($"Builder - StorePath      => TargetApplicationId: {details.StorePath}");
         _logger.LogTrace($"Builder - ServerUsername => ApplicationId:       {properties.ServerUsername}");
         _logger.LogTrace($"Builder - AzureCloud     => AzureCloud:          {properties.AzureCloud}");
-        
+
+        // The Discovery Job returns Application IDs in the format `<appid> (<friendly name>)`.
+        // We split out the first part to get the Application ID.
+        string normalizedAppID = details.StorePath.Split(" ")[0];
+
+        if (storeTypeShortName == "AzureApp")
+        {
+            _logger.LogTrace($"Builder - StorePath      => TargetApplicationApplicationId: {details.StorePath}");
+            _builder.WithTargetApplicationApplicationId(normalizedAppID);
+        }
+        else if (storeTypeShortName == "AzureSP")
+        {
+            _logger.LogTrace($"Builder - StorePath      => TargetServicePrincipalApplicationId: {details.StorePath}");
+            _builder.WithTargetServicePrincipalApplicationId(normalizedAppID);
+        }
+        else throw new Exception($"{storeTypeShortName} is not supported by WithV1CertificateStoreDetails");
+
         _builder
             .WithTenantId(details.ClientMachine)
             .WithApplicationId(properties.ServerUsername)
-            .WithTargetApplicationId(details.StorePath)
             .WithAzureCloud(properties.AzureCloud);
 
         if (string.IsNullOrWhiteSpace(properties.ClientCertificate))
@@ -68,9 +91,52 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
             _builder.WithClientCertificate(clientCert);
         }
 
+        return this;
+    }
+
+    public GraphJobClientBuilder<TBuilder> WithV2CertificateStoreDetails(CertificateStore details)
+    {
+        _logger.LogDebug($"Builder - Setting values from V2 Certificate Store Details: {JsonConvert.SerializeObject(details)}");
+
+        CertificateStoreV2Properties properties = JsonConvert.DeserializeObject<CertificateStoreV2Properties>(details.Properties);
+
+        _logger.LogTrace($"Builder - ClientMachine             => TenantId:                     {details.ClientMachine}");
+        _logger.LogTrace($"Builder - StorePath                 => TargetApplicationObjectId:    {details.StorePath}");
+        _logger.LogTrace($"Builder - ServerUsername            => ApplicationId:                {properties.ServerUsername}");
+        _logger.LogTrace($"Builder - AzureCloud                => AzureCloud:                   {properties.AzureCloud}");
+
+        if (string.IsNullOrEmpty(details.ClientMachine)) throw new Exception("ClientMachine is required");
+        if (string.IsNullOrEmpty(details.StorePath)) throw new Exception("StorePath is required");
+        if (string.IsNullOrEmpty(properties.ServerUsername)) throw new Exception("ServerUsername is required");
+
+        // The Discovery Job returns Object IDs in the format `<oid> (<friendly name>)`.
+        // We split out the first part to get the Object ID.
+        string normalizedObjectID = details.StorePath.Split(" ")[0];
+
+        _builder
+            .WithTenantId(details.ClientMachine)
+            .WithApplicationId(properties.ServerUsername)
+            .WithTargetObjectId(normalizedObjectID)
+            .WithAzureCloud(properties.AzureCloud);
+
+        if (!string.IsNullOrEmpty(properties.ServerPassword))
+        {
+            _logger.LogDebug("Client certificate not present - Using Client Secret authentication");
+            _logger.LogTrace($"Builder - ServerPassword            => ClientSecret:                 {properties.ServerPassword}");
+            _builder.WithClientSecret(properties.ServerPassword);
+        }
+        else if (!string.IsNullOrEmpty(properties.ClientCertificate))
+        {
+            _logger.LogDebug("Client certificate present - Using Client Certificate authentication");
+            _logger.LogTrace($"Builder - ClientCertificatePassword => ClientCertificateKeyPassword: {properties.ClientCertificatePassword}");
+            X509Certificate2 clientCert = SerializeClientCertificate(properties.ClientCertificate, properties.ClientCertificatePassword);
+            _builder.WithClientCertificate(clientCert);
+        }
+        else throw new Exception("One of ClientSecret or ClientCertificate is required to authenticate with Azure Graph");
 
         return this;
     }
+
 
     public GraphJobClientBuilder<TBuilder> WithDiscoveryJobConfiguration(DiscoveryJobConfiguration config, string tenantId)
     {
@@ -95,15 +161,16 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
     {
         // clientCertificate is a Base64 encoded certificate that's either PEM or PKCS#12 encoded.
         // We expect that it includes a private key compatible with the dotnet standard crypto libraries.
-        
+
         byte[] rawCertBytes = Convert.FromBase64String(clientCertificate);
         X509Certificate2 serializedCertificate = null;
-        
+
         // Try to serialize the certificate without any special handling
         try
         {
             serializedCertificate = new X509Certificate2(rawCertBytes, password, X509KeyStorageFlags.Exportable);
-            if (serializedCertificate.HasPrivateKey) {
+            if (serializedCertificate.HasPrivateKey)
+            {
                 _logger.LogTrace("Successfully serialized certificate using standard X509Certificate2");
                 return serializedCertificate;
             }
@@ -129,7 +196,7 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
     {
         _logger.LogDebug($"Attempting to serialize client certificate and private key from PEM encoding");
         ReadOnlySpan<char> utf8Cert = Encoding.UTF8.GetChars(Convert.FromBase64String(clientCertificate));
-        
+
         _logger.LogTrace("Finding all PEM objects in ClientCertificate");
 
         ReadOnlySpan<char> certificate = new char[0];
@@ -164,7 +231,7 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
             // Copy over the slice before the start of the range
             utf8Cert.Slice(0, start).CopyTo(newUtf8Cert);
             // Copy over the slice after the end of the range
-            utf8Cert.Slice(end).CopyTo(newUtf8Cert.AsSpan(start));            
+            utf8Cert.Slice(end).CopyTo(newUtf8Cert.AsSpan(start));
 
             utf8Cert = newUtf8Cert;
         }
