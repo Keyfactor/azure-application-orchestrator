@@ -22,3 +22,6 @@
   - Discovery job modified to return available Certificate Stores with Store Path in the format `<ID GUID> (<Friendly Name>)`.
   - Before other jobs operate on Certificate Stores, the contents after the ID GUID will be truncated, maintaining backward compatibility.
 
+- 4.1.0
+  - Paginate discovery method to download all available App Registrations and Enterprise Applications.
+  - Fix DefineDiscoveredStores.ps1 to paginate Certificate Stores that come back from Command.
