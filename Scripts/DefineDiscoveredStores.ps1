@@ -187,7 +187,9 @@ function Submit-RESTRequest
     return $apiResponse
 }
 
-# Step 1: Get the available Certificate Store Types
+Write-Host "============================================================================================"
+Write-Host "Step 1: Get the Store Type ID that corresponds to $CertificateStoreType"
+Write-Host "============================================================================================"
 $certificateStoreTypes = Submit-RESTRequest -Method GET -Path "CertificateStoreTypes"
 
 $desiredStoreType = $certificateStoreTypes | Where-Object { $_.ShortName -eq $CertificateStoreType }
@@ -201,25 +203,70 @@ if (-not $desiredStoreType)
 $certStoreTypeId = $desiredStoreType.StoreType
 Write-Host "$CertificateStoreType has Type ID $certStoreTypeId"
 
-# Step 3: Fetch the Certificate Stores
-$certificateStores = Submit-RESTRequest -Method GET -Path "CertificateStores"
+Write-Host "============================================================================================"
+Write-Host "Step 2: Download all Certificate Stores from Command with pagination"
+Write-Host "============================================================================================"
+$pageSize = 100
+$currentPage = 1
+$allPagesDownloaded = $false
 
-# Step 4: Process the Certificate Stores
-$storesToProcess = $certificateStores | Where-Object { $_.Approved -eq $false -and $_.CertStoreType -eq $certStoreTypeId }
-$storesToProcessLength = $storesToProcess.Length
+$totalDownloadedCertStores
+$allCertificateStores = @()
+do
+{
+    Write-Host "Downloading Certificate Stores page $currentPage (page size $pageSize)"
+    try
+    {
+        $certificateStores = Submit-RESTRequest -Method GET -Path "CertificateStores?ReturnLimit=$pageSize&PageReturned=$currentPage"
 
-Write-Host "Found $storesToProcessLength Discovered Certificate Stores of type $CertificateStoreType"
+        # Check if any certificate stores are returned
+        if ($certificateStores.Count -eq 0)
+        {
+            $allPagesDownloaded = $true
+        } else
+        {
+            Write-Host "Fetched $($certificateStores.Count) certificate stores."
+            $totalDownloadedCertStores += $certificateStores.Count 
 
+            $allCertificateStores += $certificateStores
+        }
+
+        # Move to the next page
+        $currentPage++
+
+    } catch
+    {
+        Write-Error "Failed to fetch certificate stores: $_"
+        $allPagesDownloaded = $true # Exit the loop on error
+    }
+
+} while (!$allPagesDownloaded)
+
+Write-Host "Finished downloading $totalDownloadedCertStores total certificate stores in $($currentPage - 2) pages"
+
+Write-Host "============================================================================================"
+Write-Host "Step 3: Filter the downloaded Certificate Stores for ones that came back in Discovery"
+Write-Host "============================================================================================"
+$storesToProcess = $allCertificateStores | Where-Object { $_.Approved -eq $false -and $_.CertStoreType -eq $certStoreTypeId }
+
+Write-Host "$($storesToProcess.Length)/$totalDownloadedCertStores downloaded Certificate Stores are Discovered Certificate Stores of type $CertificateStoreType ($certStoreTypeId) (only exist on the Discovery page; haven't been defined in Command)"
+
+Write-Host "============================================================================================"
+Write-Host "Step 4: Update (define) Certificate Stores that are on the Whitelist"
+Write-Host "============================================================================================"
 foreach ($store in $storesToProcess)
 {
     # Truncate Storepath to extract GUID
-    $storePathGuid = $store.Storepath.Split(" ")[0]
+    $storePathParts = $store.Storepath.Split(" ")
+    $storePathGuid = $storePathParts[0]
 
     if (-not ($whitelistGuids -contains $storePathGuid))
     {
-        Write-Host "Skipping store with Id $($store.Id) as its Storepath GUID '$storePathGuid' is not in the whitelist."
+        Write-Host "Skipping store with Path '$($store.Storepath)' as its Storepath GUID '$storePathGuid' is not in the whitelist."
         continue
     }
+
+    Write-Host "Certificate Store with Path '$($store.Storepath)' was found in the whitelist - adding"
 
     # Add/update the properties
     $properties = @{
@@ -233,16 +280,16 @@ foreach ($store in $storesToProcess)
                 SecretValue = $ServicePrincipalClientSecret
             }
         }
-        ClientCertificate = @{
-            value = @{
-                SecretValue = ""
-            }
-        }
-        ClientCertificatePassword = @{
-            value = @{
-                SecretValue = ""
-            }
-        }
+        # ClientCertificate = @{
+        #     value = @{
+        #         SecretValue = ""
+        #     }
+        # }
+        # ClientCertificatePassword = @{
+        #     value = @{
+        #         SecretValue = ""
+        #     }
+        # }
         ServerUseSsl = @{
             value = "true"
         }
