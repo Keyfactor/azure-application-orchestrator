@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35931.197 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureEnterpriseApplicationOrchestrator", "AzureEnterpriseApplicationOrchestrator\AzureEnterpriseApplicationOrchestrator.csproj", "{51A6B345-EFCF-4B84-B863-447B72E8E381}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureEnterpriseApplicationOrchestrator.Tests", "AzureEnterpriseApplicationOrchestrator.Tests\AzureEnterpriseApplicationOrchestrator.Tests.csproj", "{4A6C5ECE-9D2E-EDFA-1707-7CEB2949BF4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +17,15 @@ Global
 		{51A6B345-EFCF-4B84-B863-447B72E8E381}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51A6B345-EFCF-4B84-B863-447B72E8E381}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51A6B345-EFCF-4B84-B863-447B72E8E381}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A6C5ECE-9D2E-EDFA-1707-7CEB2949BF4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A6C5ECE-9D2E-EDFA-1707-7CEB2949BF4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A6C5ECE-9D2E-EDFA-1707-7CEB2949BF4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A6C5ECE-9D2E-EDFA-1707-7CEB2949BF4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DA3FE492-51E1-450E-938C-259942704D0D}
 	EndGlobalSection
 EndGlobal
