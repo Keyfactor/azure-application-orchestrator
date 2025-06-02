@@ -188,11 +188,12 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 Azure [App Registration/Application certificates](https://learn.microsoft.com/en-us/entra/identity-platform/certificate-credentials)
 are typically used for client authentication by applications and are typically public key only in Azure. The general
 model by which these credentials are consumed is that the certificate and private key are accessible by the Application
-using the App Registration, and are passed to the service that is authenticating the Application. The Azure App
+using the App Registration, and are passed to the service authenticating the Application. The Azure App
 Registration and Enterprise Application Orchestrator extension implements the Inventory, Management Add, Management
 Remove, and Discovery job types for managing these certificates.
 
-> [!WARNING] AzureApp "Azure App Registration (Application)" is **Deprecated**. Please use **AzureApp2** "Azure App
+> [!WARNING]
+> AzureApp "Azure App Registration (Application)" is **Deprecated**. Please use **AzureApp2** "Azure App
 > Registration 2 (Application)" instead.
 
 
@@ -316,7 +317,8 @@ Management Remove operation removes the certificate from the Enterprise Applicat
 as removing the SSO/SAML signing certificate. The Discovery operation discovers all Enterprise Applications/Service
 Principals in the tenant.
 
-> [!WARNING] AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** Azure
+> [!WARNING]
+> AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** Azure
 > "Enterprise Application 2 (Service Principal)" instead.
 
 
