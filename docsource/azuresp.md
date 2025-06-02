@@ -9,7 +9,8 @@ Management Remove operation removes the certificate from the Enterprise Applicat
 as removing the SSO/SAML signing certificate. The Discovery operation discovers all Enterprise Applications/Service
 Principals in the tenant.
 
-> [!WARNING] AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** Azure
+> [!WARNING]
+> AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** Azure
 > "Enterprise Application 2 (Service Principal)" instead.
 
 ## Requirements
