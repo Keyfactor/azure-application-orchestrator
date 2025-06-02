@@ -196,9 +196,6 @@ Remove, and Discovery job types for managing these certificates.
 > AzureApp "Azure App Registration (Application)" is **Deprecated**. Please use **AzureApp2** "Azure App
 > Registration 2 (Application)" instead.
 
-
-
-
 #### Azure App Registration (Application) Requirements
 
 Application certificates are used for client authentication and are typically public key only. No additional
