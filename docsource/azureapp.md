@@ -7,7 +7,7 @@ using the App Registration, and are passed to the service that is authenticating
 Registration and Enterprise Application Orchestrator extension implements the Inventory, Management Add, Management
 Remove, and Discovery job types for managing these certificates.
 
-> **WARNING** AzureApp "Azure App Registration (Application)" is **Deprecated**. Please use **AzureApp2** "Azure App
+> [!WARNING] AzureApp "Azure App Registration (Application)" is **Deprecated**. Please use **AzureApp2** "Azure App
 > Registration 2 (Application)" instead.
 
 ## Requirements
