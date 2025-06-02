@@ -19,4 +19,3 @@ number
 of [Certificates and Secrets](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app#add-credentials).
 Unless the Discovery job is used, you should collect the Application IDs for each App Registration that contains
 certificates to be managed.
-

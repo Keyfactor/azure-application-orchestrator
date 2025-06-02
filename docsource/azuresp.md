@@ -10,7 +10,7 @@ as removing the SSO/SAML signing certificate. The Discovery operation discovers 
 Principals in the tenant.
 
 > [!WARNING]
-> AzureSP "Azure Enterprise Application (Service Principal)" is **Depricated**. Please use **AzureSP2** Azure
+> AzureSP "Azure Enterprise Application (Service Principal)" is **Deprecated**. Please use **AzureSP2** Azure
 > "Enterprise Application 2 (Service Principal)" instead.
 
 ## Requirements
