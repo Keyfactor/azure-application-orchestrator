@@ -485,14 +485,44 @@ public class GraphClient : IAzureGraphClient
         List<string> oids = new();
         OperationResult<IEnumerable<string>> result = new(oids);
 
-        _logger.LogDebug($"Retrieving application registrations for tenant ID \"{_tenantId}\"");
-        ApplicationCollectionResponse apps;
+        _logger.LogDebug($"Retrieving Applications for tenant ID \"{_tenantId}\"");
+        List<Application> allApplications = new List<Application>();
         try
         {
-            apps = _graphClient.Applications.GetAsync((requestConfiguration) =>
+            var spsResponse = _graphClient.Applications.GetAsync(requestConfiguration =>
+            {
+                requestConfiguration.QueryParameters.Top = 500;
+            }).Result;
+
+            if (spsResponse?.Value == null)
+            {
+                _logger.LogWarning("No Applications found.");
+                return result;
+            }
+
+            // Create the PageIterator to handle pagination
+            var pageIterator = PageIterator<Application, ApplicationCollectionResponse>
+                .CreatePageIterator(
+                    _graphClient,
+                    spsResponse,
+                    // Callback executed for each Application in the collection
+                    (application) =>
                     {
-                        requestConfiguration.QueryParameters.Top = 999;
-                    }).Result;
+                        // Add each application to the list
+                        allApplications.Add(application);
+                        return true; // Continue to the next item
+                    },
+                    // Configure subsequent page requests
+                    (request) =>
+                    {
+                        _logger.LogDebug("Fetching the next page of applications...");
+                        return request;
+                    });
+
+            // Execute the pagination
+            pageIterator.IterateAsync().Wait();
+
+            _logger.LogInformation($"Successfully retrieved {allApplications.Count} applications.");
         }
         catch (AggregateException e)
         {
@@ -500,15 +530,15 @@ public class GraphClient : IAzureGraphClient
             throw;
         }
 
-        if (apps?.Value == null || apps.Value.Count == 0)
+        if (allApplications.Count == 0)
         {
-            _logger.LogWarning($"No application registrations found for tenant ID \"{_tenantId}\"");
+            _logger.LogWarning($"No Applications found for tenant ID \"{_tenantId}\"");
             return result;
         }
 
-        foreach (Application app in apps.Value)
+        foreach (Application app in allApplications)
         {
-            _logger.LogDebug($"Found application \"{app.DisplayName}\" ({app.Id})");
+            _logger.LogDebug($"Found Application \"{app.DisplayName}\" ({app.Id})");
 
             if (string.IsNullOrEmpty(app.Id))
             {
@@ -529,13 +559,43 @@ public class GraphClient : IAzureGraphClient
         OperationResult<IEnumerable<string>> result = new(oids);
 
         _logger.LogDebug($"Retrieving Service Principals for tenant ID \"{_tenantId}\"");
-        ServicePrincipalCollectionResponse sps;
+        List<ServicePrincipal> allServicePrincipals = new List<ServicePrincipal>();
         try
         {
-            sps = _graphClient.ServicePrincipals.GetAsync((requestConfiguration) =>
+            var spsResponse = _graphClient.ServicePrincipals.GetAsync(requestConfiguration =>
             {
-                requestConfiguration.QueryParameters.Top = 999;
+                requestConfiguration.QueryParameters.Top = 500;
             }).Result;
+
+            if (spsResponse?.Value == null)
+            {
+                _logger.LogWarning("No service principals found.");
+                return result;
+            }
+
+            // Create the PageIterator to handle pagination
+            var pageIterator = PageIterator<ServicePrincipal, ServicePrincipalCollectionResponse>
+                .CreatePageIterator(
+                    _graphClient,
+                    spsResponse,
+                    // Callback executed for each Service Principal in the collection
+                    (servicePrincipal) =>
+                    {
+                        // Add each service principal to the list
+                        allServicePrincipals.Add(servicePrincipal);
+                        return true; // Continue to the next item
+                    },
+                    // Configure subsequent page requests
+                    (request) =>
+                    {
+                        _logger.LogDebug("Fetching the next page of service principals...");
+                        return request;
+                    });
+
+            // Execute the pagination
+            pageIterator.IterateAsync().Wait();
+
+            _logger.LogInformation($"Successfully retrieved {allServicePrincipals.Count} service principals.");
         }
         catch (AggregateException e)
         {
@@ -543,13 +603,13 @@ public class GraphClient : IAzureGraphClient
             throw;
         }
 
-        if (sps?.Value == null || sps.Value.Count == 0)
+        if (allServicePrincipals.Count == 0)
         {
             _logger.LogWarning($"No Service Principals found for tenant ID \"{_tenantId}\"");
             return result;
         }
 
-        foreach (ServicePrincipal sp in sps.Value)
+        foreach (ServicePrincipal sp in allServicePrincipals)
         {
             _logger.LogDebug($"Found SP \"{sp.DisplayName}\" ({sp.Id})");
 
@@ -571,30 +631,60 @@ public class GraphClient : IAzureGraphClient
         List<string> appIds = new();
         OperationResult<IEnumerable<string>> result = new(appIds);
 
-        _logger.LogDebug($"Retrieving application registrations for tenant ID \"{_tenantId}\"");
-        ApplicationCollectionResponse apps;
+        _logger.LogDebug($"Retrieving Applications in tenant ID \"{_tenantId}\"");
+        List<Application> allApplications = new List<Application>();
         try
         {
-            apps = _graphClient.Applications.GetAsync((requestConfiguration) =>
+            var spsResponse = _graphClient.Applications.GetAsync(requestConfiguration =>
+            {
+                requestConfiguration.QueryParameters.Top = 500;
+            }).Result;
+
+            if (spsResponse?.Value == null)
+            {
+                _logger.LogWarning("No applications found.");
+                return result;
+            }
+
+            // Create the PageIterator to handle pagination
+            var pageIterator = PageIterator<Application, ApplicationCollectionResponse>
+                .CreatePageIterator(
+                    _graphClient,
+                    spsResponse,
+                    // Callback executed for each Application in the collection
+                    (application) =>
                     {
-                        requestConfiguration.QueryParameters.Top = 999;
-                    }).Result;
+                        // Add each application to the list
+                        allApplications.Add(application);
+                        return true; // Continue to the next item
+                    },
+                    // Configure subsequent page requests
+                    (request) =>
+                    {
+                        _logger.LogDebug("Fetching the next page of applications...");
+                        return request;
+                    });
+
+            // Execute the pagination
+            pageIterator.IterateAsync().Wait();
+
+            _logger.LogInformation($"Successfully retrieved {allApplications.Count} applications.");
         }
         catch (AggregateException e)
         {
-            _logger.LogError($"Unable to retrieve application registrations for tenant ID \"{_tenantId}\": {e}");
+            _logger.LogError($"Unable to retrieve Applications for tenant ID \"{_tenantId}\": {e}");
             throw;
         }
 
-        if (apps?.Value == null || apps.Value.Count == 0)
+        if (allApplications.Count == 0)
         {
-            _logger.LogWarning($"No application registrations found for tenant ID \"{_tenantId}\"");
+            _logger.LogWarning($"No Applications found for tenant ID \"{_tenantId}\"");
             return result;
         }
 
-        foreach (Application app in apps.Value)
+        foreach (Application app in allApplications)
         {
-            _logger.LogDebug($"Found application \"{app.DisplayName}\" ({app.Id})");
+            _logger.LogDebug($"Found Application \"{app.DisplayName}\" ({app.Id})");
 
             if (string.IsNullOrEmpty(app.AppId))
             {
@@ -615,13 +705,43 @@ public class GraphClient : IAzureGraphClient
         OperationResult<IEnumerable<string>> result = new(appIds);
 
         _logger.LogDebug($"Retrieving Service Principals for tenant ID \"{_tenantId}\"");
-        ServicePrincipalCollectionResponse sps;
+        List<ServicePrincipal> allServicePrincipals = new List<ServicePrincipal>();
         try
         {
-            sps = _graphClient.ServicePrincipals.GetAsync((requestConfiguration) =>
+            var spsResponse = _graphClient.ServicePrincipals.GetAsync(requestConfiguration =>
             {
-                requestConfiguration.QueryParameters.Top = 999;
+                requestConfiguration.QueryParameters.Top = 500;
             }).Result;
+
+            if (spsResponse?.Value == null)
+            {
+                _logger.LogWarning("No service principals found.");
+                return result;
+            }
+
+            // Create the PageIterator to handle pagination
+            var pageIterator = PageIterator<ServicePrincipal, ServicePrincipalCollectionResponse>
+                .CreatePageIterator(
+                    _graphClient,
+                    spsResponse,
+                    // Callback executed for each Service Principal in the collection
+                    (servicePrincipal) =>
+                    {
+                        // Add each service principal to the list
+                        allServicePrincipals.Add(servicePrincipal);
+                        return true; // Continue to the next item
+                    },
+                    // Configure subsequent page requests
+                    (request) =>
+                    {
+                        _logger.LogDebug("Fetching the next page of service principals...");
+                        return request;
+                    });
+
+            // Execute the pagination
+            pageIterator.IterateAsync().Wait();
+
+            _logger.LogInformation($"Successfully retrieved {allServicePrincipals.Count} service principals.");
         }
         catch (AggregateException e)
         {
@@ -629,13 +749,13 @@ public class GraphClient : IAzureGraphClient
             throw;
         }
 
-        if (sps?.Value == null || sps.Value.Count == 0)
+        if (allServicePrincipals.Count == 0)
         {
             _logger.LogWarning($"No Service Principals found for tenant ID \"{_tenantId}\"");
             return result;
         }
 
-        foreach (ServicePrincipal sp in sps.Value)
+        foreach (ServicePrincipal sp in allServicePrincipals)
         {
             _logger.LogDebug($"Found SP \"{sp.DisplayName}\" ({sp.Id})");
 
