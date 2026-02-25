@@ -1,5 +1,5 @@
 - 4.1.1
-  - Updated the following packages to eliminiate vulnerabilities:
+  - Updated the following packages to eliminate vulnerabilities:
     - Azure.Core
     - Azure.Identity
     - Newtonsoft.Json
