@@ -1,3 +1,6 @@
+- 4.2.0
+  - Added PAM Support for Azure App Registrations and Service Principals.
+
 - 4.1.1
   - Updated the following packages to eliminate vulnerabilities:
     - Azure.Core
