@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using AzureEnterpriseApplicationOrchestrator.Client;
 using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 
 namespace AzureEnterpriseApplicationOrchestrator.AzureApp2Jobs;
 
@@ -30,6 +31,17 @@ public class Discovery : IDiscoveryJobExtension
     private bool _clientInitializedByInjection = false;
 
     ILogger _logger = LogHandler.GetClassLogger<Discovery>();
+
+    public IPAMSecretResolver _resolver;
+    public Discovery(IPAMSecretResolver resolver)
+    {
+        _resolver = resolver;
+    }
+
+    public Discovery()
+    {
+            
+    }
 
     public JobResult ProcessJob(DiscoveryJobConfiguration config, SubmitDiscoveryUpdate callback)
     {
@@ -49,11 +61,14 @@ public class Discovery : IDiscoveryJobExtension
         {
             _logger.LogTrace($"Processing tenantId: {tenantId}");
 
-            // If the client was not injected, create a new one with the tenant ID determied by
+            // If the client was not injected, create a new one with the tenant ID determined by
             // the TenantIdsToSearchFromJobConfig method
             if (!_clientInitializedByInjection)
             {
-                Client = new GraphJobClientBuilder<GraphClient.Builder>()
+                var clientBuilder = new GraphJobClientBuilder<GraphClient.Builder>();
+                clientBuilder.resolver = _resolver;
+
+                Client = clientBuilder
                     .WithDiscoveryJobConfiguration(config, tenantId)
                     .Build();
             }

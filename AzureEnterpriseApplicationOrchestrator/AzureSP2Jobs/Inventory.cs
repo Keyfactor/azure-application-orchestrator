@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using AzureEnterpriseApplicationOrchestrator.Client;
 using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AzureEnterpriseApplicationOrchestrator.AzureSP2Jobs;
 
@@ -30,13 +31,27 @@ public class Inventory : IInventoryJobExtension
 
     ILogger _logger = LogHandler.GetClassLogger<Inventory>();
 
+    public IPAMSecretResolver _resolver;
+    public Inventory(IPAMSecretResolver resolver)
+    {
+        _resolver = resolver;
+    }
+
+    public Inventory()
+    {
+
+    }
+
     public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate cb)
     {
         _logger.LogDebug($"Beginning Azure Service Principal 2 (Enterprise Application/Service Principal) Inventory Job");
 
         if (Client == null)
         {
-            Client = new GraphJobClientBuilder<GraphClient.Builder>()
+            var clientBuilder = new GraphJobClientBuilder<GraphClient.Builder>();
+            clientBuilder.resolver = _resolver;
+
+            Client = clientBuilder
                 .WithV2CertificateStoreDetails(config.CertificateStoreDetails)
                 .Build();
         }
