@@ -19,6 +19,7 @@ using AzureEnterpriseApplicationOrchestrator.Client;
 using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace AzureEnterpriseApplicationOrchestrator.AzureApp2Jobs;
@@ -26,9 +27,21 @@ namespace AzureEnterpriseApplicationOrchestrator.AzureApp2Jobs;
 public class Inventory : IInventoryJobExtension
 {
     public IAzureGraphClient Client { get; set; }
+
     public string ExtensionName => "AzureApp2";
 
     ILogger _logger = LogHandler.GetClassLogger<Inventory>();
+
+    public IPAMSecretResolver _resolver;
+    public Inventory(IPAMSecretResolver resolver)
+    {
+        _resolver = resolver;
+    }
+
+    public Inventory()
+    {
+        
+    }
 
     public JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate cb)
     {
@@ -36,7 +49,10 @@ public class Inventory : IInventoryJobExtension
 
         if (Client == null)
         {
-            Client = new GraphJobClientBuilder<GraphClient.Builder>()
+            var clientBuilder = new GraphJobClientBuilder<GraphClient.Builder>();
+            clientBuilder.resolver = _resolver;
+
+            Client = clientBuilder
                 .WithV2CertificateStoreDetails(config.CertificateStoreDetails)
                 .Build();
         }
