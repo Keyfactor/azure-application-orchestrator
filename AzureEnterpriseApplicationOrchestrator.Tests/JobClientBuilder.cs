@@ -108,6 +108,8 @@ public class AzureEnterpriseApplicationOrchestrator_JobClientBuilder
         // Arrange
         GraphJobClientBuilder<FakeClient.FakeBuilder> jobClientBuilderWithFakeBuilder = new();
 
+        jobClientBuilderWithFakeBuilder.resolver = new MockPAMSecretResolver();
+
         string password = "passwordpasswordpassword";
         string certName = "SPTest" + Guid.NewGuid().ToString()[..6];
         X509Certificate2 ssCert = GetSelfSignedCert(certName);
