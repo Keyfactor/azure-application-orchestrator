@@ -1,3 +1,9 @@
+- 4.1.1
+  - Updated the following packages to eliminate vulnerabilities:
+    - Azure.Core
+    - Azure.Identity
+    - Newtonsoft.Json
+
 - 4.1.0
   - Paginate discovery method to download all available App Registrations and Enterprise Applications.
   - Fix DefineDiscoveredStores.ps1 to paginate Certificate Stores that come back from Command.
