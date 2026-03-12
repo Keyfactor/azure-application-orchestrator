@@ -1,3 +1,7 @@
+- 4.1.2
+    - Updated Keyfactor.Orchestrators.Common to eliminate an issue with a revoked certificate.
+    - Updated Keyfactor.Orchestrators.IOrchestratorJobExtensions to 1.0.0.
+    - Updated Keyfactor.Logging to 1.3.0 for .Net8 version.
 - 4.1.1
   - Updated the following packages to eliminate vulnerabilities:
     - Azure.Core
