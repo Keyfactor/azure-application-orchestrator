@@ -1,3 +1,5 @@
+- 4.1.3
+    - Added .Net 10 support
 - 4.1.2
     - Updated Keyfactor.Orchestrators.Common to eliminate an issue with a revoked certificate.
     - Updated Keyfactor.Orchestrators.IOrchestratorJobExtensions to 1.0.0.
