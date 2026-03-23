@@ -7,7 +7,7 @@ namespace AzureEnterpriseApplicationOrchestrator
 {
     internal class PAMUtilities
     {
-        internal static string ResolvePAMField(ILogger logger, IPAMSecretResolver resolver, string key, string description)
+        internal static string ResolvePAMField(ILogger logger, IPAMSecretResolver resolver, string description, string key)
         {
             logger.MethodEntry();
             logger.LogDebug($"Fetching {description} value from PAM");
