@@ -1,5 +1,6 @@
 - 4.2.0
   - Added PAM Support for Azure App Registrations and Service Principals.
+  - Updated logging to remove sensitive information.
 
 - 4.1.1
   - Updated the following packages to eliminate vulnerabilities:

@@ -23,6 +23,7 @@ using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AzureEnterpriseApplicationOrchestrator;
 
@@ -102,7 +103,16 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
 
     public GraphJobClientBuilder<TBuilder> WithV2CertificateStoreDetails(CertificateStore details)
     {
-        _logger.LogDebug($"Builder - Setting values from V2 Certificate Store Details: {JsonConvert.SerializeObject(details)}");
+        _logger.LogDebug($"Builder - Setting values from V2 Certificate Store Details: ClientMachine:{details.ClientMachine}, StorePath:{details.StorePath}, StorePassword:********, Type:{details.Type}");
+
+        var serialized = details.Properties;
+        var masked = Regex.Replace(
+            serialized,
+            @"(?<=""(?:ServerPassword)"":"")[^""]*(?="")",
+            "****"
+        );
+
+        _logger.LogDebug($"Builder - Property values from Certificate Store: {masked}");
 
         CertificateStoreV2Properties properties = JsonConvert.DeserializeObject<CertificateStoreV2Properties>(details.Properties);
 
