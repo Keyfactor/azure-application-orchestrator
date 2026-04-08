@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AzureEnterpriseApplicationOrchestrator.Client;
+using Keyfactor.Logging;
+using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
+using Microsoft.Extensions.Logging;
+using Microsoft.Graph.Models.ExternalConnectors;
+using Newtonsoft.Json;
 using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using AzureEnterpriseApplicationOrchestrator.Client;
-using Keyfactor.Logging;
-using Keyfactor.Orchestrators.Extensions;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace AzureEnterpriseApplicationOrchestrator;
 
@@ -28,6 +31,7 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
 {
     public TBuilder _builder = new TBuilder();
     private ILogger _logger = LogHandler.GetClassLogger<GraphJobClientBuilder<TBuilder>>();
+    public IPAMSecretResolver resolver;
 
     public record CertificateStoreProperties
     {
@@ -52,6 +56,9 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
 
         CertificateStoreProperties properties = JsonConvert.DeserializeObject<CertificateStoreProperties>(details.Properties);
 
+        string serverUserName = PAMUtilities.ResolvePAMField(_logger, resolver, "Server UserName", properties.ServerUsername);
+        string serverPassword = PAMUtilities.ResolvePAMField(_logger, resolver, "Server Password", properties.ServerPassword);
+
         _logger.LogTrace($"Builder - ClientMachine  => TenantId:            {details.ClientMachine}");
         _logger.LogTrace($"Builder - ServerUsername => ApplicationId:       {properties.ServerUsername}");
         _logger.LogTrace($"Builder - AzureCloud     => AzureCloud:          {properties.AzureCloud}");
@@ -74,20 +81,20 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
 
         _builder
             .WithTenantId(details.ClientMachine)
-            .WithApplicationId(properties.ServerUsername)
+            .WithApplicationId(serverUserName)
             .WithAzureCloud(properties.AzureCloud);
 
         if (string.IsNullOrWhiteSpace(properties.ClientCertificate))
         {
             _logger.LogDebug("Client certificate not present - Using Client Secret authentication");
             _logger.LogTrace($"Builder - ServerPassword => ClientSecret:        {properties.ServerPassword}");
-            _builder.WithClientSecret(properties.ServerPassword);
+            _builder.WithClientSecret(serverPassword);
         }
         else
         {
             _logger.LogDebug("Client certificate present - Using Client Certificate authentication");
             _logger.LogTrace($"Builder - ServerPassword => ClientCertificateKeyPassword:        {properties.ServerPassword}");
-            X509Certificate2 clientCert = SerializeClientCertificate(properties.ClientCertificate, properties.ServerPassword);
+            X509Certificate2 clientCert = SerializeClientCertificate(properties.ClientCertificate, serverPassword);
             _builder.WithClientCertificate(clientCert);
         }
 
@@ -96,9 +103,21 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
 
     public GraphJobClientBuilder<TBuilder> WithV2CertificateStoreDetails(CertificateStore details)
     {
-        _logger.LogDebug($"Builder - Setting values from V2 Certificate Store Details: {JsonConvert.SerializeObject(details)}");
+        _logger.LogDebug($"Builder - Setting values from V2 Certificate Store Details: ClientMachine:{details.ClientMachine}, StorePath:{details.StorePath}, StorePassword:********, Type:{details.Type}");
+
+        var serialized = details.Properties;
+        var masked = Regex.Replace(
+            serialized,
+            @"(?<=""(?:ServerPassword)"":"")[^""]*(?="")",
+            "****"
+        );
+
+        _logger.LogDebug($"Builder - Property values from Certificate Store: {masked}");
 
         CertificateStoreV2Properties properties = JsonConvert.DeserializeObject<CertificateStoreV2Properties>(details.Properties);
+
+        string serverUserName = PAMUtilities.ResolvePAMField(_logger, resolver, "Server UserName", properties.ServerUsername);
+        string serverPassword = PAMUtilities.ResolvePAMField(_logger, resolver, "Server Password", properties.ServerPassword);
 
         _logger.LogTrace($"Builder - ClientMachine             => TenantId:                     {details.ClientMachine}");
         _logger.LogTrace($"Builder - StorePath                 => TargetApplicationObjectId:    {details.StorePath}");
@@ -115,15 +134,15 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
 
         _builder
             .WithTenantId(details.ClientMachine)
-            .WithApplicationId(properties.ServerUsername)
+            .WithApplicationId(serverUserName)
             .WithTargetObjectId(normalizedObjectID)
             .WithAzureCloud(properties.AzureCloud);
 
-        if (!string.IsNullOrEmpty(properties.ServerPassword))
+        if (!string.IsNullOrEmpty(serverPassword))
         {
             _logger.LogDebug("Client certificate not present - Using Client Secret authentication");
             _logger.LogTrace($"Builder - ServerPassword            => ClientSecret:                 {properties.ServerPassword}");
-            _builder.WithClientSecret(properties.ServerPassword);
+            _builder.WithClientSecret(serverPassword);
         }
         else if (!string.IsNullOrEmpty(properties.ClientCertificate))
         {
@@ -144,10 +163,13 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
         _logger.LogTrace($"Builder - ServerUsername => ApplicationId: {config.ServerUsername}");
         _logger.LogTrace($"Builder - ServerPassword => ClientSecret: {config.ServerPassword}");
 
+        string serverUserName = PAMUtilities.ResolvePAMField(_logger, resolver, "Server UserName", config.ServerUsername);
+        string serverPassword = PAMUtilities.ResolvePAMField(_logger, resolver, "Server Password", config.ServerPassword);
+
         _builder
             .WithTenantId(tenantId)
-            .WithApplicationId(config.ServerUsername)
-            .WithClientSecret(config.ServerPassword);
+            .WithApplicationId(serverUserName)
+            .WithClientSecret(serverPassword);
 
         return this;
     }

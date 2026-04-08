@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using AzureEnterpriseApplicationOrchestrator.Client;
 using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace AzureEnterpriseApplicationOrchestrator.AzureSPJobs;
 
@@ -28,6 +29,17 @@ public class Management : IManagementJobExtension
 
     ILogger _logger = LogHandler.GetClassLogger<Management>();
 
+    public IPAMSecretResolver _resolver;
+    public Management(IPAMSecretResolver resolver)
+    {
+        _resolver = resolver;
+    }
+
+    public Management()
+    {
+
+    }
+
     public JobResult ProcessJob(ManagementJobConfiguration config)
     {
         _logger.LogWarning("Azure Service Principal (Enterprise Application/Service Principal) is DEPRICATED and will be removed in a future version. Please use AzureSP2");
@@ -36,7 +48,10 @@ public class Management : IManagementJobExtension
 
         if (Client == null)
         {
-            Client = new GraphJobClientBuilder<GraphClient.Builder>()
+            var clientBuilder = new GraphJobClientBuilder<GraphClient.Builder>();
+            clientBuilder.resolver = _resolver;
+
+            Client = clientBuilder
                 .WithV1CertificateStoreDetails(config.CertificateStoreDetails, ExtensionName)
                 .Build();
         }
