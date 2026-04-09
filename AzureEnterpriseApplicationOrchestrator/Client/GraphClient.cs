@@ -244,7 +244,7 @@ public class GraphClient : IAzureGraphClient
         // Calculate the SHA256 hash of the certificate's thumbprint
         byte[] customKeyId = Encoding.UTF8.GetBytes(certificate.Thumbprint)[..32];
 
-        _logger.LogDebug($"Adding certificate called \"{certificateName}\" to application ID \"{_targetObjectId}\" (custom key ID {Encoding.UTF8.GetString(customKeyId)})");
+        _logger.LogDebug($"Adding certificate called \"{certificateName}\" to Object ID \"{_targetObjectId}\" (custom key ID {Encoding.UTF8.GetString(customKeyId)})");
 
         // Get the application object
         Application application = GetApplication();
@@ -252,7 +252,7 @@ public class GraphClient : IAzureGraphClient
         char[] certPem = PemEncoding.Write("CERTIFICATE", certificate.RawData);
 
         // Update the application object
-        _logger.LogDebug($"Updating application object for application ID \"{_targetObjectId}\"");
+        _logger.LogDebug($"Updating application object for Object ID \"{_targetObjectId}\"");
         try
         {
             _graphClient.Applications[_targetObjectId].PatchAsync(new Application
@@ -302,7 +302,7 @@ public class GraphClient : IAzureGraphClient
             keysToKeep.Add(keyCredential);
         }
 
-        _logger.LogDebug($"Updating application object for application ID \"{_targetObjectId}\"");
+        _logger.LogDebug($"Updating application object for Object ID \"{_targetObjectId}\"");
         try
         {
             _graphClient.Applications[_targetObjectId].PatchAsync(new Application
@@ -339,13 +339,13 @@ public class GraphClient : IAzureGraphClient
 
         // Calculate the SHA256 hash of the certificate's thumbprint
         byte[] customKeyId = Encoding.UTF8.GetBytes(certificate.Thumbprint)[..32];
-        _logger.LogDebug($"Adding certificate called \"{certificateName}\" to application ID \"{_targetObjectId}\" (custom key ID {Encoding.UTF8.GetString(customKeyId)})");
+        _logger.LogDebug($"Adding certificate called \"{certificateName}\" to Object ID \"{_targetObjectId}\" (custom key ID {Encoding.UTF8.GetString(customKeyId)})");
 
         // Create a GUID to represent the key ID and to link the key to the certificate
         Guid privKeyGuid = Guid.NewGuid();
 
         // Update the service principal object
-        _logger.LogDebug($"Updating service principal object for application ID \"{_targetObjectId}\"");
+        _logger.LogDebug($"Updating service principal object for Object ID \"{_targetObjectId}\"");
         try
         {
             _graphClient.ServicePrincipals[_targetObjectId].PatchAsync(new ServicePrincipal
@@ -451,7 +451,7 @@ public class GraphClient : IAzureGraphClient
         }
 
         // Update the service principal object
-        _logger.LogDebug($"Updating service principal object for application ID \"{_targetObjectId}\"");
+        _logger.LogDebug($"Updating service principal object for Object ID \"{_targetObjectId}\"");
         try
         {
             _graphClient.ServicePrincipals[_targetObjectId].PatchAsync(new ServicePrincipal
@@ -779,7 +779,7 @@ public class GraphClient : IAzureGraphClient
 
         if (keyCredentials == null || keyCredentials.Count == 0)
         {
-            _logger.LogWarning($"No key credentials found for application ID \"{_targetObjectId}\"");
+            _logger.LogWarning($"No key credentials found for Object ID \"{_targetObjectId}\"");
             return result;
         }
 
@@ -874,7 +874,7 @@ public class GraphClient : IAzureGraphClient
 
     protected Application GetApplication()
     {
-        _logger.LogDebug($"Retrieving application for application ID \"{_targetObjectId}\"");
+        _logger.LogDebug($"Retrieving application for Object ID \"{_targetObjectId}\"");
 
         Application app;
 
@@ -889,7 +889,7 @@ public class GraphClient : IAzureGraphClient
         }
         catch (AggregateException ex)
         {
-            _logger.LogError($"Error retrieving application for application ID \"{_targetObjectId}\": {ex}");
+            _logger.LogError($"Error retrieving application for Object ID \"{_targetObjectId}\": {ex}");
             throw;
         }
 
@@ -898,7 +898,7 @@ public class GraphClient : IAzureGraphClient
 
     protected ServicePrincipal GetServicePrincipal()
     {
-        _logger.LogDebug($"Retrieving service principal for application ID \"{_targetObjectId}\"");
+        _logger.LogDebug($"Retrieving service principal for Object ID \"{_targetObjectId}\"");
 
         ServicePrincipal sp;
 
@@ -911,7 +911,7 @@ public class GraphClient : IAzureGraphClient
         }
         catch (AggregateException ex)
         {
-            _logger.LogError($"Error retrieving service principal for application ID \"{_targetObjectId}\": {ex}");
+            _logger.LogError($"Error retrieving service principal for Object ID \"{_targetObjectId}\": {ex}");
             throw;
         }
 

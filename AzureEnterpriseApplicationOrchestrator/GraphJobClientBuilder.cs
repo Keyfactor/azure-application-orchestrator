@@ -87,13 +87,11 @@ public class GraphJobClientBuilder<TBuilder> where TBuilder : IAzureGraphClientB
         if (string.IsNullOrWhiteSpace(properties.ClientCertificate))
         {
             _logger.LogDebug("Client certificate not present - Using Client Secret authentication");
-            _logger.LogTrace($"Builder - ServerPassword => ClientSecret:        {properties.ServerPassword}");
             _builder.WithClientSecret(serverPassword);
         }
         else
         {
             _logger.LogDebug("Client certificate present - Using Client Certificate authentication");
-            _logger.LogTrace($"Builder - ServerPassword => ClientCertificateKeyPassword:        {properties.ServerPassword}");
             X509Certificate2 clientCert = SerializeClientCertificate(properties.ClientCertificate, serverPassword);
             _builder.WithClientCertificate(clientCert);
         }
