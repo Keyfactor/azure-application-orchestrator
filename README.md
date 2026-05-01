@@ -336,6 +336,8 @@ the Keyfactor Command Portal
 
 
 
+
+
    </details>
 </details>
 
@@ -493,6 +495,8 @@ the Keyfactor Command Portal
 
    ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-dialog.png)
    ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-validation-options-dialog.png)
+
+
 
 
 
