@@ -91,13 +91,6 @@ New-StoreType "AzureApp" @'
       "Type": "MultipleChoice",
       "DefaultValue": "public,china,germany,government",
       "Required": false
-    },
-    {
-      "Name": "ServerUseSsl",
-      "DisplayName": "Use SSL",
-      "Type": "Bool",
-      "DefaultValue": "true",
-      "Required": true
     }
   ],
   "PasswordOptions": {
@@ -143,13 +136,6 @@ New-StoreType "AzureSP" @'
       "Type": "MultipleChoice",
       "DefaultValue": "public,china,germany,government",
       "Required": false
-    },
-    {
-      "Name": "ServerUseSsl",
-      "DisplayName": "Use SSL",
-      "Type": "Bool",
-      "DefaultValue": "true",
-      "Required": true
     }
   ],
   "PasswordOptions": {
