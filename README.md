@@ -336,6 +336,14 @@ the Keyfactor Command Portal
 
 
 
+   ###### Use SSL
+   Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it.
+
+   ![AzureApp Custom Field - ServerUseSsl](docsource/images/AzureApp-custom-field-ServerUseSsl-dialog.png)
+   ![AzureApp Custom Field - ServerUseSsl](docsource/images/AzureApp-custom-field-ServerUseSsl-validation-options-dialog.png)
+
+
+
 
 
    </details>
