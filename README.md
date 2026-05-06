@@ -64,9 +64,9 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 This integration is compatible with Keyfactor Universal Orchestrator version 10.4 and later.
 
 ## Support
-The Azure App Registration and Enterprise Application Universal Orchestrator extension If you have a support issue, please open a support ticket by either contacting your Keyfactor representative or via the Keyfactor Support Portal at https://support.keyfactor.com.
+The Azure App Registration and Enterprise Application Universal Orchestrator extension is supported by Keyfactor. If you require support for any issues or have feature request, please open a support ticket by either contacting your Keyfactor representative or via the Keyfactor Support Portal at https://support.keyfactor.com.
 
-> To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
+> If you want to contribute bug fixes or additional enhancements, use the **[Pull requests](../../pulls)** tab.
 
 ## Requirements & Prerequisites
 
@@ -176,7 +176,7 @@ Microsoft Graph API. The extension uses the following Graph API endpoints to man
 
 ## Certificate Store Types
 
-To use the Azure App Registration and Enterprise Application Universal Orchestrator extension, you **must** create the Certificate Store Types required for your usecase. This only needs to happen _once_ per Keyfactor Command instance.
+To use the Azure App Registration and Enterprise Application Universal Orchestrator extension, you **must** create the Certificate Store Types required for your use-case. This only needs to happen _once_ per Keyfactor Command instance.
 
 The Azure App Registration and Enterprise Application Universal Orchestrator extension implements 4 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types.
 
@@ -223,7 +223,7 @@ certificates to be managed.
 #### Store Type Creation
 
 ##### Using kfutil:
-`kfutil` is a custom CLI for the Keyfactor Command API and can be used to created certificate store types.
+`kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
    <details><summary>Click to expand AzureApp kfutil details</summary>
 
@@ -294,11 +294,49 @@ the Keyfactor Command Portal
    | ServerPassword | Server Password | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. | Secret |  | 🔲 Unchecked |
    | ClientCertificate | Client Certificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. | Secret |  | 🔲 Unchecked |
    | AzureCloud | Azure Global Cloud Authority Host | Specifies the Azure Cloud instance used by the organization. | MultipleChoice | public,china,germany,government | 🔲 Unchecked |
-   | ServerUseSsl | Use SSL | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. | Bool | true | ✅ Checked |
 
    The Custom Fields tab should look like this:
 
    ![AzureApp Custom Fields Tab](docsource/images/AzureApp-custom-fields-store-type-dialog.png)
+
+
+   ###### Server Username
+   The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Client Certificate
+   The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field.
+
+   ![AzureApp Custom Field - ClientCertificate](docsource/images/AzureApp-custom-field-ClientCertificate-dialog.png)
+   ![AzureApp Custom Field - ClientCertificate](docsource/images/AzureApp-custom-field-ClientCertificate-validation-options-dialog.png)
+
+
+
+   ###### Azure Global Cloud Authority Host
+   Specifies the Azure Cloud instance used by the organization.
+
+   ![AzureApp Custom Field - AzureCloud](docsource/images/AzureApp-custom-field-AzureCloud-dialog.png)
+   ![AzureApp Custom Field - AzureCloud](docsource/images/AzureApp-custom-field-AzureCloud-validation-options-dialog.png)
+
+
+
+
 
    </details>
 </details>
@@ -347,7 +385,7 @@ please see the [mechanics](#extension-mechanics) section.
 #### Store Type Creation
 
 ##### Using kfutil:
-`kfutil` is a custom CLI for the Keyfactor Command API and can be used to created certificate store types.
+`kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
    <details><summary>Click to expand AzureSP kfutil details</summary>
 
@@ -418,11 +456,49 @@ the Keyfactor Command Portal
    | ServerPassword | Server Password | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. | Secret |  | 🔲 Unchecked |
    | ClientCertificate | Client Certificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. | Secret |  | 🔲 Unchecked |
    | AzureCloud | Azure Global Cloud Authority Host | Specifies the Azure Cloud instance used by the organization. | MultipleChoice | public,china,germany,government | 🔲 Unchecked |
-   | ServerUseSsl | Use SSL | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. | Bool | true | ✅ Checked |
 
    The Custom Fields tab should look like this:
 
    ![AzureSP Custom Fields Tab](docsource/images/AzureSP-custom-fields-store-type-dialog.png)
+
+
+   ###### Server Username
+   The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Client Certificate
+   The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field.
+
+   ![AzureSP Custom Field - ClientCertificate](docsource/images/AzureSP-custom-field-ClientCertificate-dialog.png)
+   ![AzureSP Custom Field - ClientCertificate](docsource/images/AzureSP-custom-field-ClientCertificate-validation-options-dialog.png)
+
+
+
+   ###### Azure Global Cloud Authority Host
+   Specifies the Azure Cloud instance used by the organization.
+
+   ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-dialog.png)
+   ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-validation-options-dialog.png)
+
+
+
+
 
    </details>
 </details>
@@ -466,7 +542,7 @@ certificates to be managed.
 #### Store Type Creation
 
 ##### Using kfutil:
-`kfutil` is a custom CLI for the Keyfactor Command API and can be used to created certificate store types.
+`kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
    <details><summary>Click to expand AzureApp2 kfutil details</summary>
 
@@ -543,6 +619,53 @@ the Keyfactor Command Portal
 
    ![AzureApp2 Custom Fields Tab](docsource/images/AzureApp2-custom-fields-store-type-dialog.png)
 
+
+   ###### Server Username
+   The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/App Registration certificates.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/App Registration certificates. If Client Certificate Auth is used, you **must** select 'No Value'.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Client Certificate
+   The client certificate used to authenticate with Microsoft Graph for managing Application/App Registrations certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** check 'No Value'.
+
+   ![AzureApp2 Custom Field - ClientCertificate](docsource/images/AzureApp2-custom-field-ClientCertificate-dialog.png)
+   ![AzureApp2 Custom Field - ClientCertificate](docsource/images/AzureApp2-custom-field-ClientCertificate-validation-options-dialog.png)
+
+
+
+   ###### Client Certificate Password
+   The (optional) password that encrypts the private key in ClientCertificate.  If Client Certificate Auth is not used, you **must** check 'No Value'.
+
+   ![AzureApp2 Custom Field - ClientCertificatePassword](docsource/images/AzureApp2-custom-field-ClientCertificatePassword-dialog.png)
+   ![AzureApp2 Custom Field - ClientCertificatePassword](docsource/images/AzureApp2-custom-field-ClientCertificatePassword-validation-options-dialog.png)
+
+
+
+   ###### Azure Global Cloud Authority Host
+   Specifies the Azure Cloud instance used by the organization.
+
+   ![AzureApp2 Custom Field - AzureCloud](docsource/images/AzureApp2-custom-field-AzureCloud-dialog.png)
+   ![AzureApp2 Custom Field - AzureCloud](docsource/images/AzureApp2-custom-field-AzureCloud-validation-options-dialog.png)
+
+
+
+
+
    </details>
 </details>
 
@@ -585,7 +708,7 @@ please see the [mechanics](#extension-mechanics) section.
 #### Store Type Creation
 
 ##### Using kfutil:
-`kfutil` is a custom CLI for the Keyfactor Command API and can be used to created certificate store types.
+`kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
    <details><summary>Click to expand AzureSP2 kfutil details</summary>
 
@@ -662,6 +785,53 @@ the Keyfactor Command Portal
 
    ![AzureSP2 Custom Fields Tab](docsource/images/AzureSP2-custom-fields-store-type-dialog.png)
 
+
+   ###### Server Username
+   The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Service Principal/Enterprise Application certificates.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Service Principal/Enterprise Application certificates. If Client Certificate Auth is used, you **must** check 'No Value'.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Client Certificate
+   The client certificate used to authenticate with Microsoft Graph for managing Service Principal/Enterprise Application certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** check 'No Value'.
+
+   ![AzureSP2 Custom Field - ClientCertificate](docsource/images/AzureSP2-custom-field-ClientCertificate-dialog.png)
+   ![AzureSP2 Custom Field - ClientCertificate](docsource/images/AzureSP2-custom-field-ClientCertificate-validation-options-dialog.png)
+
+
+
+   ###### Client Certificate Password
+   The (optional) password that encrypts the private key in ClientCertificate. If Client Certificate Auth is not used or the certificate's private key is not encrypted, you **must** check 'No Value'.
+
+   ![AzureSP2 Custom Field - ClientCertificatePassword](docsource/images/AzureSP2-custom-field-ClientCertificatePassword-dialog.png)
+   ![AzureSP2 Custom Field - ClientCertificatePassword](docsource/images/AzureSP2-custom-field-ClientCertificatePassword-validation-options-dialog.png)
+
+
+
+   ###### Azure Global Cloud Authority Host
+   Specifies the Azure Cloud instance used by the organization.
+
+   ![AzureSP2 Custom Field - AzureCloud](docsource/images/AzureSP2-custom-field-AzureCloud-dialog.png)
+   ![AzureSP2 Custom Field - AzureCloud](docsource/images/AzureSP2-custom-field-AzureCloud-validation-options-dialog.png)
+
+
+
+
+
    </details>
 </details>
 
@@ -670,15 +840,14 @@ the Keyfactor Command Portal
 
 1. **Download the latest Azure App Registration and Enterprise Application Universal Orchestrator extension from GitHub.**
 
-    Navigate to the [Azure App Registration and Enterprise Application Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest). Refer to the compatibility matrix below to determine whether the `net6.0` or `net8.0` asset should be downloaded. Then, click the corresponding asset to download the zip archive.
+    Navigate to the [Azure App Registration and Enterprise Application Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest). Refer to the compatibility matrix below to determine the asset should be downloaded. Then, click the corresponding asset to download the zip archive.
 
    | Universal Orchestrator Version | Latest .NET version installed on the Universal Orchestrator server | `rollForward` condition in `Orchestrator.runtimeconfig.json` | `azure-application-orchestrator` .NET version to download |
    | --------- | ----------- | ----------- | ----------- |
    | Older than `11.0.0` | | | `net6.0` |
    | Between `11.0.0` and `11.5.1` (inclusive) | `net6.0` | | `net6.0` |
-   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` |
-   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
-   | `11.6` _and_ newer | `net8.0` | | `net8.0` |
+   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` || Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
+   | `11.6` _and_ newer | `net8.0` | | `net8.0` | 
 
     Unzip the archive containing extension assemblies to a known location.
 
@@ -733,8 +902,8 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "Azure App Registration (Application)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID that owns the Service Principal. |
@@ -744,7 +913,6 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
    | ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. |
    | ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. |
    | AzureCloud | Specifies the Azure Cloud instance used by the organization. |
-   | ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |
 
 </details>
 
@@ -774,7 +942,6 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
    | Properties.ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. |
    | Properties.ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. |
    | Properties.AzureCloud | Specifies the Azure Cloud instance used by the organization. |
-   | Properties.ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |
 
 3. **Import the CSV file to create the certificate stores**
 
@@ -824,8 +991,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "Azure Enterprise Application (Service Principal)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID that owns the Service Principal. |
@@ -835,7 +1002,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. |
    | ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. |
    | AzureCloud | Specifies the Azure Cloud instance used by the organization. |
-   | ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |
 
 </details>
 
@@ -865,7 +1031,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | Properties.ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. |
    | Properties.ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. |
    | Properties.AzureCloud | Specifies the Azure Cloud instance used by the organization. |
-   | Properties.ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |
 
 3. **Import the CSV file to create the certificate stores**
 
@@ -915,8 +1080,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "Azure App Registration 2 (Application)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID where the Application is instantiated |
@@ -1007,8 +1172,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "Azure Enterprise Application 2 (Service Principal)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID where the Service Principal is instantiated |

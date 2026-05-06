@@ -1,3 +1,13 @@
+- 4.2.0
+  - Added PAM Support for Azure App Registrations and Service Principals.
+  - Updated logging to remove sensitive information.
+
+- 4.1.1
+  - Updated the following packages to eliminate vulnerabilities:
+    - Azure.Core
+    - Azure.Identity
+    - Newtonsoft.Json
+
 - 4.1.0
   - Paginate discovery method to download all available App Registrations and Enterprise Applications.
   - Fix DefineDiscoveredStores.ps1 to paginate Certificate Stores that come back from Command.
