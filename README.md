@@ -294,7 +294,6 @@ the Keyfactor Command Portal
    | ServerPassword | Server Password | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. | Secret |  | 🔲 Unchecked |
    | ClientCertificate | Client Certificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. | Secret |  | 🔲 Unchecked |
    | AzureCloud | Azure Global Cloud Authority Host | Specifies the Azure Cloud instance used by the organization. | MultipleChoice | public,china,germany,government | 🔲 Unchecked |
-   | ServerUseSsl | Use SSL | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. | Bool | true | ✅ Checked |
 
    The Custom Fields tab should look like this:
 
@@ -465,7 +464,6 @@ the Keyfactor Command Portal
    | ServerPassword | Server Password | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. | Secret |  | 🔲 Unchecked |
    | ClientCertificate | Client Certificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. | Secret |  | 🔲 Unchecked |
    | AzureCloud | Azure Global Cloud Authority Host | Specifies the Azure Cloud instance used by the organization. | MultipleChoice | public,china,germany,government | 🔲 Unchecked |
-   | ServerUseSsl | Use SSL | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. | Bool | true | ✅ Checked |
 
    The Custom Fields tab should look like this:
 
@@ -505,14 +503,6 @@ the Keyfactor Command Portal
 
    ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-dialog.png)
    ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-validation-options-dialog.png)
-
-
-
-   ###### Use SSL
-   Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it.
-
-   ![AzureSP Custom Field - ServerUseSsl](docsource/images/AzureSP-custom-field-ServerUseSsl-dialog.png)
-   ![AzureSP Custom Field - ServerUseSsl](docsource/images/AzureSP-custom-field-ServerUseSsl-validation-options-dialog.png)
 
 
 
@@ -931,7 +921,6 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
    | ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. |
    | ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. |
    | AzureCloud | Specifies the Azure Cloud instance used by the organization. |
-   | ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |
 
 </details>
 
@@ -961,7 +950,6 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
    | Properties.ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. |
    | Properties.ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. |
    | Properties.AzureCloud | Specifies the Azure Cloud instance used by the organization. |
-   | Properties.ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |
 
 3. **Import the CSV file to create the certificate stores**
 
@@ -1022,7 +1010,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. |
    | ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. |
    | AzureCloud | Specifies the Azure Cloud instance used by the organization. |
-   | ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |
 
 </details>
 
@@ -1052,7 +1039,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | Properties.ServerPassword | A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field. |
    | Properties.ClientCertificate | The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field. |
    | Properties.AzureCloud | Specifies the Azure Cloud instance used by the organization. |
-   | Properties.ServerUseSsl | Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it. |
 
 3. **Import the CSV file to create the certificate stores**
 

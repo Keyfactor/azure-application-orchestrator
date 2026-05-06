@@ -1,3 +1,7 @@
+- 4.2.0
+  - Added PAM Support for Azure App Registrations and Service Principals.
+  - Updated logging to remove sensitive information.
+
 - 4.1.3
     - Added .Net 10 support
 - 4.1.2
