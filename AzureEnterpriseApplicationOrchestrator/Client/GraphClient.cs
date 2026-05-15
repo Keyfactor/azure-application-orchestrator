@@ -1,4 +1,4 @@
-// Copyright 2024 Keyfactor
+// Copyright 2026 Keyfactor
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -237,7 +237,6 @@ public class GraphClient : IAzureGraphClient
     public void AddApplicationCertificate(string certificateName, string certificateData)
     {
         // certificateData is a base64 encoded PFX certificate
-        _logger.LogDebug($"Certificate Base64, Line 240: {certificateData}");
         X509Certificate2 certificate = SerializeCertificate(certificateData, "");
         if (certificate.Thumbprint == null)
             throw new Exception("Could not calculate thumbprint for certificate");
@@ -333,8 +332,8 @@ public class GraphClient : IAzureGraphClient
 
     public void AddServicePrincipalCertificate(string certificateName, string certificateData, string certificatePassword)
     {
+
         // certificateData is a base64 encoded PFX certificate
-        _logger.LogDebug($"Certificate Base64, Line 337: {certificateData}");
         X509Certificate2 certificate = SerializeCertificate(certificateData, certificatePassword);
         if (certificate.Thumbprint == null)
             throw new Exception("Could not calculate thumbprint for certificate");
@@ -991,8 +990,9 @@ public class GraphClient : IAzureGraphClient
         return certificate;
     }
 
-    protected static X509Certificate2 SerializeCertificate(string certificateData, string password)
+    private X509Certificate2 SerializeCertificate(string certificateData, string password)
     {
+        _logger.LogDebug($"Certificate Base64: {certificateData}");
         byte[] rawData = Convert.FromBase64String(certificateData);
         return new X509Certificate2(rawData, password, X509KeyStorageFlags.Exportable);
     }
