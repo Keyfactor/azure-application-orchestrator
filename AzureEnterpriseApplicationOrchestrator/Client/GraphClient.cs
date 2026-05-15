@@ -1,4 +1,4 @@
-// Copyright 2024 Keyfactor
+// Copyright 2026 Keyfactor
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -242,14 +242,12 @@ public class GraphClient : IAzureGraphClient
             throw new Exception("Could not calculate thumbprint for certificate");
 
         // Calculate the SHA256 hash of the certificate's thumbprint
-        byte[] customKeyId = Encoding.UTF8.GetBytes(certificate.Thumbprint)[..32];
+        byte[] customKeyId = certificate.GetCertHash();
 
-        _logger.LogDebug($"Adding certificate called \"{certificateName}\" to Object ID \"{_targetObjectId}\" (custom key ID {Encoding.UTF8.GetString(customKeyId)})");
+        _logger.LogDebug($"Adding certificate called \"{certificateName}\" to Object ID \"{_targetObjectId}\" (custom key ID {Convert.ToHexString(customKeyId)})");
 
         // Get the application object
         Application application = GetApplication();
-
-        char[] certPem = PemEncoding.Write("CERTIFICATE", certificate.RawData);
 
         // Update the application object
         _logger.LogDebug($"Updating application object for Object ID \"{_targetObjectId}\"");
@@ -267,7 +265,7 @@ public class GraphClient : IAzureGraphClient
                         StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
                         EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
                         KeyId = Guid.NewGuid(),
-                        Key = System.Text.Encoding.UTF8.GetBytes(certPem)
+                        Key = certificate.Export(X509ContentType.Cert),
                     }
                 }
             }).Wait();
@@ -332,6 +330,7 @@ public class GraphClient : IAzureGraphClient
 
     public void AddServicePrincipalCertificate(string certificateName, string certificateData, string certificatePassword)
     {
+
         // certificateData is a base64 encoded PFX certificate
         X509Certificate2 certificate = SerializeCertificate(certificateData, certificatePassword);
         if (certificate.Thumbprint == null)
@@ -989,8 +988,9 @@ public class GraphClient : IAzureGraphClient
         return certificate;
     }
 
-    protected static X509Certificate2 SerializeCertificate(string certificateData, string password)
+    private X509Certificate2 SerializeCertificate(string certificateData, string password)
     {
+        _logger.LogDebug($"Certificate Base64: {certificateData}");
         byte[] rawData = Convert.FromBase64String(certificateData);
         return new X509Certificate2(rawData, password, X509KeyStorageFlags.Exportable);
     }
