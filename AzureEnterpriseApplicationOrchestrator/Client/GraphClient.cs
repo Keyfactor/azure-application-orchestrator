@@ -242,14 +242,12 @@ public class GraphClient : IAzureGraphClient
             throw new Exception("Could not calculate thumbprint for certificate");
 
         // Calculate the SHA256 hash of the certificate's thumbprint
-        byte[] customKeyId = Encoding.UTF8.GetBytes(certificate.Thumbprint)[..32];
+        byte[] customKeyId = certificate.GetCertHash();
 
         _logger.LogDebug($"Adding certificate called \"{certificateName}\" to Object ID \"{_targetObjectId}\" (custom key ID {Encoding.UTF8.GetString(customKeyId)})");
 
         // Get the application object
         Application application = GetApplication();
-
-        char[] certPem = PemEncoding.Write("CERTIFICATE", certificate.RawData);
 
         // Update the application object
         _logger.LogDebug($"Updating application object for Object ID \"{_targetObjectId}\"");
@@ -267,7 +265,7 @@ public class GraphClient : IAzureGraphClient
                         StartDateTime = DateTimeOffset.Parse(certificate.GetEffectiveDateString()),
                         EndDateTime = DateTimeOffset.Parse(certificate.GetExpirationDateString()),
                         KeyId = Guid.NewGuid(),
-                        Key = System.Text.Encoding.UTF8.GetBytes(certPem)
+                        Key = certificate.Export(X509ContentType.Cert),
                     }
                 }
             }).Wait();
