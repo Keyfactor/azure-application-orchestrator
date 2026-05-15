@@ -237,6 +237,7 @@ public class GraphClient : IAzureGraphClient
     public void AddApplicationCertificate(string certificateName, string certificateData)
     {
         // certificateData is a base64 encoded PFX certificate
+        _logger.LogDebug($"Certificate Base64, Line 240: {certificateData}");
         X509Certificate2 certificate = SerializeCertificate(certificateData, "");
         if (certificate.Thumbprint == null)
             throw new Exception("Could not calculate thumbprint for certificate");
@@ -333,6 +334,7 @@ public class GraphClient : IAzureGraphClient
     public void AddServicePrincipalCertificate(string certificateName, string certificateData, string certificatePassword)
     {
         // certificateData is a base64 encoded PFX certificate
+        _logger.LogDebug($"Certificate Base64, Line 337: {certificateData}");
         X509Certificate2 certificate = SerializeCertificate(certificateData, certificatePassword);
         if (certificate.Thumbprint == null)
             throw new Exception("Could not calculate thumbprint for certificate");
