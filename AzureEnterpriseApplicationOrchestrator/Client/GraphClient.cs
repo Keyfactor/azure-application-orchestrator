@@ -244,7 +244,7 @@ public class GraphClient : IAzureGraphClient
         // Calculate the SHA256 hash of the certificate's thumbprint
         byte[] customKeyId = certificate.GetCertHash();
 
-        _logger.LogDebug($"Adding certificate called \"{certificateName}\" to Object ID \"{_targetObjectId}\" (custom key ID {Encoding.UTF8.GetString(customKeyId)})");
+        _logger.LogDebug($"Adding certificate called \"{certificateName}\" to Object ID \"{_targetObjectId}\" (custom key ID {Convert.ToHexString(customKeyId)})");
 
         // Get the application object
         Application application = GetApplication();
