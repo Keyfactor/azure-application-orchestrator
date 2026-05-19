@@ -24,7 +24,7 @@ namespace AzureEnterpriseApplicationOrchestrator.Tests
         public string Resolve(string instanceInfo)
         {
             // For testing, if we have a predefined secret, return it
-            if (_secrets.ContainsKey(instanceInfo))
+            if (instanceInfo != null && _secrets.ContainsKey(instanceInfo))
             {
                 return _secrets[instanceInfo];
             }
