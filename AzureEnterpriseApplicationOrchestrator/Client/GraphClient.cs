@@ -800,7 +800,7 @@ public class GraphClient : IAzureGraphClient
 
         foreach (KeyCredential keyCredential in keyCredentials)
         {
-            string customKeyIdentifier = Encoding.UTF8.GetString(keyCredential.CustomKeyIdentifier);
+            string customKeyIdentifier = Convert.ToHexString(keyCredential.CustomKeyIdentifier);
 
             if (!string.IsNullOrWhiteSpace(keyCredential.Usage) && keyCredential.Usage.Equals("Sign", StringComparison.OrdinalIgnoreCase))
             {
