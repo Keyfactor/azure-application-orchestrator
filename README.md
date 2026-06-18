@@ -785,7 +785,6 @@ the Keyfactor Command Portal
    | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` |
    | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
    | Between `11.6.0` and `24.x` | `net8.0` | | `net8.0` |
-   | Between `11.6.0` and `24.x` | `net10.0` | `LatestMajor` | `net10.0` |
    | `25.0` _and_ newer | `net10.0` | | `net10.0` |
 
     Unzip the archive containing extension assemblies to a known location.
