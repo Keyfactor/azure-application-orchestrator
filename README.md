@@ -318,6 +318,53 @@ the Keyfactor Command Portal
    ![AzureApp Custom Field - AzureCloud](docsource/images/AzureApp-custom-field-AzureCloud-validation-options-dialog.svg)
 
 
+
+   ###### Server Username
+   The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Client Certificate
+   The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field.
+
+   ![AzureApp Custom Field - ClientCertificate](docsource/images/AzureApp-custom-field-ClientCertificate-dialog.png)
+   ![AzureApp Custom Field - ClientCertificate](docsource/images/AzureApp-custom-field-ClientCertificate-validation-options-dialog.png)
+
+
+
+   ###### Azure Global Cloud Authority Host
+   Specifies the Azure Cloud instance used by the organization.
+
+   ![AzureApp Custom Field - AzureCloud](docsource/images/AzureApp-custom-field-AzureCloud-dialog.png)
+   ![AzureApp Custom Field - AzureCloud](docsource/images/AzureApp-custom-field-AzureCloud-validation-options-dialog.png)
+
+
+
+   ###### Use SSL
+   Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it.
+
+   ![AzureApp Custom Field - ServerUseSsl](docsource/images/AzureApp-custom-field-ServerUseSsl-dialog.png)
+   ![AzureApp Custom Field - ServerUseSsl](docsource/images/AzureApp-custom-field-ServerUseSsl-validation-options-dialog.png)
+
+
+
+
+
    </details>
 </details>
 
@@ -464,6 +511,45 @@ the Keyfactor Command Portal
 
    ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-dialog.svg)
    ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-validation-options-dialog.svg)
+
+
+
+   ###### Server Username
+   The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/Service Principal certificates, OR the password that encrypts the private key in ClientCertificate. If Client Cert Auth is used _and_ the Client Certificate's private key is not encrypted, you **must** select 'No Value' for this field.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Client Certificate
+   The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field.
+
+   ![AzureSP Custom Field - ClientCertificate](docsource/images/AzureSP-custom-field-ClientCertificate-dialog.png)
+   ![AzureSP Custom Field - ClientCertificate](docsource/images/AzureSP-custom-field-ClientCertificate-validation-options-dialog.png)
+
+
+
+   ###### Azure Global Cloud Authority Host
+   Specifies the Azure Cloud instance used by the organization.
+
+   ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-dialog.png)
+   ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-validation-options-dialog.png)
+
+
+
 
 
    </details>
@@ -617,6 +703,53 @@ the Keyfactor Command Portal
    ![AzureApp2 Custom Field - AzureCloud](docsource/images/AzureApp2-custom-field-AzureCloud-validation-options-dialog.svg)
 
 
+
+   ###### Server Username
+   The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/App Registration certificates.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Application/App Registration certificates. If Client Certificate Auth is used, you **must** select 'No Value'.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Client Certificate
+   The client certificate used to authenticate with Microsoft Graph for managing Application/App Registrations certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** check 'No Value'.
+
+   ![AzureApp2 Custom Field - ClientCertificate](docsource/images/AzureApp2-custom-field-ClientCertificate-dialog.png)
+   ![AzureApp2 Custom Field - ClientCertificate](docsource/images/AzureApp2-custom-field-ClientCertificate-validation-options-dialog.png)
+
+
+
+   ###### Client Certificate Password
+   The (optional) password that encrypts the private key in ClientCertificate.  If Client Certificate Auth is not used, you **must** check 'No Value'.
+
+   ![AzureApp2 Custom Field - ClientCertificatePassword](docsource/images/AzureApp2-custom-field-ClientCertificatePassword-dialog.png)
+   ![AzureApp2 Custom Field - ClientCertificatePassword](docsource/images/AzureApp2-custom-field-ClientCertificatePassword-validation-options-dialog.png)
+
+
+
+   ###### Azure Global Cloud Authority Host
+   Specifies the Azure Cloud instance used by the organization.
+
+   ![AzureApp2 Custom Field - AzureCloud](docsource/images/AzureApp2-custom-field-AzureCloud-dialog.png)
+   ![AzureApp2 Custom Field - AzureCloud](docsource/images/AzureApp2-custom-field-AzureCloud-validation-options-dialog.png)
+
+
+
+
+
    </details>
 </details>
 
@@ -768,6 +901,53 @@ the Keyfactor Command Portal
    ![AzureSP2 Custom Field - AzureCloud](docsource/images/AzureSP2-custom-field-AzureCloud-validation-options-dialog.svg)
 
 
+
+   ###### Server Username
+   The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Service Principal/Enterprise Application certificates.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   A Client Secret that the extension will use to authenticate with Microsoft Graph for managing Service Principal/Enterprise Application certificates. If Client Certificate Auth is used, you **must** check 'No Value'.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Client Certificate
+   The client certificate used to authenticate with Microsoft Graph for managing Service Principal/Enterprise Application certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** check 'No Value'.
+
+   ![AzureSP2 Custom Field - ClientCertificate](docsource/images/AzureSP2-custom-field-ClientCertificate-dialog.png)
+   ![AzureSP2 Custom Field - ClientCertificate](docsource/images/AzureSP2-custom-field-ClientCertificate-validation-options-dialog.png)
+
+
+
+   ###### Client Certificate Password
+   The (optional) password that encrypts the private key in ClientCertificate. If Client Certificate Auth is not used or the certificate's private key is not encrypted, you **must** check 'No Value'.
+
+   ![AzureSP2 Custom Field - ClientCertificatePassword](docsource/images/AzureSP2-custom-field-ClientCertificatePassword-dialog.png)
+   ![AzureSP2 Custom Field - ClientCertificatePassword](docsource/images/AzureSP2-custom-field-ClientCertificatePassword-validation-options-dialog.png)
+
+
+
+   ###### Azure Global Cloud Authority Host
+   Specifies the Azure Cloud instance used by the organization.
+
+   ![AzureSP2 Custom Field - AzureCloud](docsource/images/AzureSP2-custom-field-AzureCloud-dialog.png)
+   ![AzureSP2 Custom Field - AzureCloud](docsource/images/AzureSP2-custom-field-AzureCloud-validation-options-dialog.png)
+
+
+
+
+
    </details>
 </details>
 
@@ -782,9 +962,8 @@ the Keyfactor Command Portal
    | --------- | ----------- | ----------- | ----------- |
    | Older than `11.0.0` | | | `net6.0` |
    | Between `11.0.0` and `11.5.1` (inclusive) | `net6.0` | | `net6.0` |
-   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` |
-   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
-   | `11.6` _and_ newer | `net8.0` | | `net8.0` |
+   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` || Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
+   | `11.6` _and_ newer | `net8.0` | | `net8.0` | 
 
     Unzip the archive containing extension assemblies to a known location.
 
@@ -834,8 +1013,8 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "Azure App Registration (Application)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID that owns the Service Principal. |
@@ -917,8 +1096,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "Azure Enterprise Application (Service Principal)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID that owns the Service Principal. |
@@ -1000,8 +1179,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "Azure App Registration 2 (Application)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID where the Application is instantiated |
@@ -1086,8 +1265,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "Azure Enterprise Application 2 (Service Principal)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID where the Service Principal is instantiated |
