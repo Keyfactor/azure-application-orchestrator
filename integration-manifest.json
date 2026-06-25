@@ -1,7 +1,7 @@
 {
   "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
-  "name": "Azure App Registration and Enterprise Application Orchestrator",
   "integration_type": "orchestrator",
+  "name": "Azure App Registration and Enterprise Application Orchestrator",
   "status": "production",
   "description": "The Azure App Registration and Enterprise Application Orchestrator extension remotely manages both Azure App Registration/Application certificates and Enterprise Application/Service Principal certificates.",
   "support_level": "kf-supported",
