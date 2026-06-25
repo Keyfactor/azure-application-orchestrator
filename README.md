@@ -49,21 +49,17 @@ Enterprise Application Orchestrator extension manages certificates for Azure App
 Enterprise Applications (Service Principals) differently.
 
 The Azure App Registration and Enterprise Application Universal Orchestrator extension implements 4 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types. Descriptions of each are provided below.
-
 - [Azure App Registration (Application)](#AzureApp)
-
 - [Azure Enterprise Application (Service Principal)](#AzureSP)
-
 - [Azure App Registration 2 (Application)](#AzureApp2)
-
 - [Azure Enterprise Application 2 (Service Principal)](#AzureSP2)
-
 
 ## Compatibility
 
 This integration is compatible with Keyfactor Universal Orchestrator version 10.4 and later.
 
 ## Support
+
 The Azure App Registration and Enterprise Application Universal Orchestrator extension is supported by Keyfactor. If you require support for any issues or have feature request, please open a support ticket by either contacting your Keyfactor representative or via the Keyfactor Support Portal at https://support.keyfactor.com.
 
 > If you want to contribute bug fixes or additional enhancements, use the **[Pull requests](../../pulls)** tab.
@@ -71,7 +67,6 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 ## Requirements & Prerequisites
 
 Before installing the Azure App Registration and Enterprise Application Universal Orchestrator extension, we recommend that you install [kfutil](https://github.com/Keyfactor/kfutil). Kfutil is a command-line tool that simplifies the process of creating store types, installing extensions, and instantiating certificate stores in Keyfactor Command.
-
 
 ### Azure Service Principal (Graph API Authentication)
 
@@ -173,7 +168,6 @@ Microsoft Graph API. The extension uses the following Graph API endpoints to man
 * [Update Application](https://learn.microsoft.com/en-us/graph/api/application-update?view=graph-rest-1.0&tabs=http) - Used to modify the App Registration to add or remove certificates.
     * Specifically, the extension manipulates the [`keyCredentials` resource](https://learn.microsoft.com/en-us/graph/api/resources/keycredential?view=graph-rest-1.0) of the Application object.
 
-
 ## Certificate Store Types
 
 To use the Azure App Registration and Enterprise Application Universal Orchestrator extension, you **must** create the Certificate Store Types required for your use-case. This only needs to happen _once_ per Keyfactor Command instance.
@@ -183,7 +177,6 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 ### AzureApp
 
 <details><summary>Click to expand details</summary>
-
 
 Azure [App Registration/Application certificates](https://learn.microsoft.com/en-us/entra/identity-platform/certificate-credentials)
 are typically used for client authentication by applications and are typically public key only in Azure. The general
@@ -196,9 +189,6 @@ Remove, and Discovery job types for managing these certificates.
 > AzureApp "Azure App Registration (Application)" is **Deprecated**. Please use **AzureApp2** "Azure App
 > Registration 2 (Application)" instead.
 
-
-
-
 #### Azure App Registration (Application) Requirements
 
 Application certificates are used for client authentication and are typically public key only. No additional
@@ -208,23 +198,22 @@ of [Certificates and Secrets](https://learn.microsoft.com/en-us/entra/identity-p
 Unless the Discovery job is used, you should collect the Application IDs for each App Registration that contains
 certificates to be managed.
 
-
-
 #### Supported Operations
 
-| Operation    | Is Supported                                                                                                           |
-|--------------|------------------------------------------------------------------------------------------------------------------------|
-| Add          | ✅ Checked        |
-| Remove       | ✅ Checked     |
-| Discovery    | ✅ Checked  |
+| Operation    | Is Supported |
+|--------------|--------------|
+| Add          | ✅ Checked |
+| Remove       | ✅ Checked |
+| Discovery    | ✅ Checked |
 | Reenrollment | 🔲 Unchecked |
-| Create       | 🔲 Unchecked     |
+| Create       | 🔲 Unchecked |
 
 #### Store Type Creation
 
 ##### Using kfutil:
 `kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
+
    <details><summary>Click to expand AzureApp kfutil details</summary>
 
    ##### Using online definition from GitHub:
@@ -243,10 +232,10 @@ For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out 
    ```
    </details>
 
-
 #### Manual Creation
 Below are instructions on how to create the AzureApp store type manually in
 the Keyfactor Command Portal
+
    <details><summary>Click to expand manual AzureApp details</summary>
 
    Create a store type called `AzureApp` with the attributes in the tables below:
@@ -257,11 +246,11 @@ the Keyfactor Command Portal
    | Name | Azure App Registration (Application) | Display name for the store type (may be customized) |
    | Short Name | AzureApp | Short display name for the store type |
    | Capability | AzureApp | Store type name orchestrator will register with. Check the box to allow entry of value |
-   | Supports Add | ✅ Checked | Check the box. Indicates that the Store Type supports Management Add |
-   | Supports Remove | ✅ Checked | Check the box. Indicates that the Store Type supports Management Remove |
-   | Supports Discovery | ✅ Checked | Check the box. Indicates that the Store Type supports Discovery |
-   | Supports Reenrollment | 🔲 Unchecked |  Indicates that the Store Type supports Reenrollment |
-   | Supports Create | 🔲 Unchecked |  Indicates that the Store Type supports store creation |
+   | Supports Add | ✅ Checked | Indicates that the Store Type supports Management Add |
+   | Supports Remove | ✅ Checked | Indicates that the Store Type supports Management Remove |
+   | Supports Discovery | ✅ Checked | Indicates that the Store Type supports Discovery |
+   | Supports Reenrollment | 🔲 Unchecked | Indicates that the Store Type supports Reenrollment |
+   | Supports Create | 🔲 Unchecked | Indicates that the Store Type supports store creation |
    | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
    | Blueprint Allowed | 🔲 Unchecked | Determines if store type may be included in an Orchestrator blueprint |
    | Uses PowerShell | 🔲 Unchecked | Determines if underlying implementation is PowerShell |
@@ -270,18 +259,18 @@ the Keyfactor Command Portal
 
    The Basic tab should look like this:
 
-   ![AzureApp Basic Tab](docsource/images/AzureApp-basic-store-type-dialog.png)
+   ![AzureApp Basic Tab](docsource/images/AzureApp-basic-store-type-dialog.svg)
 
    ##### Advanced Tab
    | Attribute | Value | Description |
    | --------- | ----- | ----- |
    | Supports Custom Alias | Required | Determines if an individual entry within a store can have a custom Alias. |
-   | Private Key Handling | Forbidden | This determines if Keyfactor can send the private key associated with a certificate to the store. Required because IIS certificates without private keys would be invalid. |
+   | Private Key Handling | Forbidden | This determines if Keyfactor can send the private key associated with a certificate to the store. |
    | PFX Password Style | Default | 'Default' - PFX password is randomly generated, 'Custom' - PFX password may be specified when the enrollment job is created (Requires the Allow Custom Password application setting to be enabled.) |
 
    The Advanced tab should look like this:
 
-   ![AzureApp Advanced Tab](docsource/images/AzureApp-advanced-store-type-dialog.png)
+   ![AzureApp Advanced Tab](docsource/images/AzureApp-advanced-store-type-dialog.svg)
 
    > For Keyfactor **Command versions 24.4 and later**, a Certificate Format dropdown is available with PFX and PEM options. Ensure that **PFX** is selected, as this determines the format of new and renewed certificates sent to the Orchestrator during a Management job. Currently, all Keyfactor-supported Orchestrator extensions support only PFX.
 
@@ -297,8 +286,7 @@ the Keyfactor Command Portal
 
    The Custom Fields tab should look like this:
 
-   ![AzureApp Custom Fields Tab](docsource/images/AzureApp-custom-fields-store-type-dialog.png)
-
+   ![AzureApp Custom Fields Tab](docsource/images/AzureApp-custom-fields-store-type-dialog.svg)
 
    ###### Server Username
    The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.
@@ -306,8 +294,6 @@ the Keyfactor Command Portal
 
    > [!IMPORTANT]
    > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
-
-
 
 
    ###### Server Password
@@ -318,32 +304,18 @@ the Keyfactor Command Portal
    > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
 
 
-
-
    ###### Client Certificate
    The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field.
 
-   ![AzureApp Custom Field - ClientCertificate](docsource/images/AzureApp-custom-field-ClientCertificate-dialog.png)
-   ![AzureApp Custom Field - ClientCertificate](docsource/images/AzureApp-custom-field-ClientCertificate-validation-options-dialog.png)
-
+   ![AzureApp Custom Field - ClientCertificate](docsource/images/AzureApp-custom-field-ClientCertificate-dialog.svg)
+   ![AzureApp Custom Field - ClientCertificate](docsource/images/AzureApp-custom-field-ClientCertificate-validation-options-dialog.svg)
 
 
    ###### Azure Global Cloud Authority Host
    Specifies the Azure Cloud instance used by the organization.
 
-   ![AzureApp Custom Field - AzureCloud](docsource/images/AzureApp-custom-field-AzureCloud-dialog.png)
-   ![AzureApp Custom Field - AzureCloud](docsource/images/AzureApp-custom-field-AzureCloud-validation-options-dialog.png)
-
-
-
-   ###### Use SSL
-   Specifies whether SSL should be used for communication with the server. Set to 'true' to enable SSL, and 'false' to disable it.
-
-   ![AzureApp Custom Field - ServerUseSsl](docsource/images/AzureApp-custom-field-ServerUseSsl-dialog.png)
-   ![AzureApp Custom Field - ServerUseSsl](docsource/images/AzureApp-custom-field-ServerUseSsl-validation-options-dialog.png)
-
-
-
+   ![AzureApp Custom Field - AzureCloud](docsource/images/AzureApp-custom-field-AzureCloud-dialog.svg)
+   ![AzureApp Custom Field - AzureCloud](docsource/images/AzureApp-custom-field-AzureCloud-validation-options-dialog.svg)
 
 
    </details>
@@ -352,7 +324,6 @@ the Keyfactor Command Portal
 ### AzureSP
 
 <details><summary>Click to expand details</summary>
-
 
 The Azure Enterprise Application/Service Principal certificate operations are implemented by the `AzureSP` store type,
 and supports the management of a single certificate for use in `SSO/SAML` assertion signing. The Management Add
@@ -367,9 +338,6 @@ Principals in the tenant.
 > AzureSP "Azure Enterprise Application (Service Principal)" is **Deprecated**. Please use **AzureSP2** Azure
 > "Enterprise Application 2 (Service Principal)" instead.
 
-
-
-
 #### Azure Enterprise Application (Service Principal) Requirements
 
 Service Principal certificates are typically used for SAML Token signing. Service Principals are created from Enterprise
@@ -378,23 +346,22 @@ Microsoft's [SAML-based single sign-on](https://learn.microsoft.com/en-us/entra/
 documentation. For more information on the mechanics of the Service Principal certificate management capabilities,
 please see the [mechanics](#extension-mechanics) section.
 
-
-
 #### Supported Operations
 
-| Operation    | Is Supported                                                                                                           |
-|--------------|------------------------------------------------------------------------------------------------------------------------|
-| Add          | ✅ Checked        |
-| Remove       | ✅ Checked     |
-| Discovery    | ✅ Checked  |
+| Operation    | Is Supported |
+|--------------|--------------|
+| Add          | ✅ Checked |
+| Remove       | ✅ Checked |
+| Discovery    | ✅ Checked |
 | Reenrollment | 🔲 Unchecked |
-| Create       | 🔲 Unchecked     |
+| Create       | 🔲 Unchecked |
 
 #### Store Type Creation
 
 ##### Using kfutil:
 `kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
+
    <details><summary>Click to expand AzureSP kfutil details</summary>
 
    ##### Using online definition from GitHub:
@@ -413,10 +380,10 @@ For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out 
    ```
    </details>
 
-
 #### Manual Creation
 Below are instructions on how to create the AzureSP store type manually in
 the Keyfactor Command Portal
+
    <details><summary>Click to expand manual AzureSP details</summary>
 
    Create a store type called `AzureSP` with the attributes in the tables below:
@@ -427,11 +394,11 @@ the Keyfactor Command Portal
    | Name | Azure Enterprise Application (Service Principal) | Display name for the store type (may be customized) |
    | Short Name | AzureSP | Short display name for the store type |
    | Capability | AzureSP | Store type name orchestrator will register with. Check the box to allow entry of value |
-   | Supports Add | ✅ Checked | Check the box. Indicates that the Store Type supports Management Add |
-   | Supports Remove | ✅ Checked | Check the box. Indicates that the Store Type supports Management Remove |
-   | Supports Discovery | ✅ Checked | Check the box. Indicates that the Store Type supports Discovery |
-   | Supports Reenrollment | 🔲 Unchecked |  Indicates that the Store Type supports Reenrollment |
-   | Supports Create | 🔲 Unchecked |  Indicates that the Store Type supports store creation |
+   | Supports Add | ✅ Checked | Indicates that the Store Type supports Management Add |
+   | Supports Remove | ✅ Checked | Indicates that the Store Type supports Management Remove |
+   | Supports Discovery | ✅ Checked | Indicates that the Store Type supports Discovery |
+   | Supports Reenrollment | 🔲 Unchecked | Indicates that the Store Type supports Reenrollment |
+   | Supports Create | 🔲 Unchecked | Indicates that the Store Type supports store creation |
    | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
    | Blueprint Allowed | 🔲 Unchecked | Determines if store type may be included in an Orchestrator blueprint |
    | Uses PowerShell | 🔲 Unchecked | Determines if underlying implementation is PowerShell |
@@ -440,18 +407,18 @@ the Keyfactor Command Portal
 
    The Basic tab should look like this:
 
-   ![AzureSP Basic Tab](docsource/images/AzureSP-basic-store-type-dialog.png)
+   ![AzureSP Basic Tab](docsource/images/AzureSP-basic-store-type-dialog.svg)
 
    ##### Advanced Tab
    | Attribute | Value | Description |
    | --------- | ----- | ----- |
    | Supports Custom Alias | Required | Determines if an individual entry within a store can have a custom Alias. |
-   | Private Key Handling | Required | This determines if Keyfactor can send the private key associated with a certificate to the store. Required because IIS certificates without private keys would be invalid. |
+   | Private Key Handling | Required | This determines if Keyfactor can send the private key associated with a certificate to the store. |
    | PFX Password Style | Default | 'Default' - PFX password is randomly generated, 'Custom' - PFX password may be specified when the enrollment job is created (Requires the Allow Custom Password application setting to be enabled.) |
 
    The Advanced tab should look like this:
 
-   ![AzureSP Advanced Tab](docsource/images/AzureSP-advanced-store-type-dialog.png)
+   ![AzureSP Advanced Tab](docsource/images/AzureSP-advanced-store-type-dialog.svg)
 
    > For Keyfactor **Command versions 24.4 and later**, a Certificate Format dropdown is available with PFX and PEM options. Ensure that **PFX** is selected, as this determines the format of new and renewed certificates sent to the Orchestrator during a Management job. Currently, all Keyfactor-supported Orchestrator extensions support only PFX.
 
@@ -467,8 +434,7 @@ the Keyfactor Command Portal
 
    The Custom Fields tab should look like this:
 
-   ![AzureSP Custom Fields Tab](docsource/images/AzureSP-custom-fields-store-type-dialog.png)
-
+   ![AzureSP Custom Fields Tab](docsource/images/AzureSP-custom-fields-store-type-dialog.svg)
 
    ###### Server Username
    The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/Service Principal certificates.
@@ -476,8 +442,6 @@ the Keyfactor Command Portal
 
    > [!IMPORTANT]
    > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
-
-
 
 
    ###### Server Password
@@ -488,24 +452,18 @@ the Keyfactor Command Portal
    > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
 
 
-
-
    ###### Client Certificate
    The client certificate used to authenticate with Microsoft Graph for managing Application/Service Principal certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** select 'No Value' for this field.
 
-   ![AzureSP Custom Field - ClientCertificate](docsource/images/AzureSP-custom-field-ClientCertificate-dialog.png)
-   ![AzureSP Custom Field - ClientCertificate](docsource/images/AzureSP-custom-field-ClientCertificate-validation-options-dialog.png)
-
+   ![AzureSP Custom Field - ClientCertificate](docsource/images/AzureSP-custom-field-ClientCertificate-dialog.svg)
+   ![AzureSP Custom Field - ClientCertificate](docsource/images/AzureSP-custom-field-ClientCertificate-validation-options-dialog.svg)
 
 
    ###### Azure Global Cloud Authority Host
    Specifies the Azure Cloud instance used by the organization.
 
-   ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-dialog.png)
-   ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-validation-options-dialog.png)
-
-
-
+   ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-dialog.svg)
+   ![AzureSP Custom Field - AzureCloud](docsource/images/AzureSP-custom-field-AzureCloud-validation-options-dialog.svg)
 
 
    </details>
@@ -515,16 +473,12 @@ the Keyfactor Command Portal
 
 <details><summary>Click to expand details</summary>
 
-
 Azure [App Registration/Application certificates](https://learn.microsoft.com/en-us/entra/identity-platform/certificate-credentials)
 are typically used for client authentication by applications and are typically public key only in Azure. The general
 model by which these credentials are consumed is that the certificate and private key are accessible by the Application
 using the App Registration, and are passed to the service authenticating the Application. The Azure App
 Registration and Enterprise Application Orchestrator extension implements the Inventory, Management Add, Management
 Remove, and Discovery job types for managing these certificates.
-
-
-
 
 #### Azure App Registration 2 (Application) Requirements
 
@@ -535,23 +489,22 @@ of [Certificates and Secrets](https://learn.microsoft.com/en-us/entra/identity-p
 Unless the Discovery job is used, you should collect the Application IDs for each App Registration that contains
 certificates to be managed.
 
-
-
 #### Supported Operations
 
-| Operation    | Is Supported                                                                                                           |
-|--------------|------------------------------------------------------------------------------------------------------------------------|
-| Add          | ✅ Checked        |
-| Remove       | ✅ Checked     |
-| Discovery    | ✅ Checked  |
+| Operation    | Is Supported |
+|--------------|--------------|
+| Add          | ✅ Checked |
+| Remove       | ✅ Checked |
+| Discovery    | ✅ Checked |
 | Reenrollment | 🔲 Unchecked |
-| Create       | 🔲 Unchecked     |
+| Create       | 🔲 Unchecked |
 
 #### Store Type Creation
 
 ##### Using kfutil:
 `kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
+
    <details><summary>Click to expand AzureApp2 kfutil details</summary>
 
    ##### Using online definition from GitHub:
@@ -570,10 +523,10 @@ For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out 
    ```
    </details>
 
-
 #### Manual Creation
 Below are instructions on how to create the AzureApp2 store type manually in
 the Keyfactor Command Portal
+
    <details><summary>Click to expand manual AzureApp2 details</summary>
 
    Create a store type called `AzureApp2` with the attributes in the tables below:
@@ -584,11 +537,11 @@ the Keyfactor Command Portal
    | Name | Azure App Registration 2 (Application) | Display name for the store type (may be customized) |
    | Short Name | AzureApp2 | Short display name for the store type |
    | Capability | AzureApp2 | Store type name orchestrator will register with. Check the box to allow entry of value |
-   | Supports Add | ✅ Checked | Check the box. Indicates that the Store Type supports Management Add |
-   | Supports Remove | ✅ Checked | Check the box. Indicates that the Store Type supports Management Remove |
-   | Supports Discovery | ✅ Checked | Check the box. Indicates that the Store Type supports Discovery |
-   | Supports Reenrollment | 🔲 Unchecked |  Indicates that the Store Type supports Reenrollment |
-   | Supports Create | 🔲 Unchecked |  Indicates that the Store Type supports store creation |
+   | Supports Add | ✅ Checked | Indicates that the Store Type supports Management Add |
+   | Supports Remove | ✅ Checked | Indicates that the Store Type supports Management Remove |
+   | Supports Discovery | ✅ Checked | Indicates that the Store Type supports Discovery |
+   | Supports Reenrollment | 🔲 Unchecked | Indicates that the Store Type supports Reenrollment |
+   | Supports Create | 🔲 Unchecked | Indicates that the Store Type supports store creation |
    | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
    | Blueprint Allowed | 🔲 Unchecked | Determines if store type may be included in an Orchestrator blueprint |
    | Uses PowerShell | 🔲 Unchecked | Determines if underlying implementation is PowerShell |
@@ -597,18 +550,18 @@ the Keyfactor Command Portal
 
    The Basic tab should look like this:
 
-   ![AzureApp2 Basic Tab](docsource/images/AzureApp2-basic-store-type-dialog.png)
+   ![AzureApp2 Basic Tab](docsource/images/AzureApp2-basic-store-type-dialog.svg)
 
    ##### Advanced Tab
    | Attribute | Value | Description |
    | --------- | ----- | ----- |
    | Supports Custom Alias | Required | Determines if an individual entry within a store can have a custom Alias. |
-   | Private Key Handling | Forbidden | This determines if Keyfactor can send the private key associated with a certificate to the store. Required because IIS certificates without private keys would be invalid. |
+   | Private Key Handling | Forbidden | This determines if Keyfactor can send the private key associated with a certificate to the store. |
    | PFX Password Style | Default | 'Default' - PFX password is randomly generated, 'Custom' - PFX password may be specified when the enrollment job is created (Requires the Allow Custom Password application setting to be enabled.) |
 
    The Advanced tab should look like this:
 
-   ![AzureApp2 Advanced Tab](docsource/images/AzureApp2-advanced-store-type-dialog.png)
+   ![AzureApp2 Advanced Tab](docsource/images/AzureApp2-advanced-store-type-dialog.svg)
 
    > For Keyfactor **Command versions 24.4 and later**, a Certificate Format dropdown is available with PFX and PEM options. Ensure that **PFX** is selected, as this determines the format of new and renewed certificates sent to the Orchestrator during a Management job. Currently, all Keyfactor-supported Orchestrator extensions support only PFX.
 
@@ -625,8 +578,7 @@ the Keyfactor Command Portal
 
    The Custom Fields tab should look like this:
 
-   ![AzureApp2 Custom Fields Tab](docsource/images/AzureApp2-custom-fields-store-type-dialog.png)
-
+   ![AzureApp2 Custom Fields Tab](docsource/images/AzureApp2-custom-fields-store-type-dialog.svg)
 
    ###### Server Username
    The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Application/App Registration certificates.
@@ -634,8 +586,6 @@ the Keyfactor Command Portal
 
    > [!IMPORTANT]
    > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
-
-
 
 
    ###### Server Password
@@ -646,32 +596,25 @@ the Keyfactor Command Portal
    > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
 
 
-
-
    ###### Client Certificate
    The client certificate used to authenticate with Microsoft Graph for managing Application/App Registrations certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** check 'No Value'.
 
-   ![AzureApp2 Custom Field - ClientCertificate](docsource/images/AzureApp2-custom-field-ClientCertificate-dialog.png)
-   ![AzureApp2 Custom Field - ClientCertificate](docsource/images/AzureApp2-custom-field-ClientCertificate-validation-options-dialog.png)
-
+   ![AzureApp2 Custom Field - ClientCertificate](docsource/images/AzureApp2-custom-field-ClientCertificate-dialog.svg)
+   ![AzureApp2 Custom Field - ClientCertificate](docsource/images/AzureApp2-custom-field-ClientCertificate-validation-options-dialog.svg)
 
 
    ###### Client Certificate Password
    The (optional) password that encrypts the private key in ClientCertificate.  If Client Certificate Auth is not used, you **must** check 'No Value'.
 
-   ![AzureApp2 Custom Field - ClientCertificatePassword](docsource/images/AzureApp2-custom-field-ClientCertificatePassword-dialog.png)
-   ![AzureApp2 Custom Field - ClientCertificatePassword](docsource/images/AzureApp2-custom-field-ClientCertificatePassword-validation-options-dialog.png)
-
+   ![AzureApp2 Custom Field - ClientCertificatePassword](docsource/images/AzureApp2-custom-field-ClientCertificatePassword-dialog.svg)
+   ![AzureApp2 Custom Field - ClientCertificatePassword](docsource/images/AzureApp2-custom-field-ClientCertificatePassword-validation-options-dialog.svg)
 
 
    ###### Azure Global Cloud Authority Host
    Specifies the Azure Cloud instance used by the organization.
 
-   ![AzureApp2 Custom Field - AzureCloud](docsource/images/AzureApp2-custom-field-AzureCloud-dialog.png)
-   ![AzureApp2 Custom Field - AzureCloud](docsource/images/AzureApp2-custom-field-AzureCloud-validation-options-dialog.png)
-
-
-
+   ![AzureApp2 Custom Field - AzureCloud](docsource/images/AzureApp2-custom-field-AzureCloud-dialog.svg)
+   ![AzureApp2 Custom Field - AzureCloud](docsource/images/AzureApp2-custom-field-AzureCloud-validation-options-dialog.svg)
 
 
    </details>
@@ -681,7 +624,6 @@ the Keyfactor Command Portal
 
 <details><summary>Click to expand details</summary>
 
-
 The Azure Enterprise Application/Service Principal certificate operations are implemented by the `AzureSP` store type,
 and supports the management of a single certificate for use in `SSO/SAML` assertion signing. The Management Add operation
 is only supported with the certificate replacement option, since adding a new certificate will replace the existing
@@ -689,9 +631,6 @@ certificate. The Add operation will also set newly added certificates as the act
 Management Remove operation removes the certificate from the Enterprise Application/Service Principal, which is the same
 as removing the `SSO/SAML` signing certificate. The Discovery operation discovers all Enterprise Applications/Service
 Principals in the tenant.
-
-
-
 
 #### Azure Enterprise Application 2 (Service Principal) Requirements
 
@@ -701,23 +640,22 @@ Microsoft's [SAML-based single sign-on](https://learn.microsoft.com/en-us/entra/
 documentation. For more information on the mechanics of the Service Principal certificate management capabilities,
 please see the [mechanics](#extension-mechanics) section.
 
-
-
 #### Supported Operations
 
-| Operation    | Is Supported                                                                                                           |
-|--------------|------------------------------------------------------------------------------------------------------------------------|
-| Add          | ✅ Checked        |
-| Remove       | ✅ Checked     |
-| Discovery    | ✅ Checked  |
+| Operation    | Is Supported |
+|--------------|--------------|
+| Add          | ✅ Checked |
+| Remove       | ✅ Checked |
+| Discovery    | ✅ Checked |
 | Reenrollment | 🔲 Unchecked |
-| Create       | 🔲 Unchecked     |
+| Create       | 🔲 Unchecked |
 
 #### Store Type Creation
 
 ##### Using kfutil:
 `kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
+
    <details><summary>Click to expand AzureSP2 kfutil details</summary>
 
    ##### Using online definition from GitHub:
@@ -736,10 +674,10 @@ For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out 
    ```
    </details>
 
-
 #### Manual Creation
 Below are instructions on how to create the AzureSP2 store type manually in
 the Keyfactor Command Portal
+
    <details><summary>Click to expand manual AzureSP2 details</summary>
 
    Create a store type called `AzureSP2` with the attributes in the tables below:
@@ -750,11 +688,11 @@ the Keyfactor Command Portal
    | Name | Azure Enterprise Application 2 (Service Principal) | Display name for the store type (may be customized) |
    | Short Name | AzureSP2 | Short display name for the store type |
    | Capability | AzureSP2 | Store type name orchestrator will register with. Check the box to allow entry of value |
-   | Supports Add | ✅ Checked | Check the box. Indicates that the Store Type supports Management Add |
-   | Supports Remove | ✅ Checked | Check the box. Indicates that the Store Type supports Management Remove |
-   | Supports Discovery | ✅ Checked | Check the box. Indicates that the Store Type supports Discovery |
-   | Supports Reenrollment | 🔲 Unchecked |  Indicates that the Store Type supports Reenrollment |
-   | Supports Create | 🔲 Unchecked |  Indicates that the Store Type supports store creation |
+   | Supports Add | ✅ Checked | Indicates that the Store Type supports Management Add |
+   | Supports Remove | ✅ Checked | Indicates that the Store Type supports Management Remove |
+   | Supports Discovery | ✅ Checked | Indicates that the Store Type supports Discovery |
+   | Supports Reenrollment | 🔲 Unchecked | Indicates that the Store Type supports Reenrollment |
+   | Supports Create | 🔲 Unchecked | Indicates that the Store Type supports store creation |
    | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
    | Blueprint Allowed | 🔲 Unchecked | Determines if store type may be included in an Orchestrator blueprint |
    | Uses PowerShell | 🔲 Unchecked | Determines if underlying implementation is PowerShell |
@@ -763,18 +701,18 @@ the Keyfactor Command Portal
 
    The Basic tab should look like this:
 
-   ![AzureSP2 Basic Tab](docsource/images/AzureSP2-basic-store-type-dialog.png)
+   ![AzureSP2 Basic Tab](docsource/images/AzureSP2-basic-store-type-dialog.svg)
 
    ##### Advanced Tab
    | Attribute | Value | Description |
    | --------- | ----- | ----- |
    | Supports Custom Alias | Required | Determines if an individual entry within a store can have a custom Alias. |
-   | Private Key Handling | Required | This determines if Keyfactor can send the private key associated with a certificate to the store. Required because IIS certificates without private keys would be invalid. |
+   | Private Key Handling | Required | This determines if Keyfactor can send the private key associated with a certificate to the store. |
    | PFX Password Style | Default | 'Default' - PFX password is randomly generated, 'Custom' - PFX password may be specified when the enrollment job is created (Requires the Allow Custom Password application setting to be enabled.) |
 
    The Advanced tab should look like this:
 
-   ![AzureSP2 Advanced Tab](docsource/images/AzureSP2-advanced-store-type-dialog.png)
+   ![AzureSP2 Advanced Tab](docsource/images/AzureSP2-advanced-store-type-dialog.svg)
 
    > For Keyfactor **Command versions 24.4 and later**, a Certificate Format dropdown is available with PFX and PEM options. Ensure that **PFX** is selected, as this determines the format of new and renewed certificates sent to the Orchestrator during a Management job. Currently, all Keyfactor-supported Orchestrator extensions support only PFX.
 
@@ -791,8 +729,7 @@ the Keyfactor Command Portal
 
    The Custom Fields tab should look like this:
 
-   ![AzureSP2 Custom Fields Tab](docsource/images/AzureSP2-custom-fields-store-type-dialog.png)
-
+   ![AzureSP2 Custom Fields Tab](docsource/images/AzureSP2-custom-fields-store-type-dialog.svg)
 
    ###### Server Username
    The Application ID of the Service Principal used to authenticate with Microsoft Graph for managing Service Principal/Enterprise Application certificates.
@@ -800,8 +737,6 @@ the Keyfactor Command Portal
 
    > [!IMPORTANT]
    > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
-
-
 
 
    ###### Server Password
@@ -812,32 +747,25 @@ the Keyfactor Command Portal
    > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
 
 
-
-
    ###### Client Certificate
    The client certificate used to authenticate with Microsoft Graph for managing Service Principal/Enterprise Application certificates. See the [requirements](#client-certificate-or-client-secret) for more information. If Client Certificate Auth is not used, you **must** check 'No Value'.
 
-   ![AzureSP2 Custom Field - ClientCertificate](docsource/images/AzureSP2-custom-field-ClientCertificate-dialog.png)
-   ![AzureSP2 Custom Field - ClientCertificate](docsource/images/AzureSP2-custom-field-ClientCertificate-validation-options-dialog.png)
-
+   ![AzureSP2 Custom Field - ClientCertificate](docsource/images/AzureSP2-custom-field-ClientCertificate-dialog.svg)
+   ![AzureSP2 Custom Field - ClientCertificate](docsource/images/AzureSP2-custom-field-ClientCertificate-validation-options-dialog.svg)
 
 
    ###### Client Certificate Password
    The (optional) password that encrypts the private key in ClientCertificate. If Client Certificate Auth is not used or the certificate's private key is not encrypted, you **must** check 'No Value'.
 
-   ![AzureSP2 Custom Field - ClientCertificatePassword](docsource/images/AzureSP2-custom-field-ClientCertificatePassword-dialog.png)
-   ![AzureSP2 Custom Field - ClientCertificatePassword](docsource/images/AzureSP2-custom-field-ClientCertificatePassword-validation-options-dialog.png)
-
+   ![AzureSP2 Custom Field - ClientCertificatePassword](docsource/images/AzureSP2-custom-field-ClientCertificatePassword-dialog.svg)
+   ![AzureSP2 Custom Field - ClientCertificatePassword](docsource/images/AzureSP2-custom-field-ClientCertificatePassword-validation-options-dialog.svg)
 
 
    ###### Azure Global Cloud Authority Host
    Specifies the Azure Cloud instance used by the organization.
 
-   ![AzureSP2 Custom Field - AzureCloud](docsource/images/AzureSP2-custom-field-AzureCloud-dialog.png)
-   ![AzureSP2 Custom Field - AzureCloud](docsource/images/AzureSP2-custom-field-AzureCloud-validation-options-dialog.png)
-
-
-
+   ![AzureSP2 Custom Field - AzureCloud](docsource/images/AzureSP2-custom-field-AzureCloud-dialog.svg)
+   ![AzureSP2 Custom Field - AzureCloud](docsource/images/AzureSP2-custom-field-AzureCloud-validation-options-dialog.svg)
 
 
    </details>
@@ -848,14 +776,15 @@ the Keyfactor Command Portal
 
 1. **Download the latest Azure App Registration and Enterprise Application Universal Orchestrator extension from GitHub.**
 
-    Navigate to the [Azure App Registration and Enterprise Application Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest). Refer to the compatibility matrix below to determine the asset should be downloaded. Then, click the corresponding asset to download the zip archive.
+    Navigate to the [Azure App Registration and Enterprise Application Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/azure-application-orchestrator/releases/latest). Refer to the compatibility matrix below to determine which asset should be downloaded. Then, click the corresponding asset to download the zip archive.
 
    | Universal Orchestrator Version | Latest .NET version installed on the Universal Orchestrator server | `rollForward` condition in `Orchestrator.runtimeconfig.json` | `azure-application-orchestrator` .NET version to download |
    | --------- | ----------- | ----------- | ----------- |
    | Older than `11.0.0` | | | `net6.0` |
    | Between `11.0.0` and `11.5.1` (inclusive) | `net6.0` | | `net6.0` |
-   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` || Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
-   | `11.6` _and_ newer | `net8.0` | | `net8.0` | 
+   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` |
+   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
+   | `11.6` _and_ newer | `net8.0` | | `net8.0` |
 
     Unzip the archive containing extension assemblies to a known location.
 
@@ -877,24 +806,19 @@ the Keyfactor Command Portal
 
     Refer to [Starting/Restarting the Universal Orchestrator service](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/StarttheService.htm).
 
-
 6. **(optional) PAM Integration**
 
     The Azure App Registration and Enterprise Application Universal Orchestrator extension is compatible with all supported Keyfactor PAM extensions to resolve PAM-eligible secrets. PAM extensions running on Universal Orchestrators enable secure retrieval of secrets from a connected PAM provider.
 
     To configure a PAM provider, [reference the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam) to select an extension and follow the associated instructions to install it on the Universal Orchestrator (remote).
 
-
 > The above installation steps can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions).
-
-
 
 ## Defining Certificate Stores
 
 The Azure App Registration and Enterprise Application Universal Orchestrator extension implements 4 Certificate Store Types, each of which implements different functionality. Refer to the individual instructions below for each Certificate Store Type that you deemed necessary for your use case from the installation section.
 
 <details><summary>Azure App Registration (Application) (AzureApp)</summary>
-
 
 ### Store Creation
 
@@ -910,8 +834,8 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description                                             |
-   | --------- |---------------------------------------------------------|
+   | Attribute | Description |
+   | --------- | ----------- |
    | Category | Select "Azure App Registration (Application)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID that owns the Service Principal. |
@@ -923,8 +847,6 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
    | AzureCloud | Specifies the Azure Cloud instance used by the organization. |
 
 </details>
-
-
 
 #### Using kfutil CLI
 
@@ -959,7 +881,6 @@ The Azure App Registration and Enterprise Application Universal Orchestrator ext
 
 </details>
 
-
 #### PAM Provider Eligible Fields
 <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
 
@@ -976,14 +897,11 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 </details>
 
-
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
-
 
 </details>
 
 <details><summary>Azure Enterprise Application (Service Principal) (AzureSP)</summary>
-
 
 ### Store Creation
 
@@ -999,8 +917,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description                                             |
-   | --------- |---------------------------------------------------------|
+   | Attribute | Description |
+   | --------- | ----------- |
    | Category | Select "Azure Enterprise Application (Service Principal)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID that owns the Service Principal. |
@@ -1012,8 +930,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | AzureCloud | Specifies the Azure Cloud instance used by the organization. |
 
 </details>
-
-
 
 #### Using kfutil CLI
 
@@ -1048,7 +964,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 </details>
 
-
 #### PAM Provider Eligible Fields
 <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
 
@@ -1065,14 +980,11 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 </details>
 
-
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
-
 
 </details>
 
 <details><summary>Azure App Registration 2 (Application) (AzureApp2)</summary>
-
 
 ### Store Creation
 
@@ -1088,8 +1000,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description                                             |
-   | --------- |---------------------------------------------------------|
+   | Attribute | Description |
+   | --------- | ----------- |
    | Category | Select "Azure App Registration 2 (Application)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID where the Application is instantiated |
@@ -1102,8 +1014,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | AzureCloud | Specifies the Azure Cloud instance used by the organization. |
 
 </details>
-
-
 
 #### Using kfutil CLI
 
@@ -1139,7 +1049,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 </details>
 
-
 #### PAM Provider Eligible Fields
 <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
 
@@ -1157,14 +1066,11 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 </details>
 
-
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
-
 
 </details>
 
 <details><summary>Azure Enterprise Application 2 (Service Principal) (AzureSP2)</summary>
-
 
 ### Store Creation
 
@@ -1180,8 +1086,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description                                             |
-   | --------- |---------------------------------------------------------|
+   | Attribute | Description |
+   | --------- | ----------- |
    | Category | Select "Azure Enterprise Application 2 (Service Principal)" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The Azure Tenant (directory) ID where the Service Principal is instantiated |
@@ -1194,8 +1100,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | AzureCloud | Specifies the Azure Cloud instance used by the organization. |
 
 </details>
-
-
 
 #### Using kfutil CLI
 
@@ -1231,7 +1135,6 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 </details>
 
-
 #### PAM Provider Eligible Fields
 <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
 
@@ -1249,13 +1152,12 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 </details>
 
-
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
-
 
 </details>
 
 ## Discovering Certificate Stores with the Discovery Job
+
 Discovery for all four Certificate Store Types implemented by the Azure App Registration and Enterprise
 Application Orchestrator extension returns Store Paths in the format `<guid> (<friendly name>)`. When defining
 Certificate Stores manually, you may elect to follow this format, or use the standard `<guid>` for the Store Path.
@@ -1273,12 +1175,6 @@ The Discovery operation uses the "Directories to search" field and accepts input
   Azure App Registrations available in each tenant specified in the list. The tenant IDs should be the GUIDs associated
   with each tenant, and it's the user's responsibility to ensure that the service principal has access to the specified
   tenants.
-
-
-
-
-
-
 
 
 ## License
