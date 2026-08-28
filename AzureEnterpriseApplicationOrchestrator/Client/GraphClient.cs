@@ -800,9 +800,25 @@ public class GraphClient : IAzureGraphClient
 
         foreach (KeyCredential keyCredential in keyCredentials)
         {
-            string customKeyIdentifier = Convert.ToHexString(keyCredential.CustomKeyIdentifier);
+            // CustomKeyIdentifier can be null for key credentials returned by Graph. Fall back to the
+            // KeyId so that the credential can still be tracked and reported instead of throwing.
+            string customKeyIdentifier;
+            if (keyCredential.CustomKeyIdentifier != null)
+            {
+                customKeyIdentifier = Convert.ToHexString(keyCredential.CustomKeyIdentifier);
+            }
+            else if (keyCredential.KeyId != null)
+            {
+                customKeyIdentifier = keyCredential.KeyId.ToString();
+                _logger.LogWarning($"Key credential with DisplayName \"{keyCredential.DisplayName}\" has no CustomKeyIdentifier - using KeyId \"{customKeyIdentifier}\" instead");
+            }
+            else
+            {
+                _logger.LogWarning($"Skipping key credential with DisplayName \"{keyCredential.DisplayName}\" because it has neither a CustomKeyIdentifier nor a KeyId");
+                continue;
+            }
 
-            if (!string.IsNullOrWhiteSpace(keyCredential.Usage) && keyCredential.Usage.Equals("Sign", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(keyCredential.Usage))
             {
                 _logger.LogDebug($"Certificate with CustomKeyIdentifier \"{customKeyIdentifier}\" has a private key entry");
                 privateKeyMap[customKeyIdentifier] = true;
@@ -810,7 +826,32 @@ public class GraphClient : IAzureGraphClient
             // We only track the case where the private key exists because there will be several keyCredentials
             // for Service Principals where one is the certificate and the other is the private key.
 
-            X509Certificate2 certificate = GetCertificateFromKeyCredential(keyCredential);
+            // If the thumbprint is already in the map, skip it
+            if (keyIdMap.ContainsKey(customKeyIdentifier))
+            {
+                _logger.LogTrace($"Skipping certificate with CustomKeyIdentifier \"{customKeyIdentifier}\" because it's already in the inventory");
+                continue;
+            }
+
+            X509Certificate2 certificate;
+            try
+            {
+                certificate = GetCertificateFromKeyCredential(keyCredential);
+            }
+            catch (Exception ex)
+            {
+                string message = $"Exception retrieving certificate for key credential with DisplayName \"{keyCredential.DisplayName}\" ({customKeyIdentifier}): {ex.Message}";
+                _logger.LogWarning(message);
+                failedCertificateMap[customKeyIdentifier] = message;
+                continue;
+            }
+
+            if (!string.Equals(keyCredential.Type, "AsymmetricX509Cert", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogDebug($"Skipping key credential with DisplayName \"{keyCredential.DisplayName}\" because its type is \"{keyCredential.Type}\", not a certificate");
+                continue;
+            }
+
             if (certificate == null)
             {
                 string message = $"Unable to retrieve certificate for key credential with DisplayName \"{keyCredential.DisplayName}\" ({customKeyIdentifier})";
@@ -824,12 +865,6 @@ public class GraphClient : IAzureGraphClient
                 failedCertificateMap.Remove(customKeyIdentifier);
             }
 
-            // If the thumbprint is already in the map, skip it
-            if (keyIdMap.ContainsKey(customKeyIdentifier))
-            {
-                _logger.LogTrace($"Skipping certificate with CustomKeyIdentifier \"{customKeyIdentifier}\" because it's already in the inventory");
-                continue;
-            }
             keyIdMap[customKeyIdentifier] = true;
 
             // Assemble the certificates for the inventory
@@ -967,7 +1002,9 @@ public class GraphClient : IAzureGraphClient
 
     protected X509Certificate2 GetCertificateFromKeyCredential(KeyCredential keyCredential)
     {
-        string customKeyIdentifier = Encoding.UTF8.GetString(keyCredential.CustomKeyIdentifier);
+        string customKeyIdentifier = keyCredential.CustomKeyIdentifier != null
+            ? Encoding.UTF8.GetString(keyCredential.CustomKeyIdentifier)
+            : keyCredential.KeyId?.ToString() ?? "unknown";
         if (keyCredential.Key == null || keyCredential.Key.Length == 0)
         {
             _logger.LogWarning($"Key credential with KeyId \"{keyCredential.KeyId}\" has no key data");
