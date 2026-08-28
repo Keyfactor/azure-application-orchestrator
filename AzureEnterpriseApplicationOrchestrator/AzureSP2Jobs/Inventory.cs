@@ -106,4 +106,3 @@ public class Inventory : IInventoryJobExtension
         return result;
     }
 }
-

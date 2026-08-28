@@ -1,3 +1,6 @@
+- 4.2.1
+  - Resolved an error when performing inventory on AzureAppSP2 when getting the Application Certificates indicating a value cannot be null in the Array returned from the graph.
+  
 - 4.2.0
   - Added PAM Support for Azure App Registrations and Service Principals.
   - Updated logging to remove sensitive information.
